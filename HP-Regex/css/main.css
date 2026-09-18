@@ -1,0 +1,207 @@
+/* 폰트 정의 */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard';
+}
+
+html, body {
+    height: 100%;
+    min-height: 100dvh;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    background-size: cover;
+    color: var(--text-primary);
+    font-size: 13.5px;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}
+
+::-webkit-scrollbar {
+    width: 5px;  
+}
+::-webkit-scrollbar-thumb {
+    background: var(--btn-1);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#app {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--modal-bg, #fff);
+    margin: 0;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    animation: slideDown 0.3s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* 모달 탭 스타일 */
+.modal-tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    flex-wrap: wrap; 
+}
+
+.modal-tab-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.modal-tab-btn:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+.modal-tab-btn.active {
+    background: var(--btn-1);
+    color: #fff;
+    border-color: transparent;
+}
+
+.modal-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    font-size: 1.1em;
+}
+
+.modal-content ul,
+.modal-content ol {
+    margin-left: 24px;
+    margin-top: 10px;
+    line-height: 1.8;
+    padding-left: 4px;
+}
+
+.modal-content li {
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.modal-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: var(--text-primary);
+}
+
+/* CodeMirror 모바일 환경 줌 및 터치 버그 방지 */
+.CodeMirror textarea {
+    font-size: 16px !important;
+}
+.CodeMirror, .CodeMirror-scroll {
+    touch-action: auto !important;
+    -webkit-overflow-scrolling: auto !important;
+}
+
+/* 길이 늘리기 버튼 공통 플로그인 CSS */
+.expand-btn {
+    width: 100%;
+    padding: 8px 20px;
+    background: var(--btn-bg);
+    color: var(--text-green);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+

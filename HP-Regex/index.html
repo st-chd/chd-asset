@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정규식 디자인 미리보기 - 도구 모음</title>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="codemirror-colorpicker/dist/codemirror-colorpicker.css">
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/addon/mode/simple.js"></script>
+    <script src="codemirror/mode/xml/xml.js"></script>
+    <script src="codemirror/addon/search/searchcursor.js"></script>
+    <script src="codemirror/mode/css/css.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="codemirror/mode/handlebars/handlebars.js"></script>
+    <script src="codemirror/handlebars.min.js"></script>
+    <script src="codemirror-colorpicker/dist/codemirror-colorpicker.min.js"></script>
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- 개별 스타일 -->
+    <link rel="stylesheet" href="css/regex.css">
+</head>
+
+<body data-theme="light">
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="dropdown">
+                <button class="dropdown-btn" id="currentPageTitle">정규식 디자인 미리보기<span class="arrow">▼</span></button>
+                <div class="dropdown-content">
+                    <!-- JS에서 동적으로 생성됨 -->
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="globalThemeToggle" class="icon-btn" title="전체 테마 전환">🌙</button>
+                <button id="helpBtn" class="icon-btn" title="도움말">?</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app">
+        <!-- 프리셋 바 -->
+        <div class="preset-bar">
+            <div class="preset-bar-left">
+                <button class="reset-btn" onclick="resetAll()">초기화</button>
+            </div>
+            <div class="view-modes">
+                <button class="mobile-tab active" onclick="switchMobileTab('editor')">편집</button>
+                <button class="mobile-tab" onclick="switchMobileTab('preview')">미리보기</button>
+                <button id="view-toggle" class="view-btn" onclick="toggleViewMode()">캡쳐보기</button>
+            </div>
+        </div>
+        <!-- 에디터 영역 -->
+        <div class="container">
+            <div class="editor-side" id="editor-side">
+                <div class="regex-stage-tabs">
+                    <button class="stage-add-tab" type="button">+</button>
+                    <div id="stage-tabs" class="stage-tabs"></div>
+                    <div id="stage-tab-actions" class="stage-tab-actions"></div>
+                </div>
+                <div id="stage-edit-controls" class="stage-edit-controls"></div>
+                <div class="input-group">
+                    <div class="label-row">
+                        <label onclick="toggleSection('raw-input-section')" style="cursor: pointer;">1. 출력 텍스트
+                            <span id="raw-input-toggle-icon">··· [접기]</span>
+                        </label>
+                        <button class="copy-btn" onclick="copyToClipboard('raw-input', this)">📋 복사</button>
+                    </div>
+                    <div id="raw-input-section">
+                        <textarea id="raw-input" placeholder="원본 텍스트를 입력하세요."
+                            oninput="autoResizeTextarea(this)"></textarea>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-row">
+                        <label onclick="toggleSection('regex-input-section')" style="cursor: pointer;">2.1. 정규식 입력
+                            <span id="regex-input-toggle-icon">··· [접기]</span>
+                        </label>
+                        <button class="copy-btn" onclick="copyToClipboard('regex-input', this)">📋 복사</button>
+                    </div>
+                    <div id="regex-input-section">
+                        <textarea id="regex-input" placeholder="정규식을 입력하세요."
+                            oninput="autoResizeTextarea(this)"></textarea>
+                        <label class="trim-label" onclick="toggleTrimSection()" style="cursor: pointer;">2.2. 트림아웃 입력
+                            <span id="trim-input-toggle-icon">··· [펼치기]</span>
+                        </label>
+                        <div id="trim-input-section" class="collapsed">
+                            <textarea id="trim-input" class="trim-input" placeholder="매칭값에서 제거할 문자열을 한 줄에 하나씩 입력하세요."
+                                oninput="autoResizeTextarea(this)"></textarea>
+                        </div>
+                        <div id="regex-error" class="error" style="display:none;"></div>
+
+                        <div class="group-section">
+                            <div class="group-header" onclick="toggleGroupList()">
+                                <span>매칭 그룹 정보 ($n)</span>
+                                <span id="group-toggle-icon">▼</span>
+                            </div>
+                            <div id="group-list" class="collapsed"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="label-row">
+                        <label>3. 디자인 코드</label>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="copy-btn" onclick="copyToClipboard('template-input', this)">📋 복사</button>
+                            <button class="copy-btn" onclick="selectAllEditor()">전체선택</button>
+                        </div>
+                    </div>
+                    <div class="find-container">
+                        <input type="text" id="find-query" class="find-input" placeholder="검색어 입력...">
+                        <button class="search-btn" onclick="findText('prev')">이전</button>
+                        <button class="search-btn" onclick="findText('next')">다음</button>
+                        <button id="toggle-replace-btn" class="search-btn" onclick="toggleReplaceBox()">바꾸기</button>
+                    </div>
+                    <div id="replace-box" class="replace-box">
+                        <div class="find-container">
+                            <input type="text" id="replace-query" class="find-input" placeholder="바꿀 내용...">
+                            <button class="search-btn" onclick="replaceOne()">하나만</button>
+                            <button class="search-btn" onclick="replaceAll()">전체 바꾸기</button>
+                        </div>
+                    </div>
+                    <textarea id="template-input" placeholder="디자인을 입력하세요."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="expand-btn" type="button" onclick="expandEditor('st-regex')">+ 칸 늘리기</button>
+                    <button class="expand-btn" type="button" onclick="resetEditor('st-regex')"
+                        style="background: #fff0f0; border-color: #ffcccc; color: #e74c3c;">↺
+                        원래대로</button>
+                </div>
+                <div class="regex-file-actions">
+                    <button class="save-json-btn save-json-btn-secondary" onclick="document.getElementById('load-json-input').click()">
+                        📂 파일 불러오기
+                    </button>
+                    <button class="save-json-btn save-json-btn-primary" onclick="saveAsRegexJSON()">
+                        💾 파일로 저장
+                    </button>
+                </div>
+                <input type="file" id="load-json-input" accept=".json" style="display: none;"
+                    onchange="loadRegexJSON(event)">
+                <!-- 커스텀 모달 -->
+                <div id="custom-modal" class="modal-overlay">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <h3>정규식 저장</h3>
+                        </div>
+                        <div class="modal-body">
+                            <label for="script-name-input">파일 이름</label>
+                            <input type="text" id="script-name-input" placeholder="예: 인포블럭 디자인" value="디자인1">
+
+                            <div id="save-regex-select-block" class="save-regex-select-block">
+                                <label>정규식 선택</label>
+                                <div id="save-regex-list" class="save-regex-list"></div>
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <label>영향을 미침</label>
+                                <div style="display: flex; gap: 15px; margin-top: 8px;">
+                                    <label
+                                        style="font-weight: normal; font-size: 0.9em; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                        <input type="checkbox" id="chk-user" value="1"> 사용자 입력
+                                    </label>
+                                    <label
+                                        style="font-weight: normal; font-size: 0.9em; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                        <input type="checkbox" id="chk-ai" value="2" checked> AI 출력
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <label>표시 옵션</label>
+                                <div style="display: flex; margin-top: 8px; flex-direction: column;">
+                                    <label
+                                        style="font-weight: normal; font-size: 0.9em; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                        <input type="checkbox" id="chk-markdown" checked> 형식 표시만
+                                    </label>
+                                    <label
+                                        style="font-weight: normal; font-size: 0.9em; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                        <input type="checkbox" id="chk-prompt"> 형식 프롬프트만
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="modal-btn modal-btn-cancel" onclick="closeModal()">취소</button>
+                            <button class="modal-btn modal-btn-confirm" onclick="confirmSave()">저장</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- 리사이즈 바 -->
+            <div class="resizer" id="resizer"></div>
+            <!-- 미리보기 영역 -->
+            <div class="preview-side" id="preview-side">
+                <div id="preview-render">
+                    <div id="render-target" class="render-wrapper">
+                        <div class="notice-box">
+                            <h3>💡 사용 방법</h3>
+                            <span class="notice-badge step-1">1</span>채팅 내 출력 형식을 입력하세요.<br>
+                            <span class="notice-badge step-2">2</span>정규식 패턴을 입력하세요.<br>
+                            <span class="notice-badge step-3">3</span>디자인을 입력하세요.<br>
+                            <span class="notice-badge step-4">4</span>실시간으로 결과를 확인할 수 있습니다.
+                            <hr>
+                            <span class="notice-badge step-5">✔</span>나눠진 정규식을 한 번에 확인할 수 있습니다.<br>
+                            <span class="notice-badge step-5">✔</span>프리셋을 눌러서 미리보기.<br>
+                            <span class="notice-badge step-5">✔</span>내용/캡쳐를 구분해서 볼 수 있습니다.<br>
+                            <span class="notice-badge step-5">✔</span>입력창은 자동으로 늘어납니다.<br>
+                            <hr>
+                            <h3>📌 메모</h3>
+                            <span class="note-item"></span>
+                            <span class="note-item">박스,내용을 별도로 쓰고 싶다면 <font color="#5a7c6f">[+]</font>버튼으로 추가하세요.</span>
+                            <span class="note-item">(주관주의) ST에서 디자인 오류 발생시
+                                <span class="note-item">주석처리<font color="#5a7c6f">(/*&nbsp;*/)</font>지워보기</span>
+                                <span class="note-item">큰따옴표<font color="#5a7c6f">("&nbsp;")</font>대신 작은따옴표<font
+                                        color="#5a7c6f">('&nbsp;')</font>사용해보기</span>
+                                <span class="note-item">줄바꿈 없애보기</span>
+                            </span>
+                            <div class="update">🔔 정규식 여러개 지원(드디어...)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+
+
+    <!-- 공통 스크립트 -->
+    <script src="js/theme.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/preview-sanitize.js"></script>
+    <!-- 개별 스크립트 -->
+    <script src="js/regex-presets.js"></script>
+    <script src="js/regex.js?v=stage-tabs-20260625-4"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initApp === 'function') {
+                initApp();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+# ============================================================
+# 이 파일은 data/manifest.txt 에 등록되어 있어야 사이트에 반영됩니다.
+# 형식 (자세한 설명은 README.md 참고):
+#
+# [카테고리] 이름       - 필수
+# [확장프로그램] 이름    - 필수
+# [제목] 이름           - 권장
+# [태그] a, b, c        - 선택
+# [환경] 컴퓨터, 모바일  - 선택(생략하면 모두 해당)
+# [CSS코드]
+# ...코드...
+# [/CSS코드]           - 필수 (여닫는 태그 사이에 코드 작성)
+# [출처] 달글           - 선택
+# [미리보기] 이미지URL   - 선택
+# [팁] 내용             - 선택
+#
+# 항목 사이는 반드시 "===" 한 줄로 구분합니다.
+# ============================================================
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 빅 챗 아바타 스타일에서 이미지 밑에도 텍스트 채우기
+[태그] Not A Discord Theme, 테마, 꾸미기, 정렬, 텍스트, 빅 챗 아바타
+[환경] 컴퓨터
+[CSS코드]
+body.big_side-avatars .mes[is_user="false"] .mes_block:not(:has(#curEditTextarea))::before {
+content: "";
+float: right;
+width: calc(var(--avatar-base-width) * var(--big-avatar-width-factor) * var(--big-avatar-char-width-factor));
+height: calc(var(--avatar-base-height) * var(--big-avatar-height-factor) * var(--big-avatar-char-height-factor));
+shape-outside: var(--charAvatarShapeUrl);
+shape-margin: 8px;
+}
+
+html body.big_side-avatars .mes[is_user="false"] .mes_block:not(:has(#curEditTextarea)) {
+margin-right: 20px !important;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 빅 챗 아바타 스타일 이미지 오른쪽 모서리 둥글게 하기
+[태그] Not A Discord Theme, 테마, 꾸미기, 빅 챗 아바타
+[환경] 컴퓨터
+[CSS코드]
+body.big_side-avatars .mesAvatarWrapper .avatar img {
+border-top-right-radius: 8px !important;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 채팅창에서 빅 챗 아바타 스타일 이미지 다른걸로 바꾸기
+[태그] Not A Discord Theme, 테마, 꾸미기, 빅 챗 아바타, 사진, 프사, 바꾸기
+[환경] 컴퓨터
+[CSS코드]
+body.big_side-avatars .mes[ch_name="캐릭터이름"][is_user="false"] .mesAvatarWrapper .avatar img {
+content: url("주소") !important;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 빅 챗 아바타 스타일 사용 할 때 첫 화면 버튼들 가운데 정렬하기
+[태그] Not A Discord Theme, 테마, 꾸미기, 빅 챗 아바타, 버튼, 아이콘, 정렬
+[환경] 컴퓨터
+[CSS코드]
+.custom-flex-container {
+position: fixed;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 10px;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 메시지 액션 항상 보이게 하기
+[태그] Not A Discord Theme, 테마, 꾸미기, 버튼, 아이콘
+[환경] 컴퓨터
+[CSS코드]
+.mes .mes_buttons {
+opacity: 1 !important;
+visibility: visible !important;
+box-shadow: none !important;
+background-color: transparent;
+border: none !important;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 메시지 액션의 리스트&갤러리 버튼 정렬 맞추기
+[태그] Not A Discord Theme, 테마, 꾸미기, 버튼, 아이콘, 정렬
+[환경] 컴퓨터
+[CSS코드]
+.mes_button.mes_media_list,
+.mes_button.mes_media_gallery {
+align-items: center;
+justify-content: center;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 메시지 액션 마우스 오버 색상 테마에 맞추기
+[태그] Not A Discord Theme, 테마, 꾸미기, 버튼, 아이콘
+[환경] 컴퓨터
+[CSS코드]
+.mes .mes_button:hover { background-color: var(--NSDThemeHiglitesColor) !important; }
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 버튼들 색 밝게 바꾸기
+[태그] Not A Discord Theme, 테마, 꾸미기, 버튼, 아이콘, 색상
+[환경] 컴퓨터
+[CSS코드]
+.flex-container > .menu_button,
+.menu_button > small {
+color: #eff1f5 !important;
+opacity: 1;
+}
+[/CSS코드]
+===
+[카테고리] 테마
+[확장프로그램] 낫어디스코드
+[제목] 비활성화 된 프롬프트 이름 회색으로 바꾸기
+[태그] Not A Discord Theme, 테마, 꾸미기, 색상, 텍스트
+[환경] 컴퓨터
+[CSS코드]
+#completion_prompt_manager #completion_prompt_manager_list .completion_prompt_manager_prompt_disabled .completion_prompt_manager_prompt_name,
+#completion_prompt_manager #completion_prompt_manager_list .completion_prompt_manager_prompt_disabled .completion_prompt_manager_prompt_name .prompt-manager-inspect-action {
+color: rgba(0, 0, 0, 0.2);
+}
+[/CSS코드]
+===

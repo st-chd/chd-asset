@@ -1,0 +1,583 @@
+﻿/* ========== 硫붿씤 而⑦뀒?대꼫 ========== */
+.editor-container {
+    width: var(--nav-width);
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--nav-bg);
+    border-radius: 0 0 12px 12px;
+}
+
+/* ========== ?뱀뀡 ========== */
+.editor-section {
+    background: var(--bg-primaty);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--text-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title.clickable {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* ========== ?뚯씪 ?좏깮 ========== */
+.file-input {
+    width: 100%;
+    padding: 12px;
+    background: var(--sub-header);
+    border: 2px solid var(--textarea-focus-border);
+    border-radius: 8px;
+    font-size: 1.05em;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.file-input:hover {
+    background: var(--textarea-bg);
+    border: var(--pre-btn-border);
+    color: var(--textarea-text);
+}
+
+/* ========== 寃??洹몃９ ========== */
+.search-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 12px;
+    background: var(--textarea-bg);
+    border: var(--pre-btn-border);
+    border-radius: 8px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--textarea-focus-border);
+    background: #ffffff;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* ========== 諛붽씀湲?諛뺤뒪 ========== */
+.replace-box {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.replace-box.active {
+    max-height: 100px;
+    opacity: 1;
+}
+
+.replace-box .search-group {
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+}
+
+/* ========== 踰꾪듉 ========== */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-primary, .btn-success, .btn-secondary {
+    background: var(--btn-1);
+    color: #ffffff;
+}
+
+.btn-toggle {
+    background: var(--btn-1);
+    color: white;
+    padding: 8px 40px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-group .btn {
+    flex: 1;
+    min-width: 150px;
+}
+
+.btn-sm {
+    padding: 8px 20px;
+}
+
+.btn-icon {
+    padding: 8px 20px;
+    background: var(--btn-2);
+    color: var(--text-green);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-paste, .btn-copy {
+    background: var(--btn-2);
+    color: var(--text-green);
+}
+
+.editor-title-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* ========== CodeMirror ?먮뵒??========== */
+.editor-main {
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    max-height: 600px;
+    overflow: hidden;
+}
+
+.editor-wrapper {
+    flex: 1;
+    border: 1px solid #d0ddea;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    max-height: 100% !important;
+    font-size: 14px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    width: 100%;
+    border: none !important;
+}
+
+.CodeMirror-scroll {
+    overflow-y: scroll !important;
+    overflow-x: auto !important;
+    scrollbar-gutter: stable both-edges;
+}
+
+.highlight-match {
+    background-color: #ffeb3b !important;
+}
+
+.highlight-current {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+/* ========== ?좎뒪???뚮┝ ========== */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--btn-1);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+    pointer-events: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+}
+
+/* ========== ?됱긽 ?몄쭛湲?========== */
+.color-editor-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--textarea-bg);
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    gap: 10px;
+    min-width: 0;
+}
+
+.color-label {
+    color: var(--textarea-text);
+    width: 160px;
+    flex-shrink: 0;
+    word-break: keep-all;
+    font-weight: 600;
+}
+
+.color-controls {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+}
+
+.color-picker {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 0.5;
+    min-width: 30px;
+    max-width: 40px;
+    height: 32px;
+    padding: 0;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.color-picker::-webkit-color-swatch {
+    border-radius: 2px;
+}
+
+.rgba-inputs {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex: 3; /* ?⑥? 怨듦컙 鍮꾩쑉 */
+}
+
+.rgba-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1; /* 媛곴컖???낅젰移몄씠 洹좊벑???볦씠瑜?媛吏?꾨줉 ?ㅼ젙 */
+}
+
+.rgba-label {
+    font-weight: 600;
+    color: var(--textarea-text);
+    text-transform: uppercase;
+    padding: 0 2px;
+}
+
+.rgba-number-input {
+    width: 100%;
+    min-width: 0;
+    padding: 6px;
+    border: 0;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+    background: var(--textarea-bg);
+}
+
+.rgba-number-input:focus {
+    outline: none;
+    border-color: var(--textarea-focus-border);
+    background: #fff;
+    color: var(--textarea-focus-border);
+}
+
+.hex-input {
+    flex: 1.5;
+    min-width: 0;
+    padding: 6px;
+    border: 0;
+    border-bottom: 2px solid #ddd;
+    text-transform: uppercase;
+    text-align: center;
+    background: var(--textarea-bg);
+}
+
+.hex-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--textarea-focus-border);
+    color: var(--textarea-focus-border);
+}
+
+.color-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+/* ========== 遺숈뿬?ｊ린 紐⑤떖 ========== */
+.paste-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.paste-modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.paste-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.paste-modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.paste-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.paste-close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.paste-modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+.paste-help {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.paste-example {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 15px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.paste-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.paste-textarea:focus {
+    outline: none;
+    border-color: var(--textarea-focus-border);
+}
+
+.paste-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.paste-textarea::placeholder {
+    color: #aaa;
+    opacity: 0.6;
+}
+/* ========== 紐⑤컮??諛섏쓳??========== */
+@media (max-width: 1600px) {
+    .color-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .color-item {
+        flex-direction: row; /* 紐⑤컮?쇱뿉?쒕룄 媛濡?諛곗튂 湲곗? ?좎? */
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap; /* 醫곸쑝硫?以꾨컮轅??덉슜 */
+    }
+
+    .color-label {
+        width: 160px; /* 怨좎젙 ?볦씠 ?좎? */
+        flex-shrink: 0;
+    }
+
+    .color-controls {
+        flex: 1; /* ?섎㉧吏 怨듦컙 李⑥? */
+        min-width: 220px;
+        flex-wrap: wrap;
+    }
+
+    .rgba-inputs {
+        flex: 1 1 180px;
+        flex-wrap: wrap;
+    }
+
+    .hex-input {
+        flex: 1 1 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .editor-container {
+        padding: 5px;
+    }
+
+    .editor-section {
+        padding: 16px;
+    }
+
+    .section-title {
+        font-size: 14px;
+        word-break: keep-all;
+    }
+
+    .file-input {
+        font-size: 12px;
+        padding: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .search-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .search-buttons {
+        width: 100%;
+    }
+
+    .search-buttons .btn {
+        flex: 1;
+    }
+
+    .btn {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .CodeMirror {
+        font-size: 13px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .button-group .btn {
+        width: 100%;
+    }
+
+    .editor-main {
+        height: 400px;
+        max-height: 400px;
+    }
+
+    .paste-modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .paste-example {
+        font-size: 11px;
+    }
+
+    .paste-textarea {
+        min-height: 150px;
+        font-size: 12px;
+    }
+}

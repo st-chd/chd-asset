@@ -1,0 +1,182 @@
+# ============================================================
+# 이 파일은 data/manifest.txt 에 등록되어 있어야 사이트에 반영됩니다.
+# 형식 (자세한 설명은 README.md 참고):
+#
+# [카테고리] 이름       - 필수
+# [확장프로그램] 이름    - 필수
+# [제목] 이름           - 권장
+# [태그] a, b, c        - 선택
+# [환경] 컴퓨터, 모바일  - 선택(생략하면 모두 해당)
+# [CSS코드]
+# ...코드...
+# [/CSS코드]           - 필수 (여닫는 태그 사이에 코드 작성)
+# [출처] 달글           - 선택
+# [미리보기] 이미지URL   - 선택
+# [팁] 내용             - 선택
+#
+# 항목 사이는 반드시 "===" 한 줄로 구분합니다.
+# ============================================================
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 입력창 위 테두리 보이게 하기
+[태그] 뚜껑 닫아, 입력칸, 인풋, 테마, 꾸미기
+[CSS코드]
+#send_textarea { clip-path:none !important; }
+[/CSS코드]
+[출처] 달글
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 입력창 테두리 색 바꾸기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 색상
+[CSS코드]
+#send_textarea { border-color: #000 !important; }
+[/CSS코드]
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 버튼 전부 위로 옮기기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 버튼, 아이콘, 위치, 상단
+[CSS코드]
+#nonQRFormItems { display: flex; flex-wrap: wrap; margin-top:5px; }
+#send_textarea { order: 1; flex: 0 0 100%; width: 100%; }
+#leftSendForm { order: 0; }
+#rightSendForm { order: 0; margin-left: auto; }
+[/CSS코드]
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 버튼 전부 아래로 옮기기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 버튼, 아이콘, 위치, 하단
+[CSS코드]
+#send_form { display: flex; flex-direction: column;}
+#nonQRFormItems { order: 1; flex-wrap: wrap; }
+#qr--bar { order: 2 !important;}
+#send_textarea { order: -1; flex: 1 1 100%; resize: vertical; }
+#leftSendForm{ order: 1; }
+#rightSendForm { order: 2; flex: 1; justify-content: flex-end; }
+[/CSS코드]
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 전송, 정지 버튼 빼고 전부 위로 옮기기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 버튼, 아이콘, 위치, 상단
+[CSS코드]
+#nonQRFormItems { display: flex; flex-wrap: wrap; position: relative; }
+#send_textarea { order: 1; flex: 0 0 calc(100% - 34px); width: calc(100% - 34px); }
+#leftSendForm { order: 0; }
+#rightSendForm { order: 0; margin-left: auto; }
+#send_but, #send_form .mes_stop { position: absolute !important; bottom: 0; right: 0; order: 1; z-index: 1; }
+[/CSS코드]
+[팁] 여백은 `34px` 숫자로 조절, 위치는 `bottom: 0;`로 조절하세요.
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 빠답 제외 버튼 전부 아래로 옮기기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 버튼, 아이콘, 위치, 하단
+[CSS코드]
+#nonQRFormItems { flex-wrap: wrap; }
+#send_textarea { order: -1; flex: 1 1 100%; resize: vertical; }
+#leftSendForm { order: 1; }
+#rightSendForm { order: 2; flex: 1; justify-content: flex-end; }
+[/CSS코드]
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 모든 버튼 빠답줄에 맞춰 올리기
+[태그] 입력칸, 인풋, 테마, 꾸미기, 버튼, 아이콘, 위치, 상단
+[CSS코드]
+#send_form {
+display: flex;
+flex-wrap: wrap;
+align-items: flex-start;
+padding: 3px 10px 45px 10px;
+}
+#nonQRFormItems { display: contents; }
+#leftSendForm { order: 0; margin-top: 2px; }
+#qr--bar { order: 1; flex: 1; }
+#rightSendForm { order: 2; margin-top: 1px; }
+#send_textarea {
+order: 3;
+flex: 0 0 100%;
+width: 100%;
+text-align: center; }
+[/CSS코드]
+[출처] 달글
+[팁] 아래 여백이 너무 넓다면 `45px`를 조절하세요.
+기본 메시지를 바꾸고 싶을 땐 [[기본 메시지 바꾸기2]]를 사용하세요.
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 기본 메시지 바꾸기1
+[태그] 입력칸, 인풋, 테마, 꾸미기, 텍스트, 메시지를 입력하거나 /? 도와주기 위해
+[환경] 
+[CSS코드]
+#send_textarea::placeholder { opacity: 0; }
+#nonQRFormItems:has(#send_textarea:placeholder-shown)::before {
+content: '( ᵕ ◡ ᵕ )　ｚｚＺ ･･･';
+position: absolute;
+font-size: 0.8rem;
+top: 70%;
+left: 30%;
+opacity: 0.4;
+transform: translateY(-50%);
+pointer-events: none;
+}
+[/CSS코드]
+[팁] `top`과 `left`로 화면에 맞게 조절하세요.
+[[모든 버튼 빠답줄에 맞춰 올리기]]를 사용한다면 [[기본 메시지 바꾸기2]]를 사용하세요.
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 기본 메시지 바꾸기2
+[태그] 입력칸, 인풋, 테마, 꾸미기, 텍스트, 메시지를 입력하거나 /? 도와주기 위해
+[환경] 
+[CSS코드]
+#send_textarea::placeholder { opacity: 0; }
+#send_form:has(#send_textarea:placeholder-shown)::before {
+content: '( ᵕ ◡ ᵕ )　ｚｚＺ ･･･';
+position: absolute;
+font-size: 0.8rem;
+bottom: 1.5%;
+left: 40%;
+opacity: 0.4;
+transform: translateY(-50%);
+pointer-events: none;
+}
+[/CSS코드]
+[팁] `bottom`과 `left`로 화면에 맞게 조절하세요.
+[[모든 버튼 빠답줄에 맞춰 올리기]]와 같이 사용하세요.
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 좌, 우 아이콘 크기 줄이기
+[태그] 입력칸, 인풋, 테마, 아이콘, 사이즈, 축소
+[CSS코드]
+#leftSendForm>div , #rightSendForm { font-size: 0.9rem !important; }
+[/CSS코드]
+===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 입력창 하단에 붙이기
+[태그] 입력칸, 인풋, 테마, 위치, 하단
+[환경] 모바일
+[CSS코드]
+@media (max-width: 600px) {
+html, body {
+height: 100dvh !important;
+min-height: 100dvh !important;
+max-height: 100dvh !important;
+overflow: hidden !important;
+position: fixed !important;
+width: 100% !important;
+}
+#sheld {
+height: 100dvh !important;
+max-height: 100dvh !important;
+}
+#send_form { padding-bottom: 15px !important;
+}}
+[/CSS코드]
+[출처] 달글
+===

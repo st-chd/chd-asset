@@ -1,0 +1,60 @@
+﻿:root {
+    --bg-primary: #ffffff;
+    --bg-gradient: linear-gradient(135deg, #E0F0E9 0%, #F0E68C 100%);
+    --bg-secondary: #f5f5f5;
+    --nav-bg: #ffffff;
+    --dropdown-bg: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #666666;
+    --text-green: #5a7c6f;
+    --group-label: var(--text-green);
+    --btn-bg: #f0f0f0;
+    --hover-bg: #e8e8e8;
+    --border-color: #dddddd;
+    --modal-bg: #ffffff;
+    --notice-bg: #FAFBF7;
+    /* ========== 고정 디자인 ========== */
+    --nav-width: 98%;
+    /* ========== 입력창 디자인 ========== */
+    --textarea-bg: #FAFBF7;
+    --textarea-text: #2d3748;
+    --textarea-focus-border: #81C784;
+    /* ========== 네모 버튼 디자인 ========== */
+    --btn-1: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
+    --btn-2: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);
+    /* ========== 둥근 버튼 디자인 ========== */
+    --pre-btn-bg: #FAFBF7;
+    --pre-btn-border: 2px solid #D4E5D8;
+    --pre-btn-radius: 20px;
+    --sub-header: #E8F5E9;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-gradient: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    --bg-secondary: #2d2d2d;
+    --nav-bg: #242424;
+    --dropdown-bg: #2d2d2d;
+    --modal-bg: #2d2d2d;
+    --notice-bg: #FAFBF7;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-green: #FAFBF7;
+    --group-label: var(--text-green);
+    --btn-bg: #565656;
+    --hover-bg: #404040;
+    --border-color: #444444;
+    /* ========== 입력창 디자인 ========== */
+    --textarea-bg: #fafaff;
+    --textarea-text: #2d3748;
+    --textarea-focus-border: #5865f2;
+    /* ========== 네모 버튼 디자인 ========== */
+    --btn-1: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+    --btn-2: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%); 
+    /* ========== 둥근 버튼 디자인 ========== */
+    --pre-btn-bg: #ffffff;
+    --pre-btn-border: 2px solid #404040;
+    --pre-btn-radius: 20px;
+    --sub-header: #3a3a3a;
+}
+

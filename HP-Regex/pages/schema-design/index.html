@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스키마 디자인 미리보기 - 도구 모음</title>
+    <link rel="stylesheet" href="../../codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../../codemirror-colorpicker/dist/codemirror-colorpicker.css">
+    <script src="../../codemirror/lib/codemirror.js"></script>
+    <script src="../../codemirror/addon/mode/simple.js"></script>
+    <script src="../../codemirror/mode/xml/xml.js"></script>
+    <script src="../../codemirror/addon/search/searchcursor.js"></script>
+    <script src="../../codemirror/mode/css/css.js"></script>
+    <script src="../../codemirror/mode/javascript/javascript.js"></script>
+    <script src="../../codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="../../codemirror/mode/handlebars/handlebars.js"></script>
+    <script src="../../codemirror/handlebars.min.js"></script>
+    <script src="../../codemirror-colorpicker/dist/codemirror-colorpicker.min.js"></script>
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <!-- 개별 스타일 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="light">
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="dropdown">
+                <button class="dropdown-btn" id="currentPageTitle">스키마 디자인 미리보기<span class="arrow">▼</span></button>
+                <div class="dropdown-content">
+                    <!-- JS에서 동적으로 생성됨 -->
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="globalThemeToggle" class="icon-btn" title="전체 테마 전환">🌙</button>
+                <button id="helpBtn" class="icon-btn" title="도움말">?</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app">
+<!-- 프리셋 바 -->
+<div class="preset-bar">
+<div class="preset-bar-left">
+<button class="reset-btn" onclick="resetAll()">초기화</button>
+<button class="preset-btn" onclick="loadPreset('character')">레트로(열림)</button>
+<button class="preset-btn" onclick="loadPreset('maccheckbox')">레트로(닫힘)</button>
+</div>
+<div class="view-modes">
+<button class="mobile-tab active" onclick="switchMobileTab('editor')">에디터</button>
+<button class="mobile-tab" onclick="switchMobileTab('preview')">프리뷰</button>
+</div>
+</div>
+
+<!-- 메인 컨테이너 -->
+<div class="container">
+<!-- 에디터 사이드 -->
+<div class="editor-side" id="editor-side">
+<!-- Schema JSON 입력 -->
+<div class="input-group">
+<div class="label-row">
+<label for="schema-input">1. 스키마</label>
+<div style="display: flex; gap: 5px;">
+<button class="copy-btn" onclick="copyToClipboard('schema-input', this)">복사</button>
+</div>
+</div>
+<textarea id="schema-input" placeholder='채팅에 출력된 스키마를 입력하세요...'></textarea>
+</div>
+
+<!-- 변수 추출 섹션 -->
+<div class="group-section">
+<div class="group-header" onclick="toggleVariables()">
+<span id="variable-count">0개</span>
+<span id="variable-arrow">[열기]</span>
+</div>
+<div id="variable-list" class="variable-scroll"></div>
+</div>
+
+<!-- Template 입력 -->
+<div class="input-group">
+<div class="label-row">
+<label for="template-input">2. 디자인</label>
+<div style="display: flex; gap: 5px;">
+<button class="copy-btn" onclick="copyToClipboard('template-input', this)">복사</button>
+</div>
+</div>
+
+<!-- 찾기/바꾸기 -->
+<div class="find-container">
+<input type="text" id="find-query" class="find-input" placeholder="검색어 입력...">
+<button class="search-btn" onclick="findText('prev')">이전</button>
+<button class="search-btn" onclick="findText('next')">다음</button>
+<button class="search-btn" id="toggle-replace-btn" onclick="toggleReplaceBox()">바꾸기</button>
+</div>
+<div class="replace-box" id="replace-box">
+<div class="find-container">
+<input type="text" id="replace-query" class="find-input" placeholder="바꿀 내용...">
+<button class="search-btn" onclick="replaceOne()">하나만</button>
+<button class="search-btn" onclick="replaceAll()">전체 바꾸기</button>
+</div>
+</div>
+<textarea id="template-input" placeholder="<div>{{data.name}}</div>"></textarea>
+</div>
+<div style="display: flex; gap: 10px;">
+    <button class="expand-btn" type="button" onclick="expandEditor('schema-design')">+ 칸 늘리기</button>
+    <button class="expand-btn" type="button" onclick="resetEditor('schema-design')" style="background: #fff0f0; border-color: #ffcccc; color: #e74c3c;">↺ 원래대로</button>
+</div>
+</div>
+
+<!-- 리사이저 -->
+<div class="resizer" id="resizer"></div>
+
+<!-- 프리뷰 사이드 -->
+<div class="preview-side" id="preview-side">
+<div id="preview-render">
+<div class="render-wrapper">
+<div class="notice-box">
+<h3>💡 사용 방법</h3>
+<span class="notice-badge step-1">1</span>채팅에 출력된 스키마를 입력하세요.<br>
+<span class="notice-badge step-2">2</span>추출값에서 <code>{{변수명}}</code>을 확인하세요.<br>
+<span class="notice-badge step-3">3</span>디자인을 입력하세요.<br>
+<span class="notice-badge step-4">4</span>실시간으로 결과를 확인할 수 있습니다.
+<hr>
+<span class="notice-badge step-5">✔</span>프리셋을 눌러서 미리보기.
+</div>
+</div>
+</div>
+<div id="render-error" class="error" style="display:none;"></div>
+</div>
+</div>
+    </main>
+
+
+
+    <!-- 공통 스크립트 -->
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/navbar.js"></script>
+    <script src="../../js/preview-sanitize.js"></script>
+    <!-- 개별 스크립트 -->
+    <script src="presets.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

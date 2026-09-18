@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+# data 폴더의 파일(manifest.txt 및 카테고리별 .txt)은 새 CSS를 추가할 때마다
+# 바뀌므로 캐시를 짧게 두어 배포 직후 바로 반영되도록 합니다.
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

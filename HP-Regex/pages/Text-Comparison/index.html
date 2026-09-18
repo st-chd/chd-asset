@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 비교 - 도구 모음</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" href="../../css/theme.css">
+    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <!-- 개별 스타일 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-theme="light">
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="dropdown">
+                <button class="dropdown-btn" id="currentPageTitle">텍스트 비교<span class="arrow">▼</span></button>
+                <div class="dropdown-content">
+                    <!-- JS에서 동적으로 생성됨 -->
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="globalThemeToggle" class="icon-btn" title="전체 테마 전환">🌙</button>
+                <button id="helpBtn" class="icon-btn" title="도움말">?</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app">
+        <div class="compare-container">
+
+            <div class="input-row">
+                <div class="input-box">
+                    <div class="input-label">기준 텍스트</div>
+                    <textarea id="textA" class="compare-textarea" placeholder="원본 텍스트를 입력하세요."></textarea>
+                </div>
+                <div class="input-box">
+                    <div class="input-label">
+                        변경된 텍스트
+                        <label class="match-mode-label">
+                            <input type="checkbox" id="matchMode"> 일치하는 문장찾기
+                        </label>
+                    </div>
+                    <textarea id="textB" class="compare-textarea" placeholder="비교할 텍스트를 입력하세요."></textarea>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-compare" onclick="runDiff()">비교하기</button>
+                <button class="btn-clear" onclick="clearAll()">초기화</button>
+            </div>
+
+            <div class="result-wrap" id="resultWrap">
+
+                <div class="top-bar">
+                    <div class="stats-bar" id="statsBar"></div>
+                    <div class="unit-tabs">
+                        <button class="unit-tab active" id="tabChar" onclick="setUnit('char')">글자 단위</button>
+                        <button class="unit-tab" id="tabLine" onclick="setUnit('line')">줄 단위</button>
+                    </div>
+                </div>
+
+                <div class="result-panel expanded" id="matchPanel" style="display: none;">
+                    <div class="panel-header"
+                        onclick="document.getElementById('matchPanel').classList.toggle('expanded')">
+                        <span style="color: var(--text-green);">일치하는 문장</span>
+                        <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                            <div class="legend" style="margin: 0; display: flex; gap: 8px;">
+                                <span class="legend-chip chip-match" style="padding: 2px 8px;">✓ 일치</span>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="diff-body" id="matchBody"></div>
+                </div>
+
+                <div class="result-panel expanded" id="resultPanel">
+                    <div class="panel-header"
+                        onclick="document.getElementById('resultPanel').classList.toggle('expanded')">
+                        <span style="color: var(--text-green);">비교 결과</span>
+                        <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+                            <div class="legend" style="margin: 0; display: flex; gap: 8px;">
+                                <span class="legend-chip chip-add" style="padding: 2px 8px;">+ 추가됨</span>
+                                <span class="legend-chip chip-del" style="padding: 2px 8px;">− 삭제됨</span>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="diff-body" id="diffBody"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <!-- 공통 스크립트 -->
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/navbar.js"></script>
+    <!-- 개별 스크립트 -->
+    <script src="script.js"></script>
+</body>
+
+</html>
