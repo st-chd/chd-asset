@@ -24,6 +24,7 @@
 .cr__draw-text { display: none !important; }
 .cr__draw { padding: 10px !important; }
 [/CSS코드]
+[미리보기] img/CrossRoads/1.png
 ===
 [카테고리] UI
 [확장프로그램] 크로스 로드
@@ -32,6 +33,7 @@
 [CSS코드]
 .cr__icon-btn { display: none; }
 [/CSS코드]
+[미리보기] img/CrossRoads/2.png
 ===
 [카테고리] UI
 [확장프로그램] 크로스 로드

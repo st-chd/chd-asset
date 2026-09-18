@@ -23,6 +23,7 @@
 [CSS코드]
 #extensionTopBarSearchInput { display: none; }
 [/CSS코드]
+[미리보기] img/ChatTopBar/1.png
 ===
 [카테고리] UI
 [확장프로그램] 챗탑바
@@ -50,6 +51,7 @@ text-align: left;
 text-indent: -150px; }
 [/CSS코드]
 [팁] `text-indent`를 화면에 맞게 조절하세요.
+[미리보기] img/ChatTopBar/2.png
 ===
 [카테고리] UI
 [확장프로그램] 챗탑바

@@ -45,4 +45,5 @@ box-shadow: none !important;
 border-radius: 0 !important;
 }
 [/CSS코드]
+[미리보기] img/ChatCompletionTabs/1.png
 ===

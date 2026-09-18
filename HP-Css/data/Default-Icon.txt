@@ -45,6 +45,7 @@
 [CSS코드]
 .mes .icon-svg { margin-top:5px; height:10px; }
 [/CSS코드]
+[미리보기] img/Default-Icon/1.png
 ===
 [카테고리] UI
 [확장프로그램] 기본
@@ -53,6 +54,7 @@
 [CSS코드]
 .drawer-icon { font-size: 0.9em; }
 [/CSS코드]
+[미리보기] img/Default-Icon/3.png
 ===
 # 여기서부터는 아이콘 변경이기 때문에 카테고리 아이콘으로 작성
 [카테고리] 아이콘
@@ -70,6 +72,7 @@ background-position: center;
 background-repeat: no-repeat;
 }
 [/CSS코드]
+[미리보기] img/Default-Icon/2.png
 [팁] 이미지 사이즈는 `34.5 * 34.5`가 적당합니다.
 이미지가 아닌 폰트형 아이콘으로 바꾸고 싶다면 [[비행기 아이콘 바꾸기]]를 확인하세요.
 ===

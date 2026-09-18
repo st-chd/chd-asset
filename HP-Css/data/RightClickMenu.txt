@@ -29,6 +29,7 @@ font-family: 'Font Awesome 6 Pro', 'Font Awesome 6 Free', 'Font Awesome 5 Free';
 margin: 1px 7px 0 6px;
 }
 [/CSS코드]
+[미리보기] img/RightClickMenu/1.png
 ===
 [카테고리] 채팅창
 [확장프로그램] 우클릭 팝업
@@ -46,4 +47,5 @@ padding: 0 2px;
 /* 정렬 맞추기 */
 .right_click_message_menu_horizontal { display: flex; align-items: center; }
 [/CSS코드]
+[미리보기] img/RightClickMenu/2.png
 ===

@@ -24,6 +24,7 @@
 #send_textarea { clip-path:none !important; }
 [/CSS코드]
 [출처] 달글
+[미리보기] img/input/1.png
 ===
 [카테고리] 입력창
 [확장프로그램] 기본
@@ -43,6 +44,7 @@
 #leftSendForm { order: 0; }
 #rightSendForm { order: 0; margin-left: auto; }
 [/CSS코드]
+[미리보기] img/input/2.png
 ===
 [카테고리] 입력창
 [확장프로그램] 기본
@@ -56,6 +58,7 @@
 #leftSendForm{ order: 1; }
 #rightSendForm { order: 2; flex: 1; justify-content: flex-end; }
 [/CSS코드]
+[미리보기] img/input/5.png
 ===
 [카테고리] 입력창
 [확장프로그램] 기본
@@ -68,6 +71,7 @@
 #rightSendForm { order: 0; margin-left: auto; }
 #send_but, #send_form .mes_stop { position: absolute !important; bottom: 0; right: 0; order: 1; z-index: 1; }
 [/CSS코드]
+[미리보기] img/input/3.png
 [팁] 여백은 `34px` 숫자로 조절, 위치는 `bottom: 0;`로 조절하세요.
 ===
 [카테고리] 입력창
@@ -80,6 +84,7 @@
 #leftSendForm { order: 1; }
 #rightSendForm { order: 2; flex: 1; justify-content: flex-end; }
 [/CSS코드]
+[미리보기] img/input/4.png
 ===
 [카테고리] 입력창
 [확장프로그램] 기본
@@ -103,6 +108,7 @@ width: 100%;
 text-align: center; }
 [/CSS코드]
 [출처] 달글
+[미리보기] img/input/8.png
 [팁] 아래 여백이 너무 넓다면 `45px`를 조절하세요.
 기본 메시지를 바꾸고 싶을 땐 [[기본 메시지 바꾸기2]]를 사용하세요.
 ===
@@ -124,6 +130,7 @@ transform: translateY(-50%);
 pointer-events: none;
 }
 [/CSS코드]
+[미리보기] img/input/6.png
 [팁] `top`과 `left`로 화면에 맞게 조절하세요.
 [[모든 버튼 빠답줄에 맞춰 올리기]]를 사용한다면 [[기본 메시지 바꾸기2]]를 사용하세요.
 ===
@@ -155,6 +162,7 @@ pointer-events: none;
 [CSS코드]
 #leftSendForm>div , #rightSendForm { font-size: 0.9rem !important; }
 [/CSS코드]
+[미리보기] img/input/7.png
 ===
 [카테고리] 입력창
 [확장프로그램] 기본

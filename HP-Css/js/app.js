@@ -50,6 +50,8 @@ const el = {
   noticeContent: document.querySelector(".notice-content"),
   noticeToggle: document.getElementById("noticeToggle"),
   imgTooltip: document.getElementById("imgTooltip"),
+  imgLightbox: document.getElementById("imgLightbox"),
+  imgLightboxImg: document.getElementById("imgLightboxImg"),
 };
 
 /* ============================================================
@@ -103,6 +105,16 @@ async function loadNotice() {
 el.noticeToggle.addEventListener("click", () => {
   const expanded = el.noticeContent.classList.toggle("expanded");
   el.noticeToggle.textContent = expanded ? "접기" : "더 보기";
+});
+
+el.modalPreview.addEventListener("click", () => {
+  el.imgLightboxImg.src = el.modalPreview.src;
+  el.imgLightbox.classList.add("open");
+});
+
+el.imgLightbox.addEventListener("click", () => {
+  el.imgLightbox.classList.remove("open");
+  el.imgLightboxImg.src = "";
 });
 
 /* 공지 배너 안 이미지 롤오버 텍스트: hover / focus 시 이미지 팝업 표시 */

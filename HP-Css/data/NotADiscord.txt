@@ -35,6 +35,7 @@ html body.big_side-avatars .mes[is_user="false"] .mes_block:not(:has(#curEditTex
 margin-right: 20px !important;
 }
 [/CSS코드]
+[미리보기] img/Not-A-Discord/1.png
 ===
 [카테고리] 테마
 [확장프로그램] 낫어디스코드
@@ -100,6 +101,7 @@ align-items: center;
 justify-content: center;
 }
 [/CSS코드]
+[미리보기] img/Not-A-Discord/2.png
 ===
 [카테고리] 테마
 [확장프로그램] 낫어디스코드

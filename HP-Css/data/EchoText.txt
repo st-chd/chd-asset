@@ -63,6 +63,7 @@ background: var(--grey5020a) !important;
 .et-bubble-char { box-shadow: none !important; }
 .et-bubble-actions { box-shadow: none !important; margin-right: 0 !important; }
 [/CSS코드]
+[미리보기] img/EchoText/1.png
 ===
 [카테고리] UI
 [확장프로그램] 에코텍스트
@@ -76,6 +77,7 @@ background: var(--grey5020a) !important;
 .et-user-name { color: var(--et-theme-color, #4da6ff) !important; }
 [/CSS코드]
 [팁] [[USER 메시지 꾸미기3]]에서 `페르소나 이름 가리기`와 이 글의 `페르소나 이름` 둘 중 하나만 선택하세요.
+[미리보기] img/EchoText/2.png
 ===
 [카테고리] UI
 [확장프로그램] 에코텍스트
@@ -89,6 +91,7 @@ border: 1px solid
 color-mix(in srgb, var(--et-theme-color) 22%, var(--et-border, rgba(255, 255, 255, 0.12)));
 border-radius: 22px 5px 22px 22px; }
 [/CSS코드]
+[미리보기] img/EchoText/3.png
 ===
 [카테고리] UI
 [확장프로그램] 에코텍스트
@@ -104,6 +107,7 @@ border-radius: 22px 5px 22px 22px; }
 /* 읽음 표시 작게 만들기 */
 .et-read-receipt .fa-solid { font-size: 8px !important; }
 [/CSS코드]
+[미리보기] img/EchoText/6.png
 [팁] [[USER 메시지 꾸미기1 - 글자 색 바꾸기]]에서 `페르소나 이름`과 이 글의 `페르소나 이름 가리기` 둘 중 하나만 선택하세요.
 ===
 [카테고리] UI
@@ -117,6 +121,7 @@ border-radius: 22px 5px 22px 22px; }
 /* 말풍선 여백 줄이고 선 없애기 */
 .et-bubble-char .et-message-footer { margin-top:0 !important; padding-top:0 !important; border-top:none !important; }
 [/CSS코드]
+[미리보기] img/EchoText/6.png
 ===
 [카테고리] UI
 [확장프로그램] 에코텍스트
@@ -144,6 +149,7 @@ background: #d1f1ba !important;
 }
 .et-send-btn { box-shadow: none !important; background: var(--SmartThemeBlurTintColor) !important; }
 [/CSS코드]
+[미리보기] img/EchoText/4.png
 [팁] `맥 레트로` 등 일부 테마에서는 플로팅 아이콘 색상을 수정해야 합니다.
 [[메세지 전송 버튼 그림자 없애기, 색상 바꾸기]]와 같이 쓰면 좋아요.
 색상 변경이 필요 없다면 `background`를 삭제 해 주세요.
@@ -180,7 +186,7 @@ border-radius: 50%;
 /* 테두리 */
 #et-fab { border:2px solid #000; }
 [/CSS코드]
-[팁] 
+[미리보기] img/EchoText/5.png
 ===
 [카테고리] UI
 [확장프로그램] 에코텍스트
@@ -199,4 +205,5 @@ border-radius: 50%;
 [CSS코드]
 .et-bubble-actions { opacity: 1 !important;}
 [/CSS코드]
+[미리보기] img/EchoText/7.png
 ===

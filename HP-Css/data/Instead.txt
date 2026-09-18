@@ -57,4 +57,5 @@ background-color: var(--accentColorOverlay) !important;
 .instead-feedback-header:hover {background-color: var(--crimson-hover) !important;}
 .instead-feedback-content.expanded {background-color: var(--SmartThemeBotMesBlurTintColor) !important;}
 [/CSS코드]
+[미리보기] img/Instead/1.png
 ===

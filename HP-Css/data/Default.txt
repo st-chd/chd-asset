@@ -40,6 +40,7 @@ border: none;
 border: 1px solid var(--SmartThemeBorderColor) !important;
 }
 [/CSS코드]
+[미리보기] img/Default/1.png
 ===
 [카테고리] UI
 [확장프로그램] 기본
@@ -48,6 +49,7 @@ border: 1px solid var(--SmartThemeBorderColor) !important;
 [CSS코드]
 .mes[type="assistant_message"] { display: none !important; }
 [/CSS코드]
+[미리보기] img/Default/2.png
 ===
 [카테고리] UI
 [확장프로그램] 기본
@@ -57,6 +59,7 @@ border: 1px solid var(--SmartThemeBorderColor) !important;
 .welcomePanel .welcomeHeaderTitle { display: none; }
 [/CSS코드]
 [팁] '사용자 설정' 우측 상단에서 현재 버전을 확인할 수 있어요.
+[미리보기] img/Default/3.png
 설정 버튼을 남기고 싶다면 [[메인 화면(첫 화면)에서 로고 & 버전 숨기고 설정 버튼만 남기기]]를 확인하세요.
 ===
 [카테고리] UI
@@ -117,6 +120,7 @@ animation-duration:24s;
 to{transform:translateY(100vh);}
 }
 [/CSS코드]
+[미리보기] img/Default/4.png
 ===
 [카테고리] 캐릭터 패널
 [확장프로그램] 기본
@@ -134,6 +138,7 @@ body.big-avatars .hotswap {
 min-height: calc((var(--avatar-base-height) * var(--big-avatar-height-factor)) * 1.2);
 }
 [/CSS코드]
+[미리보기] img/Default/5.png
 [팁] 여백이나 크기가 안 맞으면 숫자를 조절하세요.
 ===
 [카테고리] UI
@@ -144,6 +149,7 @@ min-height: calc((var(--avatar-base-height) * var(--big-avatar-height-factor)) *
 [CSS코드]
 #left-nav-panel, #right-nav-panel { max-height: 99.9vh; }
 [/CSS코드]
+[미리보기] img/Default/6.png
 ===
 [카테고리] 채팅창
 [확장프로그램] 기본
@@ -160,6 +166,7 @@ min-height: calc((var(--avatar-base-height) * var(--big-avatar-height-factor)) *
 [CSS코드]
 .splash-logo { content: url('로딩 완료 후 바뀔 이미지 주소.png'); }
 [/CSS코드]
+[미리보기] img/Default/7.gif
 ===
 [카테고리] UI
 [확장프로그램] 기본
@@ -230,6 +237,7 @@ display: none !important;
 }
 [/CSS코드]
 [출처] 달글
+[미리보기] img/Default/8.png
 [팁] 프리셋 패널 최상단의 `수동으로 값을 ~` 과 `?(헬프버튼)`을 숨깁니다.
 ===
 [카테고리] UI
@@ -288,6 +296,7 @@ border-radius: 999px;
 select#world_info option { background-color: transparent; }
 [/CSS코드]
 [출처] 달글
+[미리보기] img/Default/9.png
 [팁] 프롬프트 선택박스는 [[프롬프트 편집 트리거 선택박스 배경 지우기]]를 확인하세요.
 ===
 [카테고리] 프리셋 패널
@@ -320,6 +329,7 @@ unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 body { font-family: '영어폰트이름', '한글폰트이름', sans-serif; }
 [/CSS코드]
+[미리보기] img/Default/10.png
 [팁] `@font-face { ... }`안, 맨 마지막에 `uniocode ...`를 추가 해 주세요.
 ===
 [카테고리] 채팅창
@@ -385,6 +395,28 @@ text-align: center;
 z-index: 21;
 }
 [/CSS코드]
+[미리보기] img/Default/11.png
+===
+[카테고리] 채팅창
+[확장프로그램] 기본
+[제목] 메시지 수정 버튼 하단으로 내리기
+[태그] 버튼, 아이콘, 위치
+[CSS코드]
+.mes_edit_buttons {
+position: absolute;
+top: auto;
+bottom: 20px;
+left: 50%;
+right: auto;
+transform: translateX(-50%);
+}
+.mes:has(.mes_edit_buttons[style*="display: inline-flex"]) .swipeRightBlock {
+display: none !important;
+}
+[/CSS코드]
+[미리보기] img/Default/19.png
+[팁] [[메시지 액션 버튼 하단으로 내리기]]와 같이 사용하면 좋습니다.
+단독으로 사용할 때에는 `.mes_text { padding-bottom:60px; }`를 추가 하고 `.mes:has ... `를 삭제하세요.
 ===
 [카테고리] 캐릭터 패널
 [확장프로그램] 기본
@@ -453,6 +485,7 @@ object-position: center top;
 border-radius: 0 !important;
 }
 [/CSS코드]
+[미리보기] img/Default/12.png
 [팁] 화질이 안 좋다면 [[이미지 크게 바꿀 때 고화질로 수정하기]]를 확인하세요.
 [[큰 이미지 아래 흐림 효과]]를 같이 쓰면 좋아요.
 ===
@@ -473,6 +506,7 @@ overflow: hidden;
 mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, 0.6) 72%, transparent 100%);
 }
 [/CSS코드]
+[미리보기] img/Default/13.png
 [팁] [[캐릭터 이미지 크게 만들기]]와 같이 사용 하면 좋아요.
 ===
 [카테고리] 캐릭터 패널
@@ -491,6 +525,7 @@ padding-right: 10px !important;
 box-sizing: border-box;
 }
 [/CSS코드]
+[미리보기] img/Default/14.png
 ===
 [카테고리] 로어북 패널
 [확장프로그램] 기본
@@ -512,6 +547,7 @@ background-color: var(--SmartThemeBorderColor); }
 .select2-container .select2-selection--multiple .select2-selection__choice__remove {
 line-height: 1.2; }
 [/CSS코드]
+[미리보기] img/Default/15.png
 ===
 [카테고리] 로어북 패널
 [확장프로그램] 기본
@@ -522,6 +558,7 @@ line-height: 1.2; }
 display: none !important;
 }
 [/CSS코드]
+[미리보기] img/Default/16.png
 ===
 [카테고리] UI
 [확장프로그램] 기본
@@ -540,6 +577,7 @@ pointer-events: none;
 border-radius: 10px;
 }
 [/CSS코드]
+[미리보기] img/Default/17.png
 [팁] `height`로 채팅방 높이를 조절하세요. 채팅방 크기 조절이 없다면 첫 줄을 삭제 하세요.
 ===
 [카테고리] UI
@@ -550,6 +588,7 @@ border-radius: 10px;
 #selectChatPopupHeaderText { width: 100%; }
 #select_chat_search { display: none; }
 [/CSS코드]
+[미리보기] img/Default/18.png
 ===
 [카테고리] UI
 [확장프로그램] 기본

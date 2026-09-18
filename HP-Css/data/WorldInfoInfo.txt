@@ -53,6 +53,7 @@ color: var(--SmartThemeBodyColor) !important;}
 [CSS코드]
 .stwii--trigger:not([data-stwii--badge-count="0"])::after { background: #ff0000 !important; }
 [/CSS코드]
+[미리보기] img/WorldInfoInfo/1.png
 [팁] 뱃지 색상은 오퍼시티가 적용 되어 있기 때문에 설정한 색상보다 연하게 나옵니다.
 알림 색상을 진하게 바꾸고 싶다면 [[플로팅 아이콘 알림 뱃지 색상 진하게 바꾸기]]를 확인하세요.
 ===
@@ -65,5 +66,6 @@ color: var(--SmartThemeBodyColor) !important;}
 .stwii--trigger.fa-solid::before { opacity: 0.25 !important; }
 .stwii--trigger:not([data-stwii--badge-count="0"])::after { background: #ff0000 !important; opacity: 0.7 !important;}
 [/CSS코드]
+[미리보기] img/WorldInfoInfo/2.png
 [팁] 알림 색상을 책 아이콘처럼 연하게 바꾸고 싶다면 [[플로팅 아이콘 알림 뱃지 색상 바꾸기]]를 확인하세요.
 ===

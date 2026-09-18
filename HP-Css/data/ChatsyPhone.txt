@@ -23,6 +23,7 @@
 [CSS코드]
 .playlist-songs .playlist-song-item div:last-child { white-space: normal !important; }
 [/CSS코드]
+[미리보기] img/ChatsyPhone/1.png
 ===
 [카테고리] UI
 [확장프로그램] 챗시폰
@@ -31,6 +32,7 @@
 [CSS코드]
 .secret-memo-card > div + div > span:first-child { white-space: nowrap; flex-shrink: 0; }
 [/CSS코드]
+[미리보기] img/ChatsyPhone/2.png
 ===
 [카테고리] UI
 [확장프로그램] 챗시폰
@@ -59,6 +61,7 @@
 [CSS코드]
 #phone-app-page:has(.letter-fullscreen) .app-header { display: none; }
 [/CSS코드]
+[미리보기] img/ChatsyPhone/3.png
 ===
 [카테고리] UI
 [확장프로그램] 챗시폰
@@ -67,6 +70,7 @@
 [CSS코드]
 .phone-container .vm-transcript { overflow: auto !important; }
 [/CSS코드]
+[미리보기] img/ChatsyPhone/4.png
 ===
 [카테고리] UI
 [확장프로그램] 챗시폰
@@ -83,4 +87,5 @@
 [CSS코드]
 .phone-container:has(.tea-input-bar) .phone-home-bar { display: none; !important; }
 [/CSS코드]
+[미리보기] img/ChatsyPhone/5.png
 ===

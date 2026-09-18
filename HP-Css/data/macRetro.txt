@@ -25,6 +25,7 @@
 #backgrounds-button .drawer-icon::before
 [/CSS코드]
 [출처] 달글, 디코
+[미리보기] img/macRetro/1.png
 ===
 [카테고리] 테마
 [확장프로그램] 맥레트로
@@ -38,6 +39,7 @@ background-color: rgba(129,215,66,0.2);
 /* HEX 값을 사용 할 경우 */
 background-color: #d1f1ba;
 [/CSS코드]
+[미리보기] img/macRetro/2.png
 ===
 [카테고리] 테마
 [확장프로그램] 맥레트로
@@ -48,6 +50,7 @@ background-color: #d1f1ba;
 border-radius: 10px;
 [/CSS코드]
 [팁] `10px` 숫자를 높일 수록 둥글어집니다.
+[미리보기] img/macRetro/3.png
 ===
 [카테고리] 테마
 [확장프로그램] 맥레트로

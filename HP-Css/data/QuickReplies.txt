@@ -31,6 +31,7 @@ transform: translate(-50%, -50%) !important;
 z-index: 99999 !important;
 }
 [/CSS코드]
+[미리보기] img/QuickReplies/1.png
 ===
 [카테고리] 빠른 답장
 [확장프로그램] 기본
@@ -58,6 +59,7 @@ transition: max-height 300ms ease-in-out;
 }
 #send_form:focus-within #qr--bar, #send_form:hover #qr--bar { max-height: 50dvh; }
 [/CSS코드]
+[미리보기] img/QuickReplies/2.gif
 [팁] 공식 디코에 비슷한 CSS가 있는 것은 알고 있는데 너무 길어서 새로 작성했습니다.
 빠른 답장이 영역이 보일 최대 높이는 `50dvh`로 조절하세요.
 ===
