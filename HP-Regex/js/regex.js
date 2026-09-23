@@ -574,7 +574,7 @@ function renderStageActionButtons() {
   const visibilityBtn = document.createElement('button');
   visibilityBtn.className = `stage-icon-btn stage-visibility-btn ${stage.enabled === false ? 'disabled' : ''}`;
   visibilityBtn.type = 'button';
-  visibilityBtn.textContent = '👁';
+  visibilityBtn.innerHTML = `<i class="fa-solid ${stage.enabled === false ? 'fa-eye-slash' : 'fa-eye'}" aria-hidden="true"></i>`;
   visibilityBtn.title = stage.enabled === false ? '선택한 정규식 활성화' : '선택한 정규식 비활성화';
   visibilityBtn.setAttribute('aria-label', visibilityBtn.title);
   visibilityBtn.setAttribute('aria-pressed', String(stage.enabled !== false));
@@ -583,7 +583,7 @@ function renderStageActionButtons() {
   const editBtn = document.createElement('button');
   editBtn.className = `stage-icon-btn ${window.isRegexStageEditing ? 'active' : ''}`;
   editBtn.type = 'button';
-  editBtn.textContent = String.fromCharCode(9998);
+  editBtn.innerHTML = '<i class="fa-solid fa-pen" aria-hidden="true"></i>';
   editBtn.title = '제목 및 순서 수정';
   editBtn.addEventListener('click', () => {
     window.isRegexStageEditing = !window.isRegexStageEditing;

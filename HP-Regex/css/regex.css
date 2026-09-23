@@ -309,19 +309,7 @@ textarea:focus, input:focus {
 }
 
 .stage-visibility-btn {
-  position: relative;
-  font-size: 1.15rem;
-}
-
-.stage-visibility-btn.disabled::after {
-  content: '';
-  position: absolute;
-  width: 22px;
-  height: 2px;
-  background: currentColor;
-  transform: rotate(-45deg);
-  left: calc(50% - 11px);
-  top: calc(50% - 1px);
+  font-size: 1rem;
 }
 
 .stage-icon-btn.danger {
