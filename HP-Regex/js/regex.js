@@ -8,16 +8,19 @@ window.regexError = window.regexError || null;
 window.groupList = window.groupList || null;
 window.presetContainer = window.presetContainer || null;
 window.searchMarks = window.searchMarks || [];
-window.baseRegexRule = window.baseRegexRule || { name: '기본', regex: '', template: '', enabled: true, trimStrings: [] };
+window.baseRegexRule = window.baseRegexRule || { name: '기본', regex: '', template: '', enabled: true, trimStrings: [], placement: [2], markdownOnly: true, promptOnly: false };
 window.baseRegexRule.name = window.baseRegexRule.name || '기본';
 window.baseRegexRule.enabled = window.baseRegexRule.enabled !== false;
 window.baseRegexRule.trimStrings = Array.isArray(window.baseRegexRule.trimStrings) ? window.baseRegexRule.trimStrings : [];
+window.baseRegexRule.placement = Array.isArray(window.baseRegexRule.placement) ? window.baseRegexRule.placement : [2];
+window.baseRegexRule.markdownOnly = window.baseRegexRule.markdownOnly !== false;
+window.baseRegexRule.promptOnly = window.baseRegexRule.promptOnly === true;
 window.regexStages = window.regexStages || [];
 window.activeRegexStageId = window.activeRegexStageId || 'base';
 window.isRegexStageEditing = window.isRegexStageEditing || false;
 window.isLoadingRegexStage = false;
 
-/* ?좏떥由ы떚 ?⑥닔 */
+/* 유틸리티 함수 */
 function getTemplateValue() {
   return window.editor ? window.editor.getValue() : document.getElementById('template-input').value;
 }
@@ -97,7 +100,10 @@ function createRegexStage() {
     regex: '',
     template: '',
     trimStrings: [],
-    enabled: true
+    enabled: true,
+    placement: [2],
+    markdownOnly: true,
+    promptOnly: false
   };
 }
 
@@ -182,7 +188,7 @@ function replaceWithTemplate(input, regexStr, template, debugMode = false, trimS
   return { output, matches, changed };
 }
 
-/* 초기???⑥닔 */
+/* 초기화 함수 */
 function initApp() {
   window.rawInput = document.getElementById('raw-input');
   window.regexInput = document.getElementById('regex-input');
@@ -269,14 +275,14 @@ function initApp() {
   initResizer();
 }
 
-/* 모바??초기 酉?*/
+/* 모바일 화면 초기화 */
 function initMobileView() {
   if (window.innerWidth <= 768) {
     switchMobileTab('preview');
   }
 }
 
-/* ?띿뒪??찾기 */
+/* 텍스트 검색 */
 function clearSearchHighlights() {
   window.searchMarks.forEach(mark => mark.clear());
   window.searchMarks = [];
@@ -427,7 +433,7 @@ function replaceAll() {
   }
 }
 
-/* ?대┰蹂대뱶 복사 */
+/* 클립보드 복사 */
 function writeClipboardText(text) {
   const clipboardWrite = navigator.clipboard && navigator.clipboard.writeText
     ? navigator.clipboard.writeText(text)
@@ -475,7 +481,7 @@ function copyToClipboard(id, btn) {
   });
 }
 
-/* ?꾨━??愿由?*/
+/* 프리셋 관리 */
 function initPresets() {
   if (typeof window.customPresets === 'undefined') {
     console.warn('customPresets媛 로드?섏? ?딆븯?듬땲??');
@@ -504,6 +510,9 @@ function initPresets() {
         window.baseRegexRule.template = p.template || "";
         window.baseRegexRule.trimStrings = [];
         window.baseRegexRule.enabled = true;
+        window.baseRegexRule.placement = [2];
+        window.baseRegexRule.markdownOnly = true;
+        window.baseRegexRule.promptOnly = false;
         window.regexStages = [];
       }
       window.activeRegexStageId = 'base';
@@ -523,6 +532,7 @@ function renderStageControls() {
   const controls = document.getElementById('stage-edit-controls');
   if (!tabs || !controls) return;
 
+  const previousScrollLeft = tabs.scrollLeft;
   tabs.innerHTML = '';
 
   const baseTab = document.createElement('button');
@@ -542,6 +552,7 @@ function renderStageControls() {
     bindStageButtonAction(tab);
     tabs.appendChild(tab);
   });
+  tabs.scrollLeft = previousScrollLeft;
 
   renderStageActionButtons();
   renderActiveStageControls();
@@ -552,11 +563,6 @@ function renderStageActionButtons() {
   if (!actions) return;
 
   actions.innerHTML = '';
-  if (window.activeRegexStageId === 'base' && window.regexStages.length === 0) {
-    actions.classList.remove('active');
-    return;
-  }
-
   const stage = findStage(window.activeRegexStageId);
   if (!stage) {
     actions.classList.remove('active');
@@ -565,11 +571,20 @@ function renderStageActionButtons() {
 
   actions.classList.add('active');
 
+  const visibilityBtn = document.createElement('button');
+  visibilityBtn.className = `stage-icon-btn stage-visibility-btn ${stage.enabled === false ? 'disabled' : ''}`;
+  visibilityBtn.type = 'button';
+  visibilityBtn.textContent = '👁';
+  visibilityBtn.title = stage.enabled === false ? '선택한 정규식 활성화' : '선택한 정규식 비활성화';
+  visibilityBtn.setAttribute('aria-label', visibilityBtn.title);
+  visibilityBtn.setAttribute('aria-pressed', String(stage.enabled !== false));
+  visibilityBtn.addEventListener('click', () => toggleRegexStageEnabled(window.activeRegexStageId));
+
   const editBtn = document.createElement('button');
   editBtn.className = `stage-icon-btn ${window.isRegexStageEditing ? 'active' : ''}`;
   editBtn.type = 'button';
   editBtn.textContent = String.fromCharCode(9998);
-  editBtn.title = 'Edit';
+  editBtn.title = '제목 및 순서 수정';
   editBtn.addEventListener('click', () => {
     window.isRegexStageEditing = !window.isRegexStageEditing;
     renderStageControls();
@@ -585,7 +600,8 @@ function renderStageActionButtons() {
     renderStageControls();
   });
 
-  actions.append(editBtn, cancelBtn);
+  actions.append(visibilityBtn, editBtn);
+  if (window.isRegexStageEditing) actions.appendChild(cancelBtn);
 }
 
 function bindStageButtonAction(button) {
@@ -621,7 +637,7 @@ function renderActiveStageControls() {
   if (!controls) return;
 
   controls.innerHTML = '';
-  if ((window.activeRegexStageId === 'base' && window.regexStages.length === 0) || !window.isRegexStageEditing) {
+  if (!window.isRegexStageEditing) {
     controls.classList.remove('active');
     return;
   }
@@ -644,15 +660,10 @@ function renderActiveStageControls() {
   nameInput.placeholder = '단계 이름';
   nameInput.addEventListener('input', () => {
     stage.name = nameInput.value;
-    renderStageControls();
+    const activeTab = [...document.querySelectorAll('#stage-tabs .stage-tab')]
+      .find(tab => tab.dataset.stageId === activeStageId);
+    if (activeTab) activeTab.textContent = stage.name || (activeStageId === 'base' ? '기본' : '추가');
   });
-
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className = 'stage-icon-btn';
-  toggleBtn.type = 'button';
-  toggleBtn.textContent = stage.enabled ? '비활성화' : '활성화';
-  toggleBtn.title = '활성화/비활성화';
-  toggleBtn.addEventListener('click', () => toggleRegexStageEnabled(activeStageId));
 
   const upBtn = document.createElement('button');
   upBtn.className = 'stage-icon-btn';
@@ -675,7 +686,7 @@ function renderActiveStageControls() {
   deleteBtn.title = '삭제';
   deleteBtn.addEventListener('click', () => removeRegexStage(activeStageId));
 
-  controls.append(nameInput, toggleBtn, upBtn, downBtn, deleteBtn);
+  controls.append(nameInput, upBtn, downBtn, deleteBtn);
 }
 
 function findStage(stageId) {
@@ -689,18 +700,27 @@ function swapStageData(left, right) {
     regex: left.regex,
     template: left.template,
     trimStrings: normalizeTrimStrings(left.trimStrings),
-    enabled: left.enabled !== false
+    enabled: left.enabled !== false,
+    placement: [...left.placement],
+    markdownOnly: left.markdownOnly,
+    promptOnly: left.promptOnly
   };
   left.name = right.name;
   left.regex = right.regex;
   left.template = right.template;
   left.trimStrings = normalizeTrimStrings(right.trimStrings);
   left.enabled = right.enabled !== false;
+  left.placement = [...right.placement];
+  left.markdownOnly = right.markdownOnly;
+  left.promptOnly = right.promptOnly;
   right.name = leftSnapshot.name;
   right.regex = leftSnapshot.regex;
   right.template = leftSnapshot.template;
   right.trimStrings = leftSnapshot.trimStrings;
   right.enabled = leftSnapshot.enabled;
+  right.placement = leftSnapshot.placement;
+  right.markdownOnly = leftSnapshot.markdownOnly;
+  right.promptOnly = leftSnapshot.promptOnly;
 }
 
 function promoteFirstRegexStageToBase() {
@@ -711,6 +731,9 @@ function promoteFirstRegexStageToBase() {
   window.baseRegexRule.template = nextBase.template || '';
   window.baseRegexRule.trimStrings = normalizeTrimStrings(nextBase.trimStrings);
   window.baseRegexRule.enabled = nextBase.enabled !== false;
+  window.baseRegexRule.placement = [...nextBase.placement];
+  window.baseRegexRule.markdownOnly = nextBase.markdownOnly;
+  window.baseRegexRule.promptOnly = nextBase.promptOnly;
 }
 
 function isRegexRuleJson(value) {
@@ -723,6 +746,14 @@ function getImportedRegexName(rule, fallbackIndex) {
   return name || `추가${fallbackIndex}`;
 }
 
+function getRuleExportOptions(rule) {
+  return {
+    placement: Array.isArray(rule.placement) ? [...rule.placement] : [2],
+    markdownOnly: rule.markdownOnly !== false,
+    promptOnly: rule.promptOnly === true
+  };
+}
+
 function importRegexRules(rules) {
   const [baseRule, ...stageRules] = rules;
   window.baseRegexRule.name = getImportedRegexName(baseRule, 0) || '기본';
@@ -730,13 +761,15 @@ function importRegexRules(rules) {
   window.baseRegexRule.template = baseRule.replaceString || '';
   window.baseRegexRule.trimStrings = normalizeTrimStrings(baseRule.trimStrings);
   window.baseRegexRule.enabled = baseRule.disabled !== true;
+  Object.assign(window.baseRegexRule, getRuleExportOptions(baseRule));
   window.regexStages = stageRules.map((rule, index) => ({
     id: rule.id ? `stage-${rule.id}` : `stage-${generateUUID()}`,
     name: getImportedRegexName(rule, index + 1),
     regex: rule.findRegex || '',
     template: rule.replaceString || '',
     trimStrings: normalizeTrimStrings(rule.trimStrings),
-    enabled: rule.disabled !== true
+    enabled: rule.disabled !== true,
+    ...getRuleExportOptions(rule)
   }));
   window.activeRegexStageId = 'base';
   window.isRegexStageEditing = false;
@@ -750,6 +783,7 @@ window.addRegexStage = function() {
   window.isRegexStageEditing = false;
   loadActiveRegexStageValues();
   renderStageControls();
+  document.getElementById('stage-tabs').scrollLeft = document.getElementById('stage-tabs').scrollWidth;
   render();
 };
 
@@ -828,7 +862,7 @@ function selectRegexStageInternal(stageId) {
   render();
 }
 
-/* 酉?모드 */
+/* 보기 모드 */
 function toggleViewMode() {
   setViewMode(window.viewMode === 'content' ? 'debug' : 'content');
 }
@@ -894,7 +928,7 @@ function renderGroupList(matches) {
   }
 }
 
-/* ?뚮뜑留?*/
+/* 렌더링 */
 function render() {
   if (!window.rawInput || !window.regexInput || !window.renderTarget) return;
   if (!document.body.contains(window.rawInput) || !document.body.contains(window.regexInput)) return;
@@ -985,7 +1019,7 @@ function render() {
   }
 }
 
-/* 湲고? ?⑥닔 */
+/* 기타 함수 */
 function toggleGroupList() {
   const list = document.getElementById('group-list');
   const icon = document.getElementById('group-toggle-icon');
@@ -1001,7 +1035,7 @@ function toggleGroupList() {
 function resetAll() {
   if (!confirm('모든 입력 내용을 초기화할까요?')) return;
 
-  window.baseRegexRule = { name: '기본', regex: '', template: '', enabled: true, trimStrings: [] };
+  window.baseRegexRule = { name: '기본', regex: '', template: '', enabled: true, trimStrings: [], placement: [2], markdownOnly: true, promptOnly: false };
   window.regexStages = [];
   window.activeRegexStageId = 'base';
   window.isRegexStageEditing = false;
@@ -1149,7 +1183,7 @@ window.toggleTrimSection = function() {
   }
 };
 
-/* ?뺢퇋??JSON ???*/
+/* 정규식 JSON 저장 */
 function saveAsRegexJSON() {
   persistActiveRegexStageValues();
   const rules = getSaveableRegexRules();
@@ -1189,15 +1223,17 @@ function openModal() {
 
 function renderSaveRegexList() {
   const list = document.getElementById('save-regex-list');
-  const block = document.getElementById('save-regex-select-block');
-  if (!list || !block) return;
+  if (!list) return;
 
   const rules = getSaveableRegexRules();
   list.innerHTML = '';
-  block.style.display = rules.length > 1 ? 'block' : 'none';
 
   rules.forEach(item => {
-    const label = document.createElement('label');
+    const card = document.createElement('div');
+    card.className = 'save-regex-card';
+    card.dataset.stageId = item.id;
+    const heading = document.createElement('label');
+    heading.className = 'save-regex-heading';
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.className = 'save-regex-checkbox';
@@ -1205,16 +1241,49 @@ function renderSaveRegexList() {
     checkbox.checked = true;
     const text = document.createElement('span');
     text.textContent = item.rule.name || (item.id === 'base' ? '기본' : '추가');
-    label.append(checkbox, text);
-    list.appendChild(label);
+    heading.append(checkbox, text);
+    card.appendChild(heading);
+
+    const options = getRuleExportOptions(item.rule);
+    const groups = [
+      ['영향을 미침', [['user', '사용자 입력', options.placement.includes(1)], ['ai', 'AI 출력', options.placement.includes(2)]]],
+      ['표시 옵션', [['markdown', '형식 표시만', options.markdownOnly], ['prompt', '형식 프롬프트만', options.promptOnly]]]
+    ];
+    groups.forEach(([title, choices]) => {
+      const group = document.createElement('div');
+      group.className = 'save-regex-option-group';
+      const caption = document.createElement('span');
+      caption.className = 'save-regex-option-title';
+      caption.textContent = title;
+      group.appendChild(caption);
+      choices.forEach(([key, labelText, checked]) => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.dataset.option = key;
+        input.checked = checked;
+        label.append(input, document.createTextNode(labelText));
+        group.appendChild(label);
+      });
+      card.appendChild(group);
+    });
+    checkbox.addEventListener('change', () => card.classList.toggle('unselected', !checkbox.checked));
+    list.appendChild(card);
   });
 }
 
 function getSelectedRegexRuleIds() {
-  const checked = [...document.querySelectorAll('.save-regex-checkbox:checked')].map(input => input.value);
-  if (checked.length > 0) return checked;
-  const rules = getSaveableRegexRules();
-  return rules.length === 1 ? [rules[0].id] : [];
+  return [...document.querySelectorAll('.save-regex-checkbox:checked')].map(input => input.value);
+}
+
+function getSaveOptionsForRule(stageId) {
+  const card = [...document.querySelectorAll('.save-regex-card')]
+    .find(element => element.dataset.stageId === stageId);
+  const checked = key => card.querySelector(`[data-option="${key}"]`).checked;
+  const placement = [];
+  if (checked('user')) placement.push(1);
+  if (checked('ai')) placement.push(2);
+  return { placement, markdownOnly: checked('markdown'), promptOnly: checked('prompt') };
 }
 
 function normalizeRegexForExport(regexPattern) {
@@ -1234,12 +1303,6 @@ function confirmSave() {
     return;
   }
 
-  const placement = [];
-  if (document.getElementById('chk-user') && document.getElementById('chk-user').checked) placement.push(1);
-  if (document.getElementById('chk-ai') && document.getElementById('chk-ai').checked) placement.push(2);
-
-  const markdownOnly = document.getElementById('chk-markdown') ? document.getElementById('chk-markdown').checked : true;
-  const promptOnly = document.getElementById('chk-prompt') ? document.getElementById('chk-prompt').checked : false;
   const selectedIds = getSelectedRegexRuleIds();
   if (selectedIds.length === 0) {
     showMessage('저장할 정규식을 선택해주세요.');
@@ -1249,16 +1312,18 @@ function confirmSave() {
   const selectedRules = getSaveableRegexRules().filter(item => selectedIds.includes(item.id));
   const regexJSON = selectedRules.map((item, index) => {
     const trimStrings = normalizeTrimStrings(item.rule.trimStrings);
+    const options = getSaveOptionsForRule(item.id);
+    Object.assign(item.rule, options);
     return {
       "id": generateUUID(),
       "scriptName": selectedRules.length === 1 ? scriptName : (item.rule.name || `${scriptName}-${index + 1}`),
       "findRegex": normalizeRegexForExport(item.rule.regex),
       "replaceString": item.rule.template || '',
       "trimStrings": trimStrings.length > 0 ? trimStrings : [""],
-      "placement": placement.length > 0 ? placement : [2],
+      "placement": options.placement,
       "disabled": item.rule.enabled === false,
-      "markdownOnly": markdownOnly,
-      "promptOnly": promptOnly,
+      "markdownOnly": options.markdownOnly,
+      "promptOnly": options.promptOnly,
       "runOnEdit": true,
       "substituteRegex": 0,
       "minDepth": null,
@@ -1300,18 +1365,6 @@ window.loadRegexJSON = function(event) {
         }
         if (window.regexInput) autoResizeTextarea(window.regexInput);
         if (window.rawInput) autoResizeTextarea(window.rawInput);
-        const firstRule = regexRules[0];
-        if (firstRule.placement) {
-            if (document.getElementById('chk-user')) document.getElementById('chk-user').checked = firstRule.placement.includes(1);
-            if (document.getElementById('chk-ai')) document.getElementById('chk-ai').checked = firstRule.placement.includes(2);
-        }
-        if (firstRule.markdownOnly !== undefined && document.getElementById('chk-markdown')) {
-            document.getElementById('chk-markdown').checked = firstRule.markdownOnly;
-        }
-        if (firstRule.promptOnly !== undefined && document.getElementById('chk-prompt')) {
-            document.getElementById('chk-prompt').checked = firstRule.promptOnly;
-        }
-
         render();
         showMessage(regexRules.length > 1 ? `${regexRules.length}개의 정규식을 불러왔습니다.` : "성공적으로 불러왔습니다.");
       } else {

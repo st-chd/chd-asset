@@ -1,4 +1,4 @@
-﻿/* ========== ?꾨━??諛?========== */
+﻿/* ========== 프리셋 바 ========== */
 .preset-bar {
     width: var(--nav-width);
     margin: 0 auto 10px;
@@ -46,7 +46,7 @@
     flex: 0 0 auto;
 }
 
-/* 怨듯넻 踰꾪듉 */
+/* 공통 버튼 */
 .preset-btn, .reset-btn, .mobile-tab {
     cursor: pointer;
     font-weight: bold;
@@ -73,7 +73,7 @@
     display: none;
 }
 
-/* ========== 硫붿씤 而⑦뀒?대꼫 ========== */
+/* ========== 메인 컨테이너 ========== */
 .container {
     height: auto;
     display: flex;
@@ -83,7 +83,7 @@
     margin: 0 auto;
 }
 
-/* ?먮뵒???ъ씠??*/
+/* 에디터 영역 */
 .editor-side {
     width: 40%;
     display: flex;
@@ -117,7 +117,7 @@ label {
     letter-spacing: 0.5px;
 }
 
-/* ?낅젰 ?꾨뱶 */
+/* 입력 필드 */
 textarea, input {
     background: var(--textarea-bg);
     border: var(--pre-btn-border);
@@ -145,7 +145,7 @@ textarea:focus, input:focus {
     resize: vertical;
 }
 
-/* 踰꾪듉 */
+/* 버튼 */
 .copy-btn {
     cursor: pointer;
     background: var(--btn-1);
@@ -158,7 +158,7 @@ textarea:focus, input:focus {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* 李얘린/諛붽씀湲?*/
+/* 찾기 및 바꾸기 */
 .find-container {
     display: flex;
     gap: 5px;
@@ -197,7 +197,7 @@ textarea:focus, input:focus {
     opacity: 1;
 }
 
-/* ========== 蹂??異붿텧 ?뱀뀡 ========== */
+/* ========== 변수 추출 섹션 ========== */
 .group-section {
     border: var(--pre-btn-border);
     border-radius: 8px;
@@ -274,7 +274,7 @@ textarea:focus, input:focus {
     display: none;
 }
 
-/* ========== ?꾨━酉??ъ씠??========== */
+/* ========== 미리보기 영역 ========== */
 .preview-side {
     width: 60%;
     display: flex;
@@ -304,7 +304,7 @@ textarea:focus, input:focus {
     border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
-/* ========== 肄붾뱶誘몃윭 ========== */
+/* ========== 코드미러 ========== */
 .CodeMirror {
     height: 300px;
     min-height: 300px;
@@ -323,7 +323,7 @@ textarea:focus, input:focus {
     background-color: #ff9800 !important;
 }
 
-/* ========== 由ъ궗?댁? ========== */
+/* ========== 리사이저 ========== */
 .resizer {
     width: 2px;
     background: var(--btn-bg);
@@ -353,7 +353,7 @@ textarea:focus, input:focus {
     transform: scale(1.1);
 }
 
-/* ========== ?덈궡臾?========== */
+/* ========== 안내문 ========== */
 .notice-box {
     background: #FAFBF7;
     border-radius: 12px;
@@ -393,7 +393,7 @@ textarea:focus, input:focus {
 .step-4 { background: #1dd1a1; }
 .step-5 { background: #ff6b6b; }
 
-/* ========== 諛섏쓳??========== */
+/* ========== 반응형 ========== */
 @media (max-width: 1024px) {
     .editor-side { width: 45%; }
     .preview-side { width: 55%; }

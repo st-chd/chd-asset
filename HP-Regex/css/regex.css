@@ -208,13 +208,19 @@ textarea:focus, input:focus {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  scrollbar-width: none;
+  scrollbar-width: thin;
   flex: 1;
   min-width: 0;
+  padding-bottom: 4px;
 }
 
 .stage-tabs::-webkit-scrollbar {
-  display: none;
+  height: 8px;
+}
+
+.stage-tabs::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
 }
 
 .stage-tab,
@@ -231,6 +237,7 @@ textarea:focus, input:focus {
 
 .stage-tab {
   padding: 7px 12px;
+  flex: 0 0 auto;
   position: relative;
   z-index: 3;
 }
@@ -299,6 +306,22 @@ textarea:focus, input:focus {
 .stage-icon-btn.active {
   background: var(--btn-1);
   color: #fff;
+}
+
+.stage-visibility-btn {
+  position: relative;
+  font-size: 1.15rem;
+}
+
+.stage-visibility-btn.disabled::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  left: calc(50% - 11px);
+  top: calc(50% - 1px);
 }
 
 .stage-icon-btn.danger {
@@ -828,7 +851,10 @@ textarea:focus, input:focus {
   background: var(--nav-bg);
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  max-width: 460px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s;
 }
@@ -846,6 +872,8 @@ textarea:focus, input:focus {
 
 .modal-body {
   padding: 20px;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .modal-body label {
@@ -884,6 +912,35 @@ textarea:focus, input:focus {
   border: var(--pre-btn-border);
   border-radius: 8px;
   background: var(--textarea-bg);
+}
+
+.save-regex-card {
+  padding: 10px;
+  border: var(--pre-btn-border);
+  border-radius: 8px;
+  background: var(--nav-bg);
+}
+
+.save-regex-card.unselected .save-regex-option-group {
+  opacity: 0.5;
+}
+
+.save-regex-heading {
+  font-weight: 700 !important;
+}
+
+.save-regex-option-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 8px;
+}
+
+.save-regex-option-title {
+  flex: 0 0 100%;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .save-regex-list label {

@@ -1,4 +1,4 @@
-﻿/* ========== 硫붿씤 而⑦뀒?대꼫 ========== */
+﻿/* ========== 메인 컨테이너 ========== */
 .editor-container {
     width: var(--nav-width);
     margin: 0 auto;
@@ -10,7 +10,7 @@
     border-radius: 0 0 12px 12px;
 }
 
-/* ========== ?뱀뀡 ========== */
+/* ========== 섹션 ========== */
 .editor-section {
     background: var(--bg-primaty);
     border-radius: 12px;
@@ -38,7 +38,7 @@
     user-select: none;
 }
 
-/* ========== ?뚯씪 ?좏깮 ========== */
+/* ========== 파일 선택 ========== */
 .file-input {
     width: 100%;
     padding: 12px;
@@ -56,7 +56,7 @@
     color: var(--textarea-text);
 }
 
-/* ========== 寃??洹몃９ ========== */
+/* ========== 검색 그룹 ========== */
 .search-group {
     display: flex;
     gap: 10px;
@@ -84,7 +84,7 @@
     gap: 5px;
 }
 
-/* ========== 諛붽씀湲?諛뺤뒪 ========== */
+/* ========== 바꾸기 박스 ========== */
 .replace-box {
     max-height: 0;
     overflow: hidden;
@@ -102,7 +102,7 @@
     flex-wrap: nowrap;
 }
 
-/* ========== 踰꾪듉 ========== */
+/* ========== 버튼 ========== */
 .btn {
     padding: 10px 16px;
     border: none;
@@ -155,7 +155,7 @@
     gap: 8px;
 }
 
-/* ========== CodeMirror ?먮뵒??========== */
+/* ========== CodeMirror 편집기 ========== */
 .editor-main {
     display: flex;
     flex-direction: column;
@@ -197,7 +197,7 @@
     color: white !important;
 }
 
-/* ========== ?좎뒪???뚮┝ ========== */
+/* ========== 소스 미리보기 ========== */
 .toast {
     position: fixed;
     bottom: 20px;
@@ -232,7 +232,7 @@
     }
 }
 
-/* ========== ?됱긽 ?몄쭛湲?========== */
+/* ========== 색상 편집기 ========== */
 .color-editor-section {
     margin-top: 10px;
     padding: 10px;
@@ -298,14 +298,14 @@
     display: flex;
     gap: 4px;
     align-items: center;
-    flex: 3; /* ?⑥? 怨듦컙 鍮꾩쑉 */
+    flex: 3; /* 입력 패널 비율 */
 }
 
 .rgba-input-wrapper {
     display: flex;
     align-items: center;
     gap: 2px;
-    flex: 1; /* 媛곴컖???낅젰移몄씠 洹좊벑???볦씠瑜?媛吏?꾨줉 ?ㅼ젙 */
+    flex: 1; /* 각 입력칸이 같은 너비를 갖도록 설정 */
 }
 
 .rgba-label {
@@ -357,7 +357,7 @@
     margin-top: 15px;
 }
 
-/* ========== 遺숈뿬?ｊ린 紐⑤떖 ========== */
+/* ========== 붙여넣기 모달 ========== */
 .paste-modal {
     display: none;
     position: fixed;
@@ -468,7 +468,7 @@
     color: #aaa;
     opacity: 0.6;
 }
-/* ========== 紐⑤컮??諛섏쓳??========== */
+/* ========== 모바일 반응형 ========== */
 @media (max-width: 1600px) {
     .color-grid {
         grid-template-columns: 1fr;
@@ -477,19 +477,19 @@
 
 @media (max-width: 900px) {
     .color-item {
-        flex-direction: row; /* 紐⑤컮?쇱뿉?쒕룄 媛濡?諛곗튂 湲곗? ?좎? */
+        flex-direction: row; /* 좁은 화면에서도 가로 배치 유지 */
         align-items: center;
         gap: 8px;
-        flex-wrap: wrap; /* 醫곸쑝硫?以꾨컮轅??덉슜 */
+        flex-wrap: wrap; /* 공간이 부족하면 줄바꿈 */
     }
 
     .color-label {
-        width: 160px; /* 怨좎젙 ?볦씠 ?좎? */
+        width: 160px; /* 고정 너비 유지 */
         flex-shrink: 0;
     }
 
     .color-controls {
-        flex: 1; /* ?섎㉧吏 怨듦컙 李⑥? */
+        flex: 1; /* 남은 공간 차지 */
         min-width: 220px;
         flex-wrap: wrap;
     }
