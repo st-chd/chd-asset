@@ -545,7 +545,7 @@ function renderPagination(totalPages) {
     btn.addEventListener("click", () => {
       currentPage = page;
       renderPage();
-      el.grid.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
     el.pagination.appendChild(btn);
   };
