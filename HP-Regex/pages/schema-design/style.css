@@ -337,7 +337,7 @@ textarea:focus, input:focus {
 }
 
 .resizer::before {
-    content: '??;
+    content: '⋮';
     font-size: 20px;
     background: var(--pre-btn-bg);
     color: var(--textarea-text);

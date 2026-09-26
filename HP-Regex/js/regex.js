@@ -200,7 +200,7 @@ function initApp() {
   const textArea = document.getElementById('template-input');
 
   if (!window.rawInput || !window.regexInput || !window.renderTarget || !window.regexError || !window.groupList) {
-    console.error('?꾩닔 DOM ?붿냼瑜?찾을 ???놁뒿?덈떎.');
+    console.error('필수 DOM 요소를 찾을 수 없습니다.');
     return;
   }
 
@@ -469,14 +469,14 @@ function copyToClipboard(id, btn) {
 
   writeClipboardText(textToCopy).then(() => {
     const oldText = btn.innerText;
-    btn.innerText = "복사?꾨즺!";
+    btn.innerText = "복사완료!";
     btn.classList.add('success');
     setTimeout(() => {
       btn.innerText = oldText;
       btn.classList.remove('success');
     }, 1200);
   }).catch(err => {
-    console.error('복사 ?ㅽ뙣:', err);
+    console.error('복사 실패:', err);
     showMessage("복사에 실패했습니다.");
   });
 }
@@ -484,13 +484,13 @@ function copyToClipboard(id, btn) {
 /* 프리셋 관리 */
 function initPresets() {
   if (typeof window.customPresets === 'undefined') {
-    console.warn('customPresets媛 로드?섏? ?딆븯?듬땲??');
+    console.warn('customPresets가 로드되지 않았습니다.');
     return;
   }
 
   const leftGroup = document.querySelector('.preset-bar-left');
   if (!leftGroup) {
-    console.error('.preset-bar-left瑜?찾을 ???놁뒿?덈떎.');
+    console.error('.preset-bar-left를 찾을 수 없습니다.');
     return;
   }
 
@@ -1155,7 +1155,7 @@ window.toggleSection = function(sectionId) {
   const iconId = sectionId.replace('-section', '-toggle-icon');
   const icon = document.getElementById(iconId);
   if (!section || !icon) {
-    console.warn(`toggleSection: ${sectionId} ?먮뒗 ${iconId}瑜?찾을 ???놁뒿?덈떎.`);
+    console.warn(`toggleSection: ${sectionId} 또는 ${iconId}를 찾을 수 없습니다.`);
     return;
   }
 
