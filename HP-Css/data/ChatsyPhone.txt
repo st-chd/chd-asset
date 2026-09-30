@@ -89,3 +89,14 @@
 [/CSS코드]
 [미리보기] img/ChatsyPhone/5.png
 ===
+[카테고리] UI
+[확장프로그램] 챗시폰
+[제목] 확장 메뉴 - 포스트 지우기
+[태그] 마법봉, 버튼, 아이콘, 숨기기
+[CSS코드]
+#insta-trigger-container {
+display: none !important;
+}
+[/CSS코드]
+[출처] 달글
+===

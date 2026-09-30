@@ -654,3 +654,17 @@ body { background-color: #333; }
 [팁] 테마 설정의 `흐림 강도`는 채팅 영역만 흐림 처리 하는 것이고, 이 CSS는 배경 전체를 흐림 처리 합니다.
 `opacity`로 흐림 정도를 조절하세요.
 ===
+[카테고리] UI
+[확장프로그램] 기본
+[제목] 메시지 편집 창 높이 축소
+[태그] 크기, 사이즈, 수정 화면, 수정창, 연필 버튼, Textarea
+[CSS코드]
+#curEditTextarea {
+max-height: 50vh !important;
+max-height: 50dvh !important;
+}
+[/CSS코드]
+[출처] 달글
+[미리보기] img/Default/20.png
+[팁] `50` 숫자를 조절해서 원하는 크기로 변경할 수 있습니다.
+===
