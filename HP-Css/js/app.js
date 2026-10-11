@@ -694,6 +694,33 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1800);
 }
 
+
+/* ============================================================
+   이스터에그
+   ============================================================ */
+
+(function () {
+  const brandMark = document.getElementById('brandMark');
+  const filterToggle = document.getElementById('filterToggle');
+
+  function handleEasterEgg() {
+    showToast('여긴 로고랍니다😜');
+    setTimeout(() => {
+      if (filterToggle.getAttribute('aria-expanded') !== 'true') {
+        filterToggle.click();
+      }
+    }, 600);
+  }
+
+  brandMark.addEventListener('click', handleEasterEgg);
+  brandMark.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleEasterEgg();
+    }
+  });
+})();
+
 /* ============================================================
    7) 검색 입력 & 필터 초기화 & 모바일 사이드바
    ============================================================ */

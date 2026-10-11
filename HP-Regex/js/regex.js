@@ -70,12 +70,14 @@ function normalizeTrimStrings(trimStrings) {
   if (!Array.isArray(trimStrings)) return [];
   return trimStrings
     .filter(value => typeof value === 'string')
-    .map(value => value.trim())
     .filter(Boolean);
 }
 
 function getTrimInputValue() {
   if (!window.trimInput) return [];
+  const current = normalizeTrimStrings(getActiveRegexStage().trimStrings);
+  // 편집하지 않은 여러 줄 트림 문자열은 textarea의 줄 구분과 혼동하지 않고 보존한다.
+  if (window.trimInput.value === current.join('\n').replace(/\r\n?/g, '\n')) return current;
   return normalizeTrimStrings(window.trimInput.value.split(/\r?\n/));
 }
 
@@ -170,18 +172,18 @@ function replaceWithTemplate(input, regexStr, template, debugMode = false, trimS
   let changed = false;
   const output = input.replace(re, (...args) => {
     const match = args[0];
-    const groups = args.slice(1, -2);
+    const namedGroups = typeof args[args.length - 1] === 'object' ? args[args.length - 1] : null;
+    const groups = args.slice(1, namedGroups ? -3 : -2);
     const matchArray = [match, ...groups].map(value => applyTrimStrings(value, trimStrings));
     matches.push(matchArray);
     changed = true;
 
-    return template.replace(/\$(\d+)/g, (fullMatch, num) => {
-      const index = parseInt(num, 10);
-      if (index >= matchArray.length) return fullMatch;
+    return template.replace(/{{match}}/gi, '$0').replace(/\$(\d+)|\$<([^>]+)>/g, (fullMatch, num, name) => {
+      const value = name ? applyTrimStrings(namedGroups?.[name], trimStrings) : matchArray[Number(num)];
       if (debugMode) {
-        return `<span style="background:yellow; color:red;">$${index}</span>`;
+        return `<span style="background:yellow; color:red;">${name ? `$&lt;${name}&gt;` : `$${num}`}</span>`;
       }
-      return matchArray[index] || '';
+      return value || '';
     });
   });
 
@@ -190,6 +192,8 @@ function replaceWithTemplate(input, regexStr, template, debugMode = false, trimS
 
 /* 초기화 함수 */
 function initApp() {
+  const loadInput = document.getElementById('load-json-input');
+  if (loadInput) loadInput.multiple = true;
   window.rawInput = document.getElementById('raw-input');
   window.regexInput = document.getElementById('regex-input');
   window.trimInput = document.getElementById('trim-input');
@@ -505,6 +509,7 @@ function initPresets() {
       if (Array.isArray(p.rules) && p.rules.length > 0) {
         importRegexRules(p.rules);
       } else {
+        delete window.baseRegexRule.sourceRule;
         window.baseRegexRule.name = '기본';
         window.baseRegexRule.regex = p.regex || "";
         window.baseRegexRule.template = p.template || "";
@@ -703,7 +708,8 @@ function swapStageData(left, right) {
     enabled: left.enabled !== false,
     placement: [...left.placement],
     markdownOnly: left.markdownOnly,
-    promptOnly: left.promptOnly
+    promptOnly: left.promptOnly,
+    sourceRule: left.sourceRule
   };
   left.name = right.name;
   left.regex = right.regex;
@@ -713,6 +719,7 @@ function swapStageData(left, right) {
   left.placement = [...right.placement];
   left.markdownOnly = right.markdownOnly;
   left.promptOnly = right.promptOnly;
+  left.sourceRule = right.sourceRule;
   right.name = leftSnapshot.name;
   right.regex = leftSnapshot.regex;
   right.template = leftSnapshot.template;
@@ -721,6 +728,7 @@ function swapStageData(left, right) {
   right.placement = leftSnapshot.placement;
   right.markdownOnly = leftSnapshot.markdownOnly;
   right.promptOnly = leftSnapshot.promptOnly;
+  right.sourceRule = leftSnapshot.sourceRule;
 }
 
 function promoteFirstRegexStageToBase() {
@@ -734,10 +742,48 @@ function promoteFirstRegexStageToBase() {
   window.baseRegexRule.placement = [...nextBase.placement];
   window.baseRegexRule.markdownOnly = nextBase.markdownOnly;
   window.baseRegexRule.promptOnly = nextBase.promptOnly;
+  window.baseRegexRule.sourceRule = nextBase.sourceRule;
 }
 
 function isRegexRuleJson(value) {
-  return value && typeof value === 'object' && value.findRegex !== undefined && value.replaceString !== undefined;
+  return value && typeof value === 'object' && !Array.isArray(value)
+    && typeof value.findRegex === 'string' && typeof value.replaceString === 'string';
+}
+
+function extractRegexRules(json) {
+  let rules = Array.isArray(json) ? json : [json];
+  if (json?.kind === 'foldy-bundle') {
+    if (json.scope !== 'regex') throw new Error('Foldy 정규식 번들만 불러올 수 있습니다.');
+    if (Number(json.version ?? 1) !== 1) throw new Error('지원하지 않는 Foldy 번들 버전입니다.');
+    if (json.contents === 'layout' || (!Array.isArray(json.scripts) && Array.isArray(json.scriptRefs))) {
+      throw new Error('폴더 구조만 있는 파일입니다. Foldy에서 정규식 내용을 포함하여 내보내주세요.');
+    }
+    rules = json.scripts;
+  }
+  if (!Array.isArray(rules) || !rules.length || !rules.every(isRegexRuleJson)) {
+    throw new Error('올바른 정규식 JSON 형식이 아닙니다.');
+  }
+  if (json?.kind !== 'foldy-bundle' || !Array.isArray(json.layout?.root) || !Array.isArray(json.layout?.folders)) return rules;
+
+  const folders = new Map(json.layout.folders.filter(Boolean).map(folder => [String(folder.id), folder]));
+  const byId = new Map();
+  rules.forEach((rule, index) => {
+    const id = String(rule.id ?? '');
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(index);
+  });
+  const used = new Set();
+  const ordered = [];
+  for (const node of json.layout.root) {
+    const ids = node?.type === 'item' ? [node.id] : node?.type === 'folder' ? folders.get(String(node.id))?.items : [];
+    for (const id of Array.isArray(ids) ? ids : []) {
+      const index = byId.get(String(id))?.find(index => !used.has(index));
+      if (index === undefined) continue;
+      used.add(index);
+      ordered.push(rules[index]);
+    }
+  }
+  return ordered.concat(rules.filter((rule, index) => !used.has(index)));
 }
 
 function getImportedRegexName(rule, fallbackIndex) {
@@ -755,7 +801,11 @@ function getRuleExportOptions(rule) {
 }
 
 function importRegexRules(rules) {
+  if (!Array.isArray(rules) || !rules.length || !rules.every(isRegexRuleJson)) {
+    throw new Error('올바른 정규식 JSON 형식이 아닙니다.');
+  }
   const [baseRule, ...stageRules] = rules;
+  window.baseRegexRule.sourceRule = { ...baseRule };
   window.baseRegexRule.name = getImportedRegexName(baseRule, 0) || '기본';
   window.baseRegexRule.regex = baseRule.findRegex || '';
   window.baseRegexRule.template = baseRule.replaceString || '';
@@ -763,7 +813,8 @@ function importRegexRules(rules) {
   window.baseRegexRule.enabled = baseRule.disabled !== true;
   Object.assign(window.baseRegexRule, getRuleExportOptions(baseRule));
   window.regexStages = stageRules.map((rule, index) => ({
-    id: rule.id ? `stage-${rule.id}` : `stage-${generateUUID()}`,
+    id: `stage-${generateUUID()}-${index}`,
+    sourceRule: { ...rule },
     name: getImportedRegexName(rule, index + 1),
     regex: rule.findRegex || '',
     template: rule.replaceString || '',
@@ -887,7 +938,7 @@ function formatGroupValueForDisplay(value) {
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
 
   const container = document.createElement('div');
-  container.innerHTML = withoutHiddenBlocks;
+  container.innerHTML = window.sanitizePreviewHtml(withoutHiddenBlocks);
 
   const factItems = [...container.querySelectorAll('.Facts-dn-item')];
   if (factItems.length > 0) {
@@ -958,7 +1009,7 @@ function render() {
 
   if (!text || (!hasBaseRegex && !hasStageRegex)) {
     if (!window.renderTarget.querySelector('.notice-box')) {
-      window.renderTarget.innerHTML = '';
+      window.clearPreview(window.renderTarget);
     }
     return;
   }
@@ -1008,7 +1059,7 @@ function render() {
       }
     }
 
-    window.renderTarget.innerHTML = window.sanitizePreviewHtml(currentOutput);
+    window.renderPreviewHtml(window.renderTarget, currentOutput);
   } catch (e) {
     window.regexError.style.display = 'block';
     window.regexError.innerText = e.message;
@@ -1280,7 +1331,7 @@ function getSaveOptionsForRule(stageId) {
   const card = [...document.querySelectorAll('.save-regex-card')]
     .find(element => element.dataset.stageId === stageId);
   const checked = key => card.querySelector(`[data-option="${key}"]`).checked;
-  const placement = [];
+  const placement = (findStage(stageId)?.placement || []).filter(value => value !== 1 && value !== 2);
   if (checked('user')) placement.push(1);
   if (checked('ai')) placement.push(2);
   return { placement, markdownOnly: checked('markdown'), promptOnly: checked('prompt') };
@@ -1315,6 +1366,11 @@ function confirmSave() {
     const options = getSaveOptionsForRule(item.id);
     Object.assign(item.rule, options);
     return {
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null,
+      ...item.rule.sourceRule,
       "id": generateUUID(),
       "scriptName": selectedRules.length === 1 ? scriptName : (item.rule.name || `${scriptName}-${index + 1}`),
       "findRegex": normalizeRegexForExport(item.rule.regex),
@@ -1323,11 +1379,7 @@ function confirmSave() {
       "placement": options.placement,
       "disabled": item.rule.enabled === false,
       "markdownOnly": options.markdownOnly,
-      "promptOnly": options.promptOnly,
-      "runOnEdit": true,
-      "substituteRegex": 0,
-      "minDepth": null,
-      "maxDepth": null
+      "promptOnly": options.promptOnly
     };
   });
   const payload = regexJSON.length === 1 ? regexJSON[0] : regexJSON;
@@ -1346,34 +1398,44 @@ function confirmSave() {
   closeModal();
 }
 
-window.loadRegexJSON = function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+let regexImportRequest = 0;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const json = JSON.parse(e.target.result);
-      const regexRules = Array.isArray(json) ? json.filter(isRegexRuleJson) : (isRegexRuleJson(json) ? [json] : []);
-      if (regexRules.length > 0) {
-        importRegexRules(regexRules);
-        loadActiveRegexStageValues();
-        renderStageControls();
-        if (window.rawInput) {
-          window.rawInput.value = "";
-          window.rawInput.placeholder = "여기에 채팅 내 출력되는 형식을 입력하세요";
-        }
-        if (window.regexInput) autoResizeTextarea(window.regexInput);
-        if (window.rawInput) autoResizeTextarea(window.rawInput);
-        render();
-        showMessage(regexRules.length > 1 ? `${regexRules.length}개의 정규식을 불러왔습니다.` : "성공적으로 불러왔습니다.");
-      } else {
-        showMessage("올바른 정규식 JSON 형식이 아닙니다.");
+function readRegexFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const json = JSON.parse(String(event.target.result).replace(/^\uFEFF/, ''));
+        resolve(extractRegexRules(json));
+      } catch (error) {
+        reject(new Error(`${file.name}: ${error instanceof SyntaxError ? 'JSON 파일을 파싱하는 중 오류가 발생했습니다.' : error.message}`));
       }
-    } catch (err) {
-      showMessage("JSON 파일을 파싱하는 중 오류가 발생했습니다.");
-    }
-  };
-  reader.readAsText(file);
+    };
+    reader.onerror = reader.onabort = () => reject(new Error(`${file.name}: 파일을 읽지 못했습니다.`));
+    reader.readAsText(file);
+  });
+}
+
+window.loadRegexJSON = async function(event) {
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
+  const request = ++regexImportRequest;
   event.target.value = '';
+  try {
+    const regexRules = (await Promise.all(files.map(readRegexFile))).flat();
+    if (request !== regexImportRequest) return;
+    importRegexRules(regexRules);
+    loadActiveRegexStageValues();
+    renderStageControls();
+    if (window.rawInput) {
+      window.rawInput.value = "";
+      window.rawInput.placeholder = "여기에 채팅 내 출력되는 형식을 입력하세요";
+    }
+    if (window.regexInput) autoResizeTextarea(window.regexInput);
+    if (window.rawInput) autoResizeTextarea(window.rawInput);
+    render();
+    showMessage(regexRules.length > 1 ? `${regexRules.length}개의 정규식을 불러왔습니다.` : "성공적으로 불러왔습니다.");
+  } catch (error) {
+    if (request === regexImportRequest) showMessage(error.message);
+  }
 };

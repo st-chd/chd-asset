@@ -1,6 +1,9 @@
 // ── LCS ──────────────────────────────────────────────────────────────────────
 function lcs(a, b) {
   const m = a.length, n = b.length;
+  if (!m) return b.map(val => ({ type: 'add', val }));
+  if (!n) return a.map(val => ({ type: 'del', val }));
+  if ((m + 1) * (n + 1) > 4_000_000) return linearSpaceLcs(a, b);
   const dp = [];
   // Uint16Array maxes out at 65535 — for long inputs the LCS length can
   // exceed that and silently wrap around, producing a corrupted diff.
@@ -29,13 +32,97 @@ function lcs(a, b) {
   return ops.reverse();
 }
 
+function linearSpaceLcs(a, b) {
+  const ops = [];
+  function scores(aStart, aEnd, bStart, bEnd, reverse) {
+    const width = bEnd - bStart;
+    let previous = new Uint32Array(width + 1);
+    let current = new Uint32Array(width + 1);
+    for (let i = 0; i < aEnd - aStart; i++) {
+      current[0] = 0;
+      const value = a[reverse ? aEnd - 1 - i : aStart + i];
+      for (let j = 1; j <= width; j++) {
+        current[j] = value === b[reverse ? bEnd - j : bStart + j - 1]
+          ? previous[j - 1] + 1 : Math.max(previous[j], current[j - 1]);
+      }
+      [previous, current] = [current, previous];
+    }
+    return previous;
+  }
+  function splitAt(aStart, middle, aEnd, bStart, bEnd) {
+    const left = scores(aStart, middle, bStart, bEnd, false);
+    const right = scores(middle, aEnd, bStart, bEnd, true);
+    let best = -1, split = 0;
+    for (let j = 0; j <= bEnd - bStart; j++) {
+      const length = left[j] + right[bEnd - bStart - j];
+      if (length >= best) { best = length; split = j; }
+    }
+    return bStart + split;
+  }
+  function visit(aStart, aEnd, bStart, bEnd) {
+    while (aStart < aEnd && bStart < bEnd && a[aStart] === b[bStart]) {
+      ops.push({ type: 'eq', val: a[aStart++] }); bStart++;
+    }
+    let suffix = 0;
+    while (aStart < aEnd && bStart < bEnd && a[aEnd - 1] === b[bEnd - 1]) {
+      aEnd--; bEnd--; suffix++;
+    }
+    if (aStart === aEnd) {
+      for (let j = bStart; j < bEnd; j++) ops.push({ type: 'add', val: b[j] });
+    } else if (bStart === bEnd) {
+      for (let i = aStart; i < aEnd; i++) ops.push({ type: 'del', val: a[i] });
+    } else {
+      const values = new Set(a.slice(aStart, aEnd));
+      let shared = false;
+      for (let j = bStart; j < bEnd && !shared; j++) shared = values.has(b[j]);
+      if (!shared) {
+        for (let i = aStart; i < aEnd; i++) ops.push({ type: 'del', val: a[i] });
+        for (let j = bStart; j < bEnd; j++) ops.push({ type: 'add', val: b[j] });
+      } else if (aEnd - aStart === 1) {
+        let match = bEnd - 1;
+        while (b[match] !== a[aStart]) match--;
+        for (let j = bStart; j < match; j++) ops.push({ type: 'add', val: b[j] });
+        ops.push({ type: 'eq', val: a[aStart] });
+        for (let j = match + 1; j < bEnd; j++) ops.push({ type: 'add', val: b[j] });
+      } else {
+        const middle = aStart + Math.floor((aEnd - aStart) / 2);
+        // 점수 배열은 분할 위치를 계산한 함수 안에서만 유지해 재귀 중 누적을 막는다.
+        const split = splitAt(aStart, middle, aEnd, bStart, bEnd);
+        visit(aStart, middle, bStart, split);
+        visit(middle, aEnd, split, bEnd);
+      }
+    }
+    for (let i = 0; i < suffix; i++) ops.push({ type: 'eq', val: a[aEnd + i] });
+  }
+  visit(0, a.length, 0, b.length);
+  return ops;
+}
+
+const charDiffCache = new Map();
+let cachedCharOps = 0;
+function getCharDiff(lineA, lineB) {
+  const key = JSON.stringify([lineA, lineB]);
+  if (charDiffCache.has(key)) return charDiffCache.get(key);
+  const ops = lcs([...lineA], [...lineB]);
+  if (cachedCharOps + ops.length <= 200_000) {
+    charDiffCache.set(key, ops);
+    cachedCharOps += ops.length;
+  }
+  return ops;
+}
+
+function clearCharDiffCache() {
+  charDiffCache.clear();
+  cachedCharOps = 0;
+}
+
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── 글자 단위 인라인 diff HTML ───────────────────────────────────────────────
 function charDiffHtml(lineA, lineB) {
-  const ops = lcs([...lineA], [...lineB]);
+  const ops = getCharDiff(lineA, lineB);
   let html = '';
   let buf = '', bufType = null;
 
@@ -85,7 +172,7 @@ function buildCharOps(ops) {
 
     const minLen = Math.min(runDel.length, runAdd.length);
     for (let k = 0; k < minLen; k++) {
-      result.push(...lcs([...runDel[k]], [...runAdd[k]]));
+      for (const change of getCharDiff(runDel[k], runAdd[k])) result.push(change);
     }
     for (let k = minLen; k < runDel.length; k++) {
       for (const ch of runDel[k]) result.push({ type: 'del', val: ch });
@@ -173,6 +260,7 @@ function runDiff() {
 
   const isMatchMode = document.getElementById('matchMode').checked;
 
+  clearCharDiffCache();
   lineOps = lcs(linesA, linesB);
 
   updateStats();
@@ -276,6 +364,7 @@ function renderDiff() {
 }
 
 function clearAll() {
+  clearCharDiffCache();
   document.getElementById('textA').value = '';
   document.getElementById('textB').value = '';
   document.getElementById('resultWrap').classList.remove('visible');

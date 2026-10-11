@@ -56,6 +56,7 @@ function resetAll() {
                 <span class="notice-badge step-5">✔</span>프리셋을 눌러서 미리보기.
             </div>
         `;
+        window.clearPreview(window.renderTarget);
         window.renderTarget.innerHTML = noticeHTML;
         
         render();
@@ -119,9 +120,11 @@ function extractFromSchema(schema, prefix = 'data') {
             if (Array.isArray(value)) {
                 // 배열 자체는 추가 안 함
                 // 배열 내부 객체의 속성만 추출
-                if (value.length > 0 && typeof value[0] === 'object') {
-                    Object.keys(value[0]).forEach(subKey => {
-                        const subValue = value.map(item => item[subKey]).filter(v => v !== undefined);
+                const objects = value.filter(item => item !== null && typeof item === 'object' && !Array.isArray(item));
+                if (objects.length > 0) {
+                    const keys = new Set(objects.flatMap(item => Object.keys(item)));
+                    keys.forEach(subKey => {
+                        const subValue = objects.filter(item => Object.hasOwn(item, subKey)).map(item => item[subKey]).filter(v => v !== undefined);
                         // 배열 요소의 속성: character.name 형식
                         const singularKey = key.endsWith('s') ? key.slice(0, -1) : key;
                         vars.push({ path: `${singularKey}.${subKey}`, value: subValue });
@@ -487,7 +490,7 @@ function render() {
 
     if (!schemaText || !template) {
         if (!window.renderTarget.querySelector('.notice-box')) {
-            window.renderTarget.innerHTML = '';
+            window.clearPreview(window.renderTarget);
         }
         return;
     }
@@ -496,7 +499,7 @@ function render() {
         const schema = JSON.parse(schemaText);
         const compiledTemplate = Handlebars.compile(template);
         const html = compiledTemplate({ data: schema });
-        window.renderTarget.innerHTML = window.sanitizePreviewHtml(html);
+        window.renderPreviewHtml(window.renderTarget, html);
     } catch (e) {
         window.renderError.style.display = 'block';
         window.renderError.innerText = '오류: ' + e.message;

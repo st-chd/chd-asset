@@ -4,6 +4,7 @@ window.themeEditor = {
     searchMatches: [],
     currentMatchIndex: -1,
     currentColors: {},
+    colorStates: new WeakMap(),
 
     colorFields: {
         'main_text_color': '주요 텍스트',
@@ -85,7 +86,7 @@ window.themeEditor = {
 
             const parsedJSON = JSON.parse(event.target.result);
             
-            if (parsedJSON.hasOwnProperty('custom_css')) {
+            if (parsedJSON !== null && typeof parsedJSON === 'object' && Object.hasOwn(parsedJSON, 'custom_css')) {
                 this.originalJSON = parsedJSON;
                 this.editor.setValue(parsedJSON.custom_css || "");
                 this.showColorEditor();
@@ -112,7 +113,7 @@ window.themeEditor = {
         this.currentColors = {};
 
         for (const [key, label] of Object.entries(this.colorFields)) {
-            if (!this.originalJSON.hasOwnProperty(key)) continue;
+            if (!Object.hasOwn(this.originalJSON, key)) continue;
 
             const value = this.originalJSON[key];
             this.currentColors[key] = value;
@@ -120,6 +121,7 @@ window.themeEditor = {
 
             const colorItem = document.createElement('div');
             colorItem.className = 'color-item';
+            this.colorStates.set(colorItem, rgba);
 
             const colorLabel = document.createElement('label');
             colorLabel.className = 'color-label';
@@ -319,8 +321,8 @@ window.themeEditor = {
 
         let textToCopy = '';
         for (const [key, label] of Object.entries(this.colorFields)) {
-            if (this.originalJSON.hasOwnProperty(key)) {
-                const rgba = this.parseColor(this.originalJSON[key]);
+            if (Object.hasOwn(this.originalJSON, key)) {
+                const rgba = this.parseColor(this.currentColors[key] ?? this.originalJSON[key]);
                 const hex = this.rgbaToHex(rgba);
                 textToCopy += rgba.a !== 1 ? `${label}: ${hex} (A: ${rgba.a})\n` : `${label}: ${hex}\n`;
             }
@@ -374,7 +376,7 @@ window.themeEditor = {
             const trimmed = line.trim();
             if (!trimmed) continue;
 
-            const match = trimmed.match(/^(.+?)[:：\s]+#?([0-9A-Fa-f]{6})(?:\s+A\s*[:：]?\s*([\d.]+))?/);
+            const match = trimmed.match(/^(.+?)[:：\s]+#?([0-9A-Fa-f]{6})(?:\s+\(?A\s*[:：]?\s*(\d+(?:\.\d+)?|\.\d+)\s*\)?)?\s*$/);
             if (match) {
                 const labelText = match[1].trim();
                 const hexValue = match[2].toUpperCase();
@@ -382,7 +384,7 @@ window.themeEditor = {
 
                 for (const [key, label] of Object.entries(this.colorFields)) {
                     if (label === labelText) {
-                        const normalizedAlpha = alphaValue > 1 ? alphaValue / 100 : (alphaValue || 1);
+                        const normalizedAlpha = Math.min(1, alphaValue > 1 ? alphaValue / 100 : (alphaValue ?? 1));
                         const rgba = this.hexToRgbaObj('#' + hexValue, normalizedAlpha);
                         const rgbaString = this.rgbaObjToString(rgba);
 
@@ -410,9 +412,12 @@ window.themeEditor = {
         let itemIndex = 0;
 
         for (const [key, label] of Object.entries(this.colorFields)) {
-            if (this.originalJSON?.hasOwnProperty(key) && itemIndex < colorItems.length) {
+            if (this.originalJSON && Object.hasOwn(this.originalJSON, key) && itemIndex < colorItems.length) {
                 const colorItem = colorItems[itemIndex];
                 const rgba = this.parseColor(this.originalJSON[key]);
+                // 개별 입력 핸들러가 참조하는 색상도 갱신해야 다음 편집에서 붙여넣은 값이 사라지지 않는다.
+                const state = this.colorStates.get(colorItem);
+                if (state) Object.assign(state, rgba);
 
                 colorItem.querySelector('.color-picker').value = this.rgbaToHex(rgba);
                 colorItem.querySelector('.hex-input').value = this.rgbaToHex(rgba);
