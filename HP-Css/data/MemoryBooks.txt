@@ -67,3 +67,59 @@ filter: none !important;
 [/CSS코드]
 [출처] 달글
 ===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 도움말 및 가이드 지우기
+[태그] MemoryBooks, 숨기기, 패널, 텍스트
+[CSS코드]
+.info-block.hint { display: none; }
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 현재 장면 지우기
+[태그] MemoryBooks, 숨기기, 패널, 텍스트
+[CSS코드]
+#stmb-scene {display: none;}
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 메모리 상태 지우기
+[태그] MemoryBooks, 숨기기, 패널, 텍스트
+[CSS코드]
+#stmb-memory-status { display: none; }
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 내레이터 모드 체크 지우기
+[태그] MemoryBooks, 숨기기, 패널, 텍스트, 체크박스, 옵션
+[CSS코드]
+.world_entry_form_control:has(#stmb-narrator-mode-enabled) { display: none; }
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 대기중인 진행 상태 버튼 지우기
+[태그] MemoryBooks, 숨기기, 패널, 버튼
+[CSS코드]
+#stmb-pending-progress { display: none; }
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 자동 메모리 버튼 지우기
+[태그] MemoryBooks, 숨기기, 패널, 버튼
+[CSS코드]
+#stmb-automatic-memories-settings { display: none; }
+[/CSS코드]
+===
+[카테고리] UI
+[확장프로그램] 메모리북
+[제목] 기억력 지원 제안 버튼 지우기
+[태그] MemoryBooks, 숨기기, 패널, 버튼
+[CSS코드]
+#stmb-clip-review-suggestions { display: none; }
+[/CSS코드]
+===

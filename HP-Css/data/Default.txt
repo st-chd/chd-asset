@@ -668,3 +668,22 @@ max-height: 50dvh !important;
 [미리보기] img/Default/20.png
 [팁] `50` 숫자를 조절해서 원하는 크기로 변경할 수 있습니다.
 ===
+[카테고리] 확장 패널
+[확장프로그램] 기본
+[제목] 확장프로그램 관리에서 MOVE 버튼 지우기
+[태그] 숨기기, 버튼, 아이콘
+[CSS코드]
+.extensions_info .extension_block .btn_move { display: none; }
+[/CSS코드]
+[미리보기] img/Default/21.png
+[팁] 확장 위치를 `public/scripts/extensions/third-party`나 `data/default-user/extensions`로 전환하는 버튼입니다.
+===
+[카테고리] UI
+[확장프로그램] 기본
+[제목] 이동 가능한 UI 패널 드래그 버튼 지우기
+[태그] MUI, 숨기기, 아이콘, 가리기
+[환경] 컴퓨터
+[CSS코드]
+.movingUI .drag-grabber { display: none; }
+[/CSS코드]
+===
