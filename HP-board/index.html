@@ -758,6 +758,9 @@
     <div class="app">
         <header class="topbar">
             <h1>게시판</h1>
+            <button class="icon-btn" onclick="pickRandom()" title="랜덤">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg>
+            </button>
             <button class="icon-btn" onclick="openFileInput()" title="불러오기">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg>
             </button>
@@ -853,6 +856,7 @@
         let editingId = null;
         let draftTags = [];
         let editorSnapshot = '';
+        let lastRandomId = null;
 
         // 초기화
         window.onload = function() {
@@ -1271,6 +1275,28 @@
                 openIds.has(id) ? openIds.delete(id) : openIds.add(id);
             }
             renderPosts();
+        }
+
+        // 지금 목록(검색·필터 적용) 중 하나를 골라 보여주기. 직전에 나온 글은 제외
+        function pickRandom() {
+            const pool = getFilteredPosts();
+            if (!pool.length) return;
+            const candidates = pool.length > 1 ? pool.filter(p => p.id !== lastRandomId) : pool;
+            const post = candidates[Math.floor(Math.random() * candidates.length)];
+
+            if (wideMQ.matches) {
+                if (!closeEditor()) return;
+                selectedId = post.id;
+                document.getElementById('side').scrollTop = 0;
+            } else {
+                openIds.clear();
+                openIds.add(post.id);
+            }
+            lastRandomId = post.id;
+            currentPage = Math.floor(pool.indexOf(post) / POSTS_PER_PAGE) + 1;
+            renderPosts();
+            renderDetail();
+            document.getElementById(`post-${post.id}`).scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
 
         // 모두 열기/접기 (좁은 화면)
