@@ -1390,6 +1390,7 @@
 
             const now = new Date();
             let post = editingId !== null ? posts.find(p => p.id === editingId) : null;
+            const isNew = !post;
 
             if (post) {
                 // 수정 모드
@@ -1417,15 +1418,15 @@
             closeEditor(true);
             savePosts();
 
-            // 방금 쓴 글이 필터에 걸려 안 보이면 필터 해제
-            if (!getFilteredPosts().includes(post)) {
+            // 새 글이 필터에 걸려 안 보이면 필터 해제 (수정할 땐 검색·필터 유지)
+            if (isNew && !getFilteredPosts().includes(post)) {
                 searchInput.value = '';
                 activeTag = null;
                 untaggedOnly = false;
                 favOnly = false;
             }
             const index = getFilteredPosts().indexOf(post);
-            currentPage = Math.floor(index / POSTS_PER_PAGE) + 1;
+            if (index !== -1) currentPage = Math.floor(index / POSTS_PER_PAGE) + 1;
 
             selectedId = post.id;
             openIds.add(post.id);
