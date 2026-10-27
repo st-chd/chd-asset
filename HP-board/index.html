@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시뮬 게시판</title>
+    <style>
+        :root {
+            --accent: #2f6fe4;
+            --accent-hover: #2559c2;
+            --accent-bg: #eef3fd;
+            --line: #e5e9f0;
+            --line-strong: #cfd6e0;
+            --text: #1e293b;
+            --sub: #475569;
+            --muted: #64748b;
+            --faint: #94a3b8;
+            --page: #f4f6f9;
+            --danger: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', Arial, sans-serif;
+            background: var(--page);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        body.lock {
+            overflow: hidden;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .app {
+            max-width: 1360px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 바 */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 12px 10px 16px;
+            background: white;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar h1 {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .icon-btn {
+            flex: 0 0 auto;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--sub);
+            cursor: pointer;
+        }
+
+        .icon-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .icon-btn.primary {
+            margin-left: 4px;
+            background: var(--accent);
+            color: white;
+        }
+
+        .icon-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            height: 34px;
+            padding: 0 14px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            background: white;
+            color: var(--sub);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #f8fafc;
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn.sm {
+            height: 30px;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn.danger {
+            color: var(--danger);
+        }
+
+        .layout {
+            flex: 1;
+        }
+
+        /* 검색 · 태그 필터 */
+        .search-row {
+            display: flex;
+            gap: 6px;
+            padding: 12px 12px 8px 16px;
+        }
+
+        .search-row input {
+            flex: 1;
+            min-width: 0;
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .sort-select {
+            flex: 0 0 auto;
+            height: 38px;
+            padding: 0 8px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            background: white;
+            color: var(--sub);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .sort-select:focus,
+        .search-row input:focus,
+        .field:focus,
+        .tag-input:focus-within {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(47, 111, 228, 0.12);
+        }
+
+        .tag-filter {
+            display: flex;
+            gap: 6px;
+            padding: 0 16px 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .tag-filter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tag-filter.empty {
+            padding-bottom: 4px;
+        }
+
+        .filter-chip {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            height: 28px;
+            padding: 0 12px;
+            border: 1px solid var(--line-strong);
+            border-radius: 999px;
+            background: white;
+            color: var(--sub);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .filter-chip.active {
+            background: var(--accent-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .chip-x {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            margin: 0 -8px 0 4px;
+            border-radius: 50%;
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .chip-x:hover {
+            background: rgba(47, 111, 228, 0.15);
+        }
+
+        .filter-chip.fav-chip {
+            color: #f59e0b;
+        }
+
+        /* 태그 칩 */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 1px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        /* 글 목록 */
+        .item {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .item.open,
+        .item.selected {
+            background: var(--accent-bg);
+            box-shadow: inset 3px 0 var(--accent);
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 12px 12px 16px;
+        }
+
+        .item-main {
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .item-main .tags {
+            margin-top: 4px;
+        }
+
+        .item-sub {
+            display: flex;
+            gap: 10px;
+            margin-top: 3px;
+            font-size: 13px;
+        }
+
+        .item-preview {
+            flex: 1;
+            min-width: 0;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item.open .item-preview {
+            visibility: hidden;
+        }
+
+        .item-date {
+            flex: 0 0 auto;
+            color: var(--faint);
+            font-size: 12px;
+        }
+
+        .copy-btn {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: white;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .fav-btn {
+            flex: 0 0 auto;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--line-strong);
+            fill: none;
+            cursor: pointer;
+        }
+
+        /* 터치 화면에선 누른 뒤 hover가 남아 켜진 것처럼 보여서 마우스에서만 */
+        @media (hover: hover) {
+            .fav-btn:hover {
+                color: #f59e0b;
+            }
+        }
+
+        .fav-btn.on {
+            color: #f59e0b;
+            fill: #f59e0b;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        .item-body {
+            display: none;
+            padding: 0 16px 16px;
+        }
+
+        .item.open .item-body {
+            display: block;
+        }
+
+        /* 본문 · 메모 */
+        .content-text {
+            padding: 12px 14px;
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: #334155;
+            font-size: 14px;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .memo {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .memo-label {
+            display: block;
+            margin-bottom: 2px;
+            color: var(--faint);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .detail-actions {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .highlight {
+            background: #fef08a;
+            border-radius: 3px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 72px 20px;
+            color: var(--faint);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 16px;
+        }
+
+        .pagination:empty {
+            display: none;
+        }
+
+        .pagination button {
+            min-width: 36px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid var(--line-strong);
+            border-radius: 7px;
+            background: white;
+            color: var(--sub);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .pagination button.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .pagination .ellipsis {
+            padding: 0 3px;
+            color: var(--faint);
+        }
+
+        /* 오른쪽 패널 (넓은 화면 상세 / 글쓰기) */
+        .side {
+            display: none;
+            background: white;
+        }
+
+        .side.editing {
+            display: block;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            overflow-y: auto;
+        }
+
+        .side.editing #detailView {
+            display: none;
+        }
+
+        .editor {
+            display: none;
+        }
+
+        .side.editing .editor {
+            display: block;
+        }
+
+        .detail {
+            max-width: 760px;
+            padding: 24px 28px 32px;
+        }
+
+        .detail-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .detail-headtext {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .detail-title {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .detail-title .fav-btn {
+            margin-top: -1px;
+        }
+
+        .detail-headtext h2 {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .detail-headtext .tags {
+            margin-top: 6px;
+        }
+
+        .detail-headtext .item-date {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .detail .content-text {
+            font-size: 15px;
+            padding: 16px 18px;
+        }
+
+        .editor-head {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            background: white;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .editor-head span {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .editor-body {
+            max-width: 760px;
+            padding: 16px;
+        }
+
+        .field-label {
+            display: block;
+            margin: 16px 0 6px;
+            color: var(--sub);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .field-label:first-child {
+            margin-top: 0;
+        }
+
+        .field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        textarea.field {
+            resize: vertical;
+            min-height: 240px;
+        }
+
+        textarea.field.memo-field {
+            min-height: 72px;
+            background: #f8fafc;
+            color: var(--muted);
+        }
+
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            min-height: 42px;
+            padding: 6px 10px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            cursor: text;
+        }
+
+        .tag-input input {
+            flex: 1;
+            min-width: 80px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .tag-remove {
+            margin-left: 3px;
+            border: none;
+            background: none;
+            color: inherit;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .tag-suggest {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag-suggest:empty {
+            display: none;
+        }
+
+        .suggest-chip {
+            height: 26px;
+            padding: 0 10px;
+            border: 1px dashed var(--line-strong);
+            border-radius: 999px;
+            background: white;
+            color: var(--sub);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .suggest-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .copy-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            z-index: 1000;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #1e293b;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translate(-50%, 16px);
+            transition: all 0.25s;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 899px) {
+            /* iOS 입력창 확대 방지 */
+            .search-row input,
+            .field,
+            .tag-input input {
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            body {
+                padding: 20px;
+            }
+
+            .app {
+                height: calc(100vh - 40px);
+                min-height: 0;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            .topbar {
+                position: static;
+            }
+
+            .layout {
+                min-height: 0;
+                display: grid;
+                /* 오른쪽은 본문 폭(760)만큼, 남는 폭은 왼쪽 목록이 가져감 */
+                grid-template-columns: minmax(340px, 1fr) minmax(0, 760px);
+            }
+
+            .list-pane {
+                overflow-y: auto;
+                border-right: 1px solid var(--line);
+            }
+
+            .side,
+            .side.editing {
+                display: block;
+                position: static;
+                overflow-y: auto;
+            }
+
+            #expandToggle {
+                display: none;
+            }
+
+            .editor-body {
+                padding: 20px 28px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <h1>게시판</h1>
+            <button class="icon-btn" onclick="openFileInput()" title="불러오기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg>
+            </button>
+            <button class="icon-btn" onclick="downloadToFile()" title="파일로 저장">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            </button>
+            <button class="icon-btn primary" onclick="openEditor()" title="글쓰기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept=".txt,.json" onchange="loadFromFile(event)">
+        </header>
+
+        <div class="layout">
+            <section class="list-pane" id="listPane">
+                <div class="search-row">
+                    <input type="search" id="searchInput" placeholder="검색">
+                    <select id="sortSelect" class="sort-select" title="정렬">
+                        <option value="newest">최신순</option>
+                        <option value="oldest">오래된순</option>
+                        <option value="title-asc">제목 오름차순</option>
+                        <option value="title-desc">제목 내림차순</option>
+                    </select>
+                    <button class="icon-btn" id="expandToggle" onclick="toggleExpandAll()" title="모두 열기/접기">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5-5 5 5M7 15l5 5 5-5"/></svg>
+                    </button>
+                </div>
+                <div class="tag-filter" id="tagFilter"></div>
+                <div class="board-list" id="boardList"></div>
+                <div class="pagination" id="pagination" aria-label="게시글 페이지"></div>
+            </section>
+
+            <section class="side" id="side">
+                <div id="detailView"></div>
+                <div class="editor" id="editor">
+                    <div class="editor-head">
+                        <button class="icon-btn" onclick="closeEditor()" title="닫기">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                        </button>
+                        <span id="editorTitle">글쓰기</span>
+                        <button class="btn primary" id="submitBtn" onclick="submitPost()">등록</button>
+                    </div>
+                    <div class="editor-body">
+                        <label class="field-label" for="postTitle">제목</label>
+                        <input type="text" id="postTitle" class="field">
+                        <label class="field-label" for="tagText">태그</label>
+                        <div class="tag-input" onclick="document.getElementById('tagText').focus()">
+                            <span class="tags" id="draftTagList"></span>
+                            <input type="text" id="tagText" placeholder="추가">
+                        </div>
+                        <div class="tag-suggest" id="tagSuggest"></div>
+                        <label class="field-label" for="postContent">내용</label>
+                        <textarea id="postContent" class="field"></textarea>
+                        <label class="field-label" for="postMemo">메모</label>
+                        <textarea id="postMemo" class="field memo-field" placeholder="복사되지 않음"></textarea>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="copy-toast" id="copyToast"></div>
+
+    <script>
+        const STORAGE_KEY = 'boardPosts';
+        const SORT_KEY = 'boardSort';
+        const POSTS_PER_PAGE = 50;
+        // 선택된 줄의 파란 배경과 겹치지 않게 파란 계열은 뺌
+        const TAG_COLORS = [
+            ['#dcfce7', '#15803d'],
+            ['#fef3c7', '#b45309'],
+            ['#f3e8ff', '#7e22ce'],
+            ['#ffe4e6', '#be123c'],
+            ['#ccfbf1', '#0f766e'],
+            ['#ffedd5', '#c2410c'],
+            ['#e2e8f0', '#475569']
+        ];
+        const ICON_COPY = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+        const ICON_STAR = '<svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
+        const ICON_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
+
+        const wideMQ = window.matchMedia('(min-width: 900px)');
+        const searchInput = document.getElementById('searchInput');
+        const tagText = document.getElementById('tagText');
+        const sortSelect = document.getElementById('sortSelect');
+
+        let posts = [];
+        let currentPage = 1;
+        let activeTag = null;
+        let untaggedOnly = false;   // '태그 없음' 칩
+        let favOnly = false;        // '★' 칩 (태그 칩과 같이 걸림)
+        let selectedId = null;      // 넓은 화면: 오른쪽에 보이는 글
+        const openIds = new Set();  // 좁은 화면: 펼친 글
+        let editingId = null;
+        let draftTags = [];
+        let editorSnapshot = '';
+
+        // 초기화
+        window.onload = function() {
+            loadPosts();
+            try {
+                const savedSort = localStorage.getItem(SORT_KEY);
+                if (savedSort && SORTERS[savedSort]) sortSelect.value = savedSort;
+            } catch (e) {}
+            render();
+        };
+
+        // localStorage에서 게시글 불러오기
+        function loadPosts() {
+            try {
+                const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (Array.isArray(stored)) posts = stored.map(normalizePost);
+            } catch (e) {
+                posts = [];
+            }
+        }
+
+        // localStorage에 게시글 저장
+        function savePosts() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+        }
+
+        // 예전 데이터(수제 체크) → 태그
+        function normalizePost(post) {
+            if (!Array.isArray(post.tags)) post.tags = post.isHandmade ? ['수제'] : [];
+            post.tags = post.tags.map(t => String(t).trim()).filter(Boolean);
+            delete post.isHandmade;
+            post.memo = post.memo || '';
+            post.dateStr = post.dateStr || '';
+            return post;
+        }
+
+        // 파일 입력 열기
+        function openFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        // 파일로 저장
+        function downloadToFile() {
+            const dataStr = JSON.stringify(posts, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
+            link.download = `시뮬_${dateStr}.json`;
+            link.href = url;
+            link.click();
+
+            URL.revokeObjectURL(url);
+            showToast('파일이 저장되었습니다');
+        }
+
+        // 파일에서 불러오기
+        function loadFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const loadedData = JSON.parse(e.target.result);
+
+                    if (!Array.isArray(loadedData)) {
+                        alert('올바른 형식의 파일이 아닙니다');
+                        return;
+                    }
+                    if (confirm('기존 데이터를 모두 삭제하고 불러온 데이터로 대체하시겠습니까?')) {
+                        posts = loadedData.map(normalizePost);
+                        currentPage = 1;
+                        activeTag = null;
+                        untaggedOnly = false;
+                        favOnly = false;
+                        selectedId = null;
+                        openIds.clear();
+                        closeEditor(true);
+                        savePosts();
+                        render();
+                        showToast('파일을 불러왔습니다');
+                    }
+                } catch (error) {
+                    alert('파일을 읽는 중 오류가 발생했습니다');
+                }
+            };
+
+            reader.onerror = function() {
+                alert('파일을 읽는 중 오류가 발생했습니다');
+            };
+
+            reader.readAsText(file);
+
+            // input 초기화 (같은 파일 다시 선택 가능하도록)
+            event.target.value = '';
+        }
+
+        // 날짜 포맷팅
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        }
+
+        // HTML 이스케이프 (속성값에도 쓰므로 따옴표까지)
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // 텍스트 하이라이트
+        function highlightText(text, search) {
+            const escaped = escapeHtml(text);
+            if (!search) return escaped;
+            const searchEscaped = escapeHtml(search);
+            const regex = new RegExp('(' + searchEscaped.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            return escaped.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // 태그
+        function getAllTags() {
+            return [...new Set(posts.flatMap(p => p.tags))].sort((a, b) => a.localeCompare(b, 'ko'));
+        }
+
+        function tagStyle(tag) {
+            let hash = 0;
+            for (const ch of tag) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+            const [bg, fg] = TAG_COLORS[hash % TAG_COLORS.length];
+            return `background:${bg};color:${fg}`;
+        }
+
+        function renderTagChips(tags) {
+            if (!tags.length) return '';
+            return '<div class="tags">' +
+                tags.map(t => `<span class="tag" style="${tagStyle(t)}">${escapeHtml(t)}</span>`).join('') +
+                '</div>';
+        }
+
+        // 검색어 + 태그 필터
+        function getSearchTerm() {
+            return searchInput.value.trim().toLowerCase();
+        }
+
+        // 정렬 (최신순/오래된순은 목록에 보이는 날짜와 같은 수정일 기준)
+        const SORTERS = {
+            newest: (a, b) => updatedTime(b) - updatedTime(a),
+            oldest: (a, b) => updatedTime(a) - updatedTime(b),
+            'title-asc': (a, b) => a.title.localeCompare(b.title, 'ko', { numeric: true }),
+            'title-desc': (a, b) => b.title.localeCompare(a.title, 'ko', { numeric: true })
+        };
+
+        function updatedTime(post) {
+            return Date.parse(post.updatedAt) || Date.parse(post.createdAt) || post.id;
+        }
+
+        function getFilteredPosts() {
+            const term = getSearchTerm();
+            const sorter = SORTERS[sortSelect.value] || SORTERS.newest;
+            return posts.filter(p =>
+                (!favOnly || p.fav) &&
+                (!activeTag || p.tags.includes(activeTag)) &&
+                (!untaggedOnly || p.tags.length === 0) &&
+                (!term || [p.title, p.content, p.memo, ...p.tags].some(t => t.toLowerCase().includes(term))))
+                // 즐겨찾기는 맨 위에 고정, 그 안에서도 고른 정렬대로
+                .sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || sorter(a, b));
+        }
+
+        function firstLine(text) {
+            return (text.split('\n').find(line => line.trim()) || '').trim().slice(0, 200);
+        }
+
+        function render() {
+            renderTagFilter();
+            renderPosts();
+            renderDetail();
+        }
+
+        // 태그 필터 칩
+        // (전체) (★) (태그들…) (태그 없음)
+        function renderTagFilter() {
+            const tagFilter = document.getElementById('tagFilter');
+            const tags = getAllTags();
+            const hasFav = posts.some(p => p.fav);
+            const hasUntagged = tags.length > 0 && posts.some(p => p.tags.length === 0);
+            if (activeTag && !tags.includes(activeTag)) activeTag = null;
+            if (!hasFav) favOnly = false;
+            if (!hasUntagged) untaggedOnly = false;
+
+            if (!tags.length && !hasFav) {
+                tagFilter.innerHTML = '';
+                tagFilter.classList.add('empty');
+                return;
+            }
+            const allActive = !activeTag && !untaggedOnly && !favOnly;
+            tagFilter.classList.remove('empty');
+            tagFilter.innerHTML =
+                `<button class="filter-chip ${allActive ? 'active' : ''}" data-kind="all">전체</button>` +
+                (hasFav ? `<button class="filter-chip fav-chip ${favOnly ? 'active' : ''}" data-kind="fav" title="즐겨찾기">★</button>` : '') +
+                tags.map(t => {
+                    const active = t === activeTag;
+                    return `<button class="filter-chip ${active ? 'active' : ''}" data-kind="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}${active ? '<span class="chip-x" title="태그 삭제">×</span>' : ''}</button>`;
+                }).join('') +
+                (hasUntagged ? `<button class="filter-chip ${untaggedOnly ? 'active' : ''}" data-kind="untagged">태그 없음</button>` : '');
+        }
+
+        document.getElementById('tagFilter').addEventListener('click', function(e) {
+            const chip = e.target.closest('.filter-chip');
+            if (!chip) return;
+            if (e.target.closest('.chip-x')) {
+                deleteTag(chip.dataset.tag);
+                return;
+            }
+            const kind = chip.dataset.kind;
+            if (kind === 'all') {
+                activeTag = null;
+                untaggedOnly = false;
+                favOnly = false;
+            } else if (kind === 'fav') {
+                favOnly = !favOnly;
+            } else if (kind === 'untagged') {
+                untaggedOnly = !untaggedOnly;
+                activeTag = null;
+            } else {
+                activeTag = activeTag === chip.dataset.tag ? null : chip.dataset.tag;
+                untaggedOnly = false;
+            }
+            currentPage = 1;
+            renderTagFilter();
+            renderPosts();
+        });
+
+        // 모든 글에서 태그 빼기 (글과 수정일은 그대로)
+        function deleteTag(tag) {
+            if (!confirm(`'${tag}' 태그를 모든 글에서 뺄까요?`)) return;
+            posts.forEach(p => { p.tags = p.tags.filter(t => t !== tag); });
+            activeTag = null;
+            currentPage = 1;
+            savePosts();
+            render();
+            if (isEditorOpen()) renderTagSuggest();
+        }
+
+        // 게시글 렌더링
+        function renderPosts() {
+            const boardList = document.getElementById('boardList');
+            const filtered = getFilteredPosts();
+
+            if (filtered.length === 0) {
+                boardList.innerHTML = `
+                    <div class="empty-state">
+                        ${ICON_EMPTY}
+                        <p>${posts.length ? '검색 결과가 없습니다' : '등록된 게시글이 없습니다'}</p>
+                    </div>
+                `;
+                renderPagination(0);
+                return;
+            }
+
+            const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+            currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+            const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+            const visiblePosts = filtered.slice(startIndex, startIndex + POSTS_PER_PAGE);
+            const term = getSearchTerm();
+            const wide = wideMQ.matches;
+
+            boardList.innerHTML = visiblePosts.map(post => {
+                const state = wide
+                    ? (post.id === selectedId ? 'selected' : '')
+                    : (openIds.has(post.id) ? 'open' : '');
+                return `
+                    <div class="item ${state}" id="post-${post.id}">
+                        <div class="item-row">
+                            <div class="item-main" onclick="selectPost(${post.id})">
+                                <div class="item-title">${highlightText(post.title, term)}</div>
+                                ${renderTagChips(post.tags)}
+                                <div class="item-sub">
+                                    <span class="item-preview">${highlightText(firstLine(post.content), term)}</span>
+                                    <span class="item-date">${post.dateStr}</span>
+                                </div>
+                            </div>
+                            ${renderFavButton(post)}
+                            <button class="copy-btn" onclick="copyContent(${post.id})" title="복사">${ICON_COPY}</button>
+                        </div>
+                        ${wide ? '' : `<div class="item-body"><div class="post-actions">${renderPostActions(post)}</div>${renderPostBody(post)}</div>`}
+                    </div>
+                `;
+            }).join('');
+
+            renderPagination(totalPages);
+        }
+
+        function renderFavButton(post) {
+            return `<button class="fav-btn ${post.fav ? 'on' : ''}" onclick="toggleFav(${post.id})" title="즐겨찾기">${ICON_STAR}</button>`;
+        }
+
+        // 즐겨찾기 (수정일은 그대로)
+        function toggleFav(id) {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+            post.fav = !post.fav;
+            savePosts();
+            render();
+        }
+
+        function renderPostActions(post) {
+            return `
+                <button class="btn sm" onclick="openEditor(${post.id})">수정</button>
+                <button class="btn sm danger" onclick="deletePost(${post.id})">삭제</button>
+            `;
+        }
+
+        // 본문 · 메모 (목록 펼침과 오른쪽 상세에서 같이 씀)
+        function renderPostBody(post) {
+            const memoHtml = post.memo
+                ? `<div class="memo"><span class="memo-label">메모</span>${escapeHtml(post.memo)}</div>`
+                : '';
+            return `
+                <div class="content-text">${escapeHtml(post.content)}</div>
+                ${memoHtml}
+            `;
+        }
+
+        // 넓은 화면 오른쪽 상세
+        function renderDetail() {
+            const detailView = document.getElementById('detailView');
+            if (!wideMQ.matches) {
+                detailView.innerHTML = '';
+                return;
+            }
+
+            const post = posts.find(p => p.id === selectedId);
+            if (!post) {
+                detailView.innerHTML = `<div class="empty-state">${ICON_EMPTY}<p>글을 선택하세요</p></div>`;
+                return;
+            }
+
+            detailView.innerHTML = `
+                <div class="detail">
+                    <div class="detail-head">
+                        <div class="detail-headtext">
+                            <div class="detail-title">
+                                <h2>${escapeHtml(post.title)}</h2>
+                                ${renderFavButton(post)}
+                            </div>
+                            ${renderTagChips(post.tags)}
+                            <span class="item-date">${post.dateStr}</span>
+                        </div>
+                        <div class="detail-actions">
+                            ${renderPostActions(post)}
+                            <button class="btn primary" onclick="copyContent(${post.id})">복사</button>
+                        </div>
+                    </div>
+                    ${renderPostBody(post)}
+                </div>
+            `;
+        }
+
+        // 페이지 이동 버튼 렌더링
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>이전</button>`;
+            const pageNumbers = new Set([1, totalPages]);
+            for (let page = currentPage - 2; page <= currentPage + 2; page++) {
+                if (page >= 1 && page <= totalPages) pageNumbers.add(page);
+            }
+
+            let previousPage = 0;
+            [...pageNumbers].sort((a, b) => a - b).forEach(page => {
+                if (page - previousPage > 1) html += '<span class="ellipsis">…</span>';
+                html += `<button class="${page === currentPage ? 'active' : ''}" onclick="goToPage(${page})" aria-label="${page}페이지">${page}</button>`;
+                previousPage = page;
+            });
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>`;
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.max(1, Math.ceil(getFilteredPosts().length / POSTS_PER_PAGE));
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            currentPage = page;
+            renderPosts();
+            if (wideMQ.matches) {
+                document.getElementById('listPane').scrollTop = 0;
+            } else {
+                document.getElementById('listPane').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 글 클릭: 넓은 화면은 오른쪽 상세, 좁은 화면은 제자리 펼침
+        function selectPost(id) {
+            if (wideMQ.matches) {
+                if (id === selectedId && !isEditorOpen()) return;
+                if (!closeEditor()) return;
+                selectedId = id;
+                renderDetail();
+                document.getElementById('side').scrollTop = 0;
+            } else {
+                openIds.has(id) ? openIds.delete(id) : openIds.add(id);
+            }
+            renderPosts();
+        }
+
+        // 모두 열기/접기 (좁은 화면)
+        function toggleExpandAll() {
+            const visibleIds = [...document.querySelectorAll('#boardList .item')].map(el => Number(el.id.slice(5)));
+            const allOpen = visibleIds.length > 0 && visibleIds.every(id => openIds.has(id));
+            visibleIds.forEach(id => allOpen ? openIds.delete(id) : openIds.add(id));
+            renderPosts();
+        }
+
+        // 복사
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('내용이 복사되었습니다');
+            } catch (err) {
+                // fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                try {
+                    document.execCommand('copy');
+                    showToast('내용이 복사되었습니다');
+                } catch (e) {
+                    alert('복사에 실패했습니다');
+                }
+
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function copyContent(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) copyText(post.content);
+        }
+
+        // 토스트 알림 표시
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('copyToast');
+            toast.textContent = '✓ ' + message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 글쓰기 / 수정
+        function isEditorOpen() {
+            return document.getElementById('side').classList.contains('editing');
+        }
+
+        function getEditorState() {
+            return JSON.stringify([
+                document.getElementById('postTitle').value,
+                draftTags,
+                tagText.value,
+                document.getElementById('postContent').value,
+                document.getElementById('postMemo').value
+            ]);
+        }
+
+        function openEditor(id = null) {
+            if (isEditorOpen() && !closeEditor()) return;
+            const post = id !== null ? posts.find(p => p.id === id) : null;
+
+            editingId = post ? post.id : null;
+            document.getElementById('postTitle').value = post ? post.title : '';
+            document.getElementById('postContent').value = post ? post.content : '';
+            document.getElementById('postMemo').value = post ? post.memo : '';
+            tagText.value = '';
+            draftTags = post ? [...post.tags] : [];
+            renderDraftTags();
+
+            document.getElementById('editorTitle').textContent = post ? '수정' : '글쓰기';
+            document.getElementById('submitBtn').textContent = post ? '수정' : '등록';
+
+            const side = document.getElementById('side');
+            side.classList.add('editing');
+            side.scrollTop = 0;
+            if (!wideMQ.matches) document.body.classList.add('lock');
+            editorSnapshot = getEditorState();
+            if (!post) document.getElementById('postTitle').focus();
+        }
+
+        // 작성 중인 내용이 있으면 확인. 닫혔으면 true
+        function closeEditor(force = false) {
+            if (!isEditorOpen()) return true;
+            if (!force && getEditorState() !== editorSnapshot && !confirm('작성 중인 내용을 버릴까요?')) {
+                return false;
+            }
+            document.getElementById('side').classList.remove('editing');
+            document.body.classList.remove('lock');
+            editingId = null;
+            return true;
+        }
+
+        // 게시글 등록/수정
+        function submitPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const memo = document.getElementById('postMemo').value.trim();
+            if (tagText.value.trim()) addDraftTag(tagText.value);
+
+            if (!title) {
+                alert('제목을 입력해주세요');
+                return;
+            }
+
+            if (!content) {
+                alert('내용을 입력해주세요');
+                return;
+            }
+
+            const now = new Date();
+            let post = editingId !== null ? posts.find(p => p.id === editingId) : null;
+
+            if (post) {
+                // 수정 모드
+                post.title = title;
+                post.content = content;
+                post.memo = memo;
+                post.tags = [...draftTags];
+                post.updatedAt = now.toISOString();
+                post.dateStr = formatDate(now);
+            } else {
+                // 등록 모드
+                post = {
+                    id: Date.now(),
+                    title: title,
+                    content: content,
+                    memo: memo,
+                    tags: [...draftTags],
+                    createdAt: now.toISOString(),
+                    updatedAt: now.toISOString(),
+                    dateStr: formatDate(now)
+                };
+                posts.unshift(post);
+            }
+
+            closeEditor(true);
+            savePosts();
+
+            // 방금 쓴 글이 필터에 걸려 안 보이면 필터 해제
+            if (!getFilteredPosts().includes(post)) {
+                searchInput.value = '';
+                activeTag = null;
+                untaggedOnly = false;
+                favOnly = false;
+            }
+            const index = getFilteredPosts().indexOf(post);
+            currentPage = Math.floor(index / POSTS_PER_PAGE) + 1;
+
+            selectedId = post.id;
+            openIds.add(post.id);
+            render();
+
+            const el = document.getElementById(`post-${post.id}`);
+            if (el) el.scrollIntoView({ block: 'nearest' });
+        }
+
+        // 게시글 삭제
+        function deletePost(id) {
+            if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            if (editingId === id) closeEditor(true);
+            posts = posts.filter(p => p.id !== id);
+            openIds.delete(id);
+            if (selectedId === id) selectedId = null;
+            savePosts();
+            render();
+        }
+
+        // 태그 입력
+        function addDraftTag(name) {
+            name.split(',').map(t => t.trim()).filter(Boolean).forEach(tag => {
+                if (!draftTags.includes(tag)) draftTags.push(tag);
+            });
+            tagText.value = '';
+            renderDraftTags();
+        }
+
+        function removeDraftTag(index) {
+            draftTags.splice(index, 1);
+            renderDraftTags();
+        }
+
+        function renderDraftTags() {
+            document.getElementById('draftTagList').innerHTML = draftTags.map((t, i) =>
+                `<span class="tag" style="${tagStyle(t)}">${escapeHtml(t)}<button class="tag-remove" onclick="event.stopPropagation(); removeDraftTag(${i})" title="빼기">×</button></span>`
+            ).join('');
+            renderTagSuggest();
+        }
+
+        function renderTagSuggest() {
+            const query = tagText.value.trim().toLowerCase();
+            const suggestions = getAllTags().filter(t => !draftTags.includes(t) && (!query || t.toLowerCase().includes(query)));
+            document.getElementById('tagSuggest').innerHTML = suggestions.map(t =>
+                `<button class="suggest-chip" data-tag="${escapeHtml(t)}">+ ${escapeHtml(t)}</button>`
+            ).join('');
+        }
+
+        document.getElementById('tagSuggest').addEventListener('click', function(e) {
+            const chip = e.target.closest('.suggest-chip');
+            if (!chip) return;
+            addDraftTag(chip.dataset.tag);
+            tagText.focus();
+        });
+
+        // 한글 조합 중 Enter는 조합이 끝난 뒤 태그로 추가
+        let addAfterCompose = false;
+        tagText.addEventListener('compositionend', function() {
+            if (!addAfterCompose) return;
+            addAfterCompose = false;
+            setTimeout(() => addDraftTag(tagText.value));
+        });
+
+        tagText.addEventListener('keydown', function(e) {
+            if (e.isComposing) {
+                if (e.key === 'Enter') addAfterCompose = true;
+                return;
+            }
+            if ((e.key === 'Enter' || e.key === ',') && tagText.value.trim()) {
+                e.preventDefault();
+                addDraftTag(tagText.value);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('postContent').focus();
+            } else if (e.key === 'Backspace' && !tagText.value && draftTags.length) {
+                removeDraftTag(draftTags.length - 1);
+            }
+        });
+
+        tagText.addEventListener('input', function() {
+            // 모바일 키보드는 쉼표를 keydown으로 안 줄 때가 있음
+            if (tagText.value.includes(',')) addDraftTag(tagText.value);
+            else renderTagSuggest();
+        });
+
+        // 검색
+        searchInput.addEventListener('input', function() {
+            currentPage = 1;
+            renderPosts();
+        });
+
+        // 정렬
+        sortSelect.addEventListener('change', function() {
+            try {
+                localStorage.setItem(SORT_KEY, sortSelect.value);
+            } catch (e) {}
+            currentPage = 1;
+            renderPosts();
+        });
+
+        // 제목 입력 시 Enter 키로 태그로 이동
+        document.getElementById('postTitle').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
+                tagText.focus();
+            }
+        });
+
+        // Esc로 글쓰기 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isEditorOpen()) closeEditor();
+        });
+
+        // 화면 폭이 바뀌면 다시 그리기
+        wideMQ.addEventListener('change', function() {
+            document.body.classList.toggle('lock', isEditorOpen() && !wideMQ.matches);
+            renderPosts();
+            renderDetail();
+        });
+    </script>
+</body>
+</html>
