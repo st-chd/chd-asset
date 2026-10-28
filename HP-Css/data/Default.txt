@@ -687,3 +687,15 @@ max-height: 50dvh !important;
 .movingUI .drag-grabber { display: none; }
 [/CSS코드]
 ===
+[카테고리] 채팅창
+[확장프로그램] 기본
+[제목] 메시지 높이 고정하고 스크롤바 만들기
+[태그] 크기, 사이즈, 조절, 스크롤 바
+[CSS코드]
+.mes .mes_text {
+max-height: 50vh;
+overflow-y: auto;
+}
+[/CSS코드]
+[미리보기] https://t1.daumcdn.net/cafeattach/1IHuH/1353a97dbb4371d1d2079410f711ac27efd2396a?type=thumb&opt=R667x0a
+===
