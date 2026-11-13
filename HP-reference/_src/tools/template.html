@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SillyTavern 스크립트 레퍼런스</title>
+<meta name="description" content="SillyTavern 매크로, STscript, 슬래시 명령어, LALib 명령어 한국어 레퍼런스">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root {
+  --bg: #f7f6f3; --panel: #ffffff; --side: #efede8; --line: #e2dfd8; --line-2: #d3cfc6;
+  --text: #22211f; --muted: #6d6a63; --faint: #9a968d;
+  --accent: #b4532a; --accent-soft: #f6e6dc; --link: #2f5f8a;
+  --code-bg: #f2f0eb; --pre-bg: #1f2024; --pre-text: #e6e4df;
+  --note: #8a6d1d; --note-bg: #fbf4de;
+  --t-f: #f0a868; --t-a: #9fc3e8; --t-m: #b8d98a; --t-k: #e39bd0; --t-c: #8b8d93;
+  --mono: "D2Coding", "JetBrains Mono", Consolas, "Cascadia Mono", monospace;
+  --sans: "Pretendard Variable", Pretendard, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17181b; --panel: #1f2125; --side: #1b1c20; --line: #2c2f35; --line-2: #3a3e45;
+    --text: #e7e5e0; --muted: #a29f98; --faint: #77746e;
+    --accent: #e88a5a; --accent-soft: #3a2519; --link: #8fb8e0;
+    --code-bg: #2a2c31; --pre-bg: #121316; --pre-text: #e6e4df;
+    --note: #e0c271; --note-bg: #2d2817;
+  }
+}
+:root[data-theme="light"][data-pal="grape"] { --bg:#f8f6fd; --panel:#fff; --side:#f1edfa; --line:#e4dff1; --line-2:#d2cbe6; --text:#24212c; --muted:#6a6578; --faint:#9a95a8; --accent:#7a57c9; --accent-soft:#ece5fa; --link:#5b6fd0; --code-bg:#f0ecf8; }
+:root[data-theme="light"][data-pal="sky"] { --bg:#f5f8fc; --panel:#fff; --side:#eaf0f8; --line:#dce4ef; --line-2:#c9d4e3; --text:#1f2530; --muted:#5f6b7c; --faint:#93a0b2; --accent:#2f6fd6; --accent-soft:#e3edfb; --link:#2f6fd6; --code-bg:#edf2f8; }
+:root[data-theme="light"][data-pal="forest"] { --bg:#f5f9f6; --panel:#fff; --side:#eaf3ed; --line:#dbe7df; --line-2:#c6d8cc; --text:#1f2a24; --muted:#5d6d63; --faint:#93a399; --accent:#2e8b6a; --accent-soft:#e0f2ea; --link:#2a7a8c; --code-bg:#ecf3ee; }
+:root[data-theme="light"][data-pal="blossom"] { --bg:#fdf7f9; --panel:#fff; --side:#f9edf2; --line:#f0dfe6; --line-2:#e3cbd5; --text:#2b2126; --muted:#75636b; --faint:#a8959d; --accent:#d0508a; --accent-soft:#fbe6ef; --link:#b0508f; --code-bg:#f7edf1; }
+:root[data-theme="dark"] {
+  --bg: #17181b; --panel: #1f2125; --side: #1b1c20; --line: #2c2f35; --line-2: #3a3e45;
+  --text: #e7e5e0; --muted: #a29f98; --faint: #77746e;
+  --accent: #e88a5a; --accent-soft: #3a2519; --link: #8fb8e0;
+  --code-bg: #2a2c31; --pre-bg: #121316; --pre-text: #e6e4df;
+  --note: #e0c271; --note-bg: #2d2817;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 58px; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.65 var(--sans); word-break: keep-all; overflow-wrap: anywhere; }
+a { color: var(--link); text-decoration: none; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); border: 3px solid transparent; background-clip: content-box; }
+@supports not selector(::-webkit-scrollbar) { * { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; } }
+code { font-family: var(--mono); font-size: .88em; background: var(--code-bg); padding: .08em .35em; border-radius: 4px; }
+a.ref code { color: var(--link); }
+a.ref:hover code { text-decoration: underline; }
+
+/* layout */
+.layout { display: grid; grid-template-columns: var(--side-w, 320px) minmax(0, 1fr); min-height: 100vh; }
+aside { position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+.resizer { position: absolute; top: 0; right: -5px; width: 10px; height: 100%; cursor: col-resize; z-index: 3; touch-action: none; }
+.resizer::after { content: ""; position: absolute; top: 0; bottom: 0; left: 4px; width: 2px; background: transparent; transition: background .15s; }
+.resizer:hover::after, .resizer:focus-visible::after, body.resizing .resizer::after { background: var(--accent); }
+.resizer:focus-visible { outline: none; }
+body.resizing { cursor: col-resize; user-select: none; }
+.brand { padding: 18px 18px 12px; }
+.brand h1 { margin: 0; font-size: 17px; letter-spacing: -.01em; }
+.brand h1 a { color: inherit; }
+.brand .ver { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.search { margin: 0 14px 10px; position: relative; }
+.search input { width: 100%; padding: 9px 34px 9px 34px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; font-size: 14px; outline: none; }
+.search input:focus { border-color: var(--accent); }
+.search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--faint); }
+.search input::-webkit-search-cancel-button { display: none; }
+.q-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border: 0; border-radius: 50%; background: var(--line); color: var(--muted); font: 15px/1 var(--sans); cursor: pointer; display: none; align-items: center; justify-content: center; padding: 0; }
+.q-clear:hover { background: var(--accent-soft); color: var(--accent); }
+.search.has-text .q-clear { display: flex; }
+.result { margin: -4px 16px 8px; font-size: 12px; color: var(--muted); min-height: 1em; }
+nav { overflow-y: auto; padding: 4px 8px 24px; flex: 1; }
+.nav-sec { margin-bottom: 10px; }
+.nav-h { display: block; padding: 6px 10px; font-weight: 700; color: var(--text); font-size: 14px; }
+nav ul { list-style: none; margin: 0; padding: 0; }
+nav li a { display: flex; justify-content: space-between; gap: 8px; padding: 3px 10px 3px 20px; color: var(--muted); font-size: 13.5px; border-radius: 6px; }
+nav li a span { color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+nav li a:hover { background: var(--line); color: var(--text); }
+nav li a.on { background: var(--accent-soft); color: var(--accent); }
+nav li a.on span { color: var(--accent); }
+nav li a.dim { opacity: .35; }
+.side-foot { padding: 10px 16px 14px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: space-between; align-items: center; font-size: 12px; color: var(--faint); }
+.looks { display: flex; gap: 6px; }
+.looks button { width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid var(--side); background: var(--c); cursor: pointer; box-shadow: 0 0 0 1px var(--line-2); }
+.looks button.on { box-shadow: 0 0 0 2px var(--accent); }
+
+main { padding: 28px 40px 80px; max-width: 1060px; width: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+.legend .an { display: inline; }
+section.top > h2 { font-size: 28px; margin: 44px 0 6px; letter-spacing: -.02em; }
+section.top:first-of-type > h2 { margin-top: 8px; }
+section.group > h3 { position: sticky; top: 0; z-index: 2; margin: 30px -6px 10px; padding: 10px 6px 8px; font-size: 17px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+
+/* card */
+.card { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 14px; }
+.card:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.card header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 14px; margin-bottom: 4px; }
+.card h4 { margin: 0; font: 600 16px/1.4 var(--mono); }
+.card h4 a { color: var(--text); }
+.card h4 a:hover { color: var(--accent); }
+.alias { display: flex; flex-wrap: wrap; gap: 4px; }
+.alias code { font-size: 12px; color: var(--muted); background: transparent; border: 1px solid var(--line); }
+.alias code.hidden { border-style: dashed; opacity: .75; }
+.card p { margin: 4px 0; }
+.card p[lang="en"], .ad[lang="en"] { color: var(--muted); font-style: italic; }
+.card ul, .card ol { margin: 4px 0; padding-left: 22px; }
+.card li { margin: 2px 0; }
+a.term { color: inherit; border-bottom: 1px dotted var(--link); }
+a.term:hover { color: var(--link); }
+.note { border-left: 3px solid var(--note); background: var(--note-bg); padding: 6px 10px; border-radius: 0 6px 6px 0; font-size: 14px; }
+
+/* args */
+.args { margin: 10px 0 4px; border-top: 1px solid var(--line); }
+.arg { display: grid; grid-template-columns: minmax(7.5rem, 11rem) minmax(5.5rem, 9.5rem) minmax(0, 1fr); gap: 4px 14px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.an { font-family: var(--mono); }
+.an code { background: none; padding: 0; font-size: 13.5px; color: var(--text); }
+.arg.req .an code, .arg.req .an .pos { color: var(--accent); font-weight: 700; }
+.arg.req .an::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 6px 2px -12px; vertical-align: middle; }
+.arg .an { padding-left: 12px; }
+.pos { display: inline-block; font: 12.5px var(--mono); padding: 0 7px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); }
+.at { color: var(--muted); font-size: 13px; }
+.def { display: block; font-family: var(--mono); font-size: 12.5px; color: var(--faint); }
+.ad { min-width: 0; }
+dl.enum, details.enum dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 12px; margin: 6px 0 2px; font-size: 13.5px; }
+dl.enum dt, details.enum dt { margin: 0; }
+dl.enum dd, details.enum dd { margin: 0; color: var(--muted); }
+details.enum summary { cursor: pointer; color: var(--link); font-size: 13px; margin-top: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chips code { font-size: 12px; }
+.more { font-size: 12px; color: var(--faint); align-self: center; }
+.enum-link { display: inline-block; margin-top: 4px; font-size: 13px; }
+
+/* examples */
+figure.ex { margin: 10px 0 2px; }
+figure.ex figcaption { font-size: 13px; color: var(--muted); margin-bottom: 3px; }
+pre { margin: 0; background: var(--pre-bg); color: var(--pre-text); border-radius: 8px; padding: 10px 14px; overflow-x: auto; font: 13px/1.55 var(--mono); }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+.t-f { color: var(--t-f); } .t-a { color: var(--t-a); } .t-m { color: var(--t-m); } .t-k { color: var(--t-k); } .t-c { color: var(--t-c); font-style: italic; }
+
+/* guides */
+.gcard { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 2px 24px 18px; margin-top: 14px; }
+.guide h2 { font-size: 20px; margin: 18px 0 6px; }
+.gcard > h3 { font-size: 18px; margin: 16px 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.gcard > h3::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--accent); vertical-align: 2px; }
+.sample-wrap { margin-top: 14px; }
+.group-note { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+.group-note p { margin: 4px 0; }
+.to-top { position: fixed; right: 22px; bottom: 22px; z-index: 12; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--panel); color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.10); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; transform: translateY(6px); }
+.to-top.show { opacity: 1; pointer-events: auto; transform: none; }
+.to-top:hover { background: var(--accent-soft); }
+.to-top svg { width: 20px; height: 20px; }
+.guide h4 { font-size: 15px; margin: 20px 0 4px; color: var(--muted); }
+figure.ex.out pre { background: var(--code-bg); color: var(--text); border: 1px dashed var(--line-2); }
+.guide p, .guide li { font-size: 14.5px; }
+.guide ul, .guide ol { padding-left: 22px; margin: 6px 0; }
+.guide figure.ex { margin: 10px 0; }
+.tbl { overflow-x: auto; margin: 8px 0; }
+.tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.tbl th, .tbl td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: break-word; }
+.tbl th { color: var(--muted); font-weight: 600; font-size: 13px; border-bottom-color: var(--line-2); }
+.card.wide .arg { grid-template-columns: minmax(10rem, 14rem) minmax(5rem, 8rem) minmax(0, 1fr); }
+
+.hide { display: none !important; }
+.menu-btn { display: none; }
+.empty { color: var(--muted); padding: 40px 0; text-align: center; }
+
+@media (max-width: 900px) {
+  .layout { display: block; }
+  aside { position: fixed; inset: 0 auto 0 0; width: min(300px, 86vw); z-index: 20; transform: translateX(-100%); transition: transform .2s; }
+  body.nav-open aside { transform: none; box-shadow: 0 0 24px rgba(0,0,0,.14); }
+  .resizer { display: none; }
+  .scrim { display: none; }
+  body.nav-open .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 15; }
+  .menu-btn { display: flex; position: sticky; top: 0; z-index: 10; align-items: center; gap: 10px; width: 100%; padding: 10px 16px; background: var(--panel); border: 0; border-bottom: 1px solid var(--line); color: var(--text); font: 600 15px var(--sans); cursor: pointer; text-align: left; }
+  .menu-btn svg { width: 18px; height: 18px; flex: none; }
+  .menu-btn .mb-top { color: var(--muted); font-weight: 500; white-space: nowrap; }
+  .menu-btn .mb-sep { color: var(--faint); }
+  .menu-btn .mb-sub { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .to-top { right: 14px; bottom: 14px; }
+  main { padding: 12px 16px 60px; }
+  section.group > h3 { top: 43px; }
+  html { scroll-padding-top: 100px; }
+  .arg { grid-template-columns: minmax(0, 1fr) auto; }
+  .ad { grid-column: 1 / -1; }
+  .at { text-align: right; }
+  .def { display: inline; margin-left: 6px; }
+  .gcard { padding: 2px 16px 14px; }
+  .tbl th, .tbl td { overflow-wrap: anywhere; }
+  .card { padding: 12px 14px; }
+}
+</style>
+</head>
+<body>
+<button class="menu-btn" type="button" aria-label="목차 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="mb-top"></span><span class="mb-sep"></span><span class="mb-sub"></span></button>
+<div class="scrim"></div>
+<div class="layout">
+<aside>
+  <div class="brand">
+    <h1><a href="#" id="home" title="맨 위로">SillyTavern 스크립트 레퍼런스</a></h1>
+    <div class="ver">SillyTavern %%ST%% · LALib %%LALIB%% · %%DATE%%</div>
+  </div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="명령어·매크로·설명 검색" autocomplete="off" spellcheck="false">
+    <button type="button" class="q-clear" id="q-clear" aria-label="검색어 지우기">×</button>
+  </div>
+  <div class="result" id="result"></div>
+  <nav>%%NAV%%</nav>
+  <div class="side-foot"><span>매크로 %%NMACRO%% · 명령어 %%NCORE%% · LALib %%NLALIB%%</span><div class="looks" id="looks" role="group" aria-label="색감"><button type="button" data-look="base" style="--c:#b4532a" title="기본"></button><button type="button" data-look="grape" style="--c:#7a57c9" title="포도"></button><button type="button" data-look="sky" style="--c:#2f6fd6" title="하늘"></button><button type="button" data-look="forest" style="--c:#2e8b6a" title="숲"></button><button type="button" data-look="blossom" style="--c:#d0508a" title="벚꽃"></button><button type="button" data-look="dark" style="--c:#2a2c31" title="어둡게"></button></div></div>
+  <div class="resizer" role="separator" aria-orientation="vertical" aria-label="목차 너비 조절" tabindex="0" title="드래그해서 너비 조절 · 더블클릭하면 기본값"></div>
+</aside>
+<main>
+  <div class="legend">
+    <span><span class="arg req" style="display:inline;border:0;padding:0"><span class="an"><code>name=</code></span></span> 필수 인자</span>
+    <span><span class="pos">값</span> 이름 없이 쓰는 인자</span>
+    <span><code style="background:none;padding:0;color:var(--faint)">= 기본값</code></span>
+  </div>
+  %%MAIN%%
+  <p class="empty hide" id="empty">검색 결과가 없습니다.</p>
+</main>
+</div>
+<button class="to-top" type="button" id="to-top" aria-label="맨 위로" title="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<script>
+(() => {
+  const root = document.documentElement;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+  // colors: five light palettes and a dark one, picked by the reader
+  const lookBtns = [...document.querySelectorAll('#looks button')];
+  const mark = v => lookBtns.forEach(b => b.classList.toggle('on', b.dataset.look === v));
+  const setLook = v => {
+    root.dataset.theme = v === 'dark' ? 'dark' : 'light';
+    if (v === 'dark' || v === 'base') delete root.dataset.pal; else root.dataset.pal = v;
+    mark(v);
+  };
+  const oldTheme = store.get('st-ref-theme');
+  const savedLook = store.get('st-ref-look') || (oldTheme === 'dark' ? 'dark' : oldTheme === 'light' ? 'base' : null);
+  if (savedLook && lookBtns.some(b => b.dataset.look === savedLook)) setLook(savedLook);
+  else mark(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'base');
+  for (const b of lookBtns) b.addEventListener('click', () => { setLook(b.dataset.look); store.set('st-ref-look', b.dataset.look); });
+
+  // sidebar width
+  const SIDE_MIN = 220, SIDE_DEFAULT = 320;
+  const sideMax = () => Math.max(SIDE_MIN, Math.min(640, Math.round(innerWidth * 0.6)));
+  const setSide = w => {
+    const v = Math.min(sideMax(), Math.max(SIDE_MIN, Math.round(w)));
+    root.style.setProperty('--side-w', v + 'px');
+    return v;
+  };
+  const savedW = Number(store.get('st-ref-side'));
+  if (savedW) setSide(savedW);
+  const resizer = document.querySelector('.resizer');
+  resizer.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    resizer.setPointerCapture(e.pointerId);
+    document.body.classList.add('resizing');
+    const move = ev => setSide(ev.clientX);
+    const up = ev => {
+      resizer.releasePointerCapture(ev.pointerId);
+      resizer.removeEventListener('pointermove', move);
+      resizer.removeEventListener('pointerup', up);
+      document.body.classList.remove('resizing');
+      store.set('st-ref-side', setSide(ev.clientX));
+    };
+    resizer.addEventListener('pointermove', move);
+    resizer.addEventListener('pointerup', up);
+  });
+  resizer.addEventListener('dblclick', () => {
+    root.style.removeProperty('--side-w');
+    store.set('st-ref-side', '');
+  });
+  resizer.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const cur = document.querySelector('aside').getBoundingClientRect().width;
+    store.set('st-ref-side', setSide(cur + (e.key === 'ArrowRight' ? 16 : -16)));
+  });
+
+  // mobile drawer
+  const body = document.body;
+  document.querySelector('.menu-btn').addEventListener('click', () => body.classList.add('nav-open'));
+  document.querySelector('.scrim').addEventListener('click', () => body.classList.remove('nav-open'));
+  document.querySelector('nav').addEventListener('click', e => { if (e.target.closest('a')) body.classList.remove('nav-open'); });
+
+  // search
+  const q = document.getElementById('q');
+  const cards = [...document.querySelectorAll('.card:not(.sample)')];
+  const groups = [...document.querySelectorAll('section.group')];
+  const guides = [...document.querySelectorAll('.guide, .legend, .sample-wrap, .group-note')];
+  const tops = [...document.querySelectorAll('section.top')];
+  const result = document.getElementById('result');
+  const empty = document.getElementById('empty');
+  const navLinks = [...document.querySelectorAll('nav li a')];
+  const text = new Map(cards.map(c => [c, (c.dataset.s + ' ' + c.textContent).toLowerCase()]));
+  const head = new Map(cards.map(c => [c, c.querySelector('h4').textContent.toLowerCase() + ' ' + c.querySelector('.alias')?.textContent.toLowerCase()]));
+  let timer;
+  function run() {
+    const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const on = terms.length > 0;
+    let n = 0;
+    for (const c of cards) {
+      const hit = !on || terms.every(t => text.get(c).includes(t));
+      c.classList.toggle('hide', !hit);
+      if (hit) n++;
+    }
+    for (const g of groups) g.classList.toggle('hide', on && !g.querySelector('.card:not(.hide)'));
+    for (const g of guides) g.classList.toggle('hide', on);
+    for (const t of tops) t.classList.toggle('hide', on && !t.querySelector('.card:not(.hide)'));
+    for (const a of navLinks) {
+      const el = document.getElementById(a.dataset.target);
+      a.classList.toggle('dim', on && (!el || el.classList.contains('hide')));
+    }
+    empty.classList.toggle('hide', !on || n > 0);
+    result.textContent = on ? `${n}개` : '';
+    if (on) {
+      // exact name match first: jump to it
+      const exact = cards.find(c => !c.classList.contains('hide') && head.get(c).split(/\s+/).some(w => w.replace(/[{}]/g, '') === terms[0].replace(/^\//, '/').replace(/[{}]/g, '')));
+      if (exact && terms.length === 1) exact.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
+    }
+  }
+  let last = '';
+  const schedule = () => {
+    if (q.value === last) return;
+    last = q.value;
+    clearTimeout(timer);
+    timer = setTimeout(run, 120);
+  };
+  for (const ev of ['input', 'compositionend', 'keyup']) q.addEventListener(ev, schedule);
+  const searchBox = q.closest('.search');
+  const syncClear = () => searchBox.classList.toggle('has-text', q.value.length > 0);
+  const clearSearch = () => { q.value = ''; last = ''; clearTimeout(timer); run(); syncClear(); };
+  for (const ev of ['input', 'compositionend', 'keyup']) q.addEventListener(ev, syncClear);
+  q.addEventListener('keydown', e => { if (e.key === 'Escape') { clearSearch(); q.blur(); } });
+  document.getElementById('q-clear').addEventListener('click', () => { clearSearch(); q.focus(); });
+
+  // home
+  const toTop = document.getElementById('to-top');
+  const goTop = e => {
+    e.preventDefault();
+    history.replaceState(null, '', location.pathname + location.search);
+    scrollTo({ top: 0, behavior: 'smooth' });
+    body.classList.remove('nav-open');
+  };
+  document.getElementById('home').addEventListener('click', goTop);
+  toTop.addEventListener('click', goTop);
+
+  // where am I: worked out from the scroll position, so it follows in both directions
+  const subs = navLinks.map(a => ({ a, el: document.getElementById(a.dataset.target) })).filter(x => x.el);
+  const secs = [...document.querySelectorAll('nav .nav-h')].map(a => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) })).filter(x => x.el);
+  const [mbTop, mbSep, mbSub] = ['.mb-top', '.mb-sep', '.mb-sub'].map(s => document.querySelector('.menu-btn ' + s));
+  const narrow = matchMedia('(max-width: 900px)');
+  const shown = el => el.offsetParent !== null;
+  let current = null, ticking = false;
+  function locate() {
+    ticking = false;
+    const line = narrow.matches ? 110 : 90;
+    let sec = null, sub = null;
+    for (const s of secs) if (shown(s.el) && s.el.getBoundingClientRect().top <= line) sec = s;
+    for (const s of subs) if (shown(s.el) && s.el.getBoundingClientRect().top <= line) sub = s;
+    if (!sec) sec = secs.find(s => shown(s.el)) || secs[0];
+    if (sub && !sec.el.contains(sub.el)) sub = null;
+    const a = sub ? sub.a : null;
+    if (a !== current) {
+      current?.classList.remove('on');
+      current = a;
+      if (a) { a.classList.add('on'); a.scrollIntoView({ block: 'nearest' }); }
+    }
+    const subText = sub ? sub.a.firstChild.textContent : '';
+    mbTop.textContent = sec.a.textContent;
+    mbSep.textContent = subText ? '›' : '';
+    mbSub.textContent = subText;
+    toTop.classList.toggle('show', scrollY > 500);
+  }
+  const queue = () => { if (!ticking) { ticking = true; requestAnimationFrame(locate); } };
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  q.addEventListener('input', () => setTimeout(locate, 300));
+  locate();
+})();
+</script>
+</body>
+</html>

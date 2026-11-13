@@ -1,0 +1,517 @@
+@join
+[[리스트]]의 칸들을 **이어 붙여** 글 하나로 만듭니다. 칸 사이에는 기본으로 `, `(쉼표와 빈칸)가 들어갑니다.
+```stscript
+/join ["사과","배","귤"] | /echo
+/join glue=" / " ["사과","배","귤"] | /echo
+```
+첫 줄 `사과, 배, 귤`, 둘째 줄 `사과 / 배 / 귤`. 빈칸 하나로 이으려면 `glue={{space}}`.
+.glue 칸 사이에 넣을 글. 기본 `, `
+#0 이어 붙일 리스트
+
+@trim
+글 **앞뒤의** 빈칸과 빈 줄을 지웁니다(가운데는 그대로).
+```stscript
+/trim "   안녕   " | /echo [{{pipe}}]
+```
+알림 `[안녕]`.
+#0 다듬을 글
+
+@pad-start
+글이 정한 길이보다 짧으면 **앞쪽**을 채워 그 길이로 맞춥니다. 숫자 자릿수를 맞출 때 씁니다.
+```stscript
+/pad-start fill=0 3 7 | /echo
+```
+`7`을 3자리로 맞춰 알림 `007`. `fill=`을 안 쓰면 빈칸으로 채웁니다.
+.fill 채울 글자. 기본 빈칸
+#0 맞출 길이(글자 수)
+#1 채울 글
+
+@pad-end
+글이 정한 길이보다 짧으면 **뒤쪽**을 채워 그 길이로 맞춥니다.
+```stscript
+/pad-end fill=. 6 이름 | /echo
+```
+알림 `이름....`.
+.fill 채울 글자. 기본 빈칸
+#0 맞출 길이(글자 수)
+#1 채울 글
+
+@pad-both
+글이 정한 길이보다 짧으면 **양쪽**을 채워 가운데 정렬합니다. 채울 수가 홀수면 남는 한 칸은 뒤쪽에 붙습니다.
+```stscript
+/pad-both fill=* 6 abc | /echo
+```
+3칸을 채워야 해서 앞에 1칸, 뒤에 2칸: 알림 `*abc**`.
+.fill 채울 글자. 기본 빈칸
+#0 맞출 길이(글자 수)
+#1 채울 글
+
+@diff
+옛 글과 새 글을 비교해 **달라진 부분**을 창에 보여 줍니다. 버튼으로 고른 쪽 글을 결과로 남깁니다.
+```stscript
+/diff old="오늘은 맑다." new="오늘은 흐리다." | /echo 고른 글: {{pipe}}
+```
+창에 `맑다`가 `흐리다`로 바뀐 것이 표시됩니다. 버튼으로 옛 글이나 새 글을 고릅니다.
+.all `true`면 새 글·옛 글·차이를 나란히, `false`면 차이만
+.buttons 어느 글을 고를지 버튼을 붙일지
+.stripcode 비교 전에 코드 블록(백틱 세 개로 감싼 부분)을 지울지
+.notes 비교 위에 보일 메모
+.old 옛 글
+.new 새 글
+
+@json-pretty
+한 줄로 뭉친 [[JSON]]을 줄을 나누고 들여 써서 **읽기 좋게** 바꿉니다.
+```stscript
+/json-pretty {"hp":80,"skills":["베기","막기"]} | /comment {{pipe}}
+```
+채팅 메모로 이렇게 보입니다.
+```result
+{
+    "hp": 80,
+    "skills": [
+        "베기",
+        "막기"
+    ]
+}
+```
+#0 정리할 JSON
+
+@substitute
+글 안의 매크로를 **지금** 바꿉니다. 일부러 `\{\{…\}\}`로 막아 둔 매크로를 원하는 때에 바꿀 때 씁니다.
+```stscript
+/let x 사과 |
+/substitute 고른 것은 \{\{var::x\}\} | /echo
+```
+알림 `고른 것은 사과`.
+#0 매크로를 바꿀 글
+
+@encodeURIComponent
+글을 인터넷 주소에 넣을 수 있는 모양으로 바꿉니다. 빈칸, `&`, `?`, `/`, 한글 같은 글자가 `%20` 같은 코드로 바뀝니다.
+```stscript
+/encodeURIComponent 고양이 사진 | /echo
+```
+알림 `%EA%B3%A0%EC%96%91%EC%9D%B4%20%EC%82%AC%EC%A7%84`.
+#0 바꿀 글
+
+@decodeURIComponent
+`/encodeURIComponent`의 반대로, `%20` 같은 코드를 원래 글자로 되돌립니다.
+```stscript
+/decodeURIComponent quick%20brown%2Ffox | /echo
+```
+알림 `quick brown/fox`.
+#0 되돌릴 글
+
+@wordcount
+글의 **단어 수**를 셉니다. 언어마다 단어를 나누는 규칙이 다르므로 `language=`로 언어를 정할 수 있습니다.
+```stscript
+/wordcount language=ko 오늘 날씨가 정말 좋다 | /echo
+```
+알림 `4`.
+.language 언어 코드(`ko`, `en`, `ja` 등). 기본 `en`
+#0 단어를 셀 글
+
+@sentencecount
+글의 **문장 수**를 셉니다.
+```stscript
+/sentencecount language=ko 밥 먹었어? 나는 아직. 같이 가자! | /echo
+```
+알림 `3`.
+.language 언어 코드. 기본 `en`
+#0 문장을 셀 글
+
+@segment
+글을 글자·단어·문장 단위로 **잘라** 리스트로 만듭니다.
+```stscript
+/segment granularity=sentence language=ko 밥 먹었어? 나는 아직. | /echo
+```
+알림 `["밥 먹었어? ","나는 아직."]`.
+.granularity 자를 단위
+=grapheme 글자(이모지처럼 여러 부분으로 된 것도 한 글자로)
+=word 단어(문장부호·빈칸은 빠짐)
+=sentence 문장
+.language 언어 코드. 기본 `en`
+#0 자를 글
+
+@re-escape
+글을 [[정규식]] 안에 **그대로** 넣을 수 있게, 정규식에서 특별한 뜻이 있는 기호(`.`, `/`, `(` 등) 앞에 `\`를 붙입니다.
+```stscript
+/re-escape 1.5배 | /echo
+```
+알림 `1\.5배`. 점(`.`)은 정규식에서 "아무 글자"라는 뜻이라, 진짜 점을 찾으려면 이렇게 바꿔야 합니다.
+```stscript
+/re-escape {{char}} |
+/re-replace find=/{{pipe}}/g replace=그녀 {{lastMessage}} | /echo
+```
+마지막 메시지 속 캐릭터 이름을 모두 `그녀`로 바꿔 알림으로 띄웁니다. 이름에 특수 기호가 있어도 안전합니다.
+#0 바꿀 글
+
+@re-test
+글이 [[정규식]]에 맞으면 `true`, 아니면 `false`를 결과로 남깁니다.
+```stscript
+/re-test find=/고양이/ 우리 집 고양이는 귀엽다 | /echo
+/re-test find="/개|고양이/" 강아지를 키운다 | /echo
+```
+첫 줄 `true`. 둘째 줄은 "개 또는 고양이"를 찾아 `강아지` 속 `개`에 맞으므로 `true`.
+! 정규식의 "또는"(`|`)은 명령 구분 기호와 겹칩니다. 둘째 줄처럼 정규식을 **큰따옴표로 감싸면** 그대로 써도 되고, 따옴표 없이 쓰면 `\|`로 씁니다. 글자 `|` 자체를 찾으려면 따옴표 없이 `\\\|`, 따옴표 안에서는 `\|`.
+.find 정규식(`/식/옵션`)
+#0 검사할 글
+
+@re-replace
+[[정규식]]으로 찾은 부분을 다른 글로 **바꿉니다**. 바꿀 글을 직접 주거나(`replace=`), 찾을 때마다 실행할 묶음을 줄 수 있습니다(`cmd=`).
+```stscript
+/re-replace find=/\s+/g replace=" " 빈칸이    너무     많다 | /echo
+```
+빈칸 묶음을 모두 하나로: 알림 `빈칸이 너무 많다`. 정규식 끝의 `g`가 없으면 **첫 번째만** 바꿉니다.
+```stscript
+/re-replace find=/(\d+)원/g cmd={: /mul {{$1}} 2 | /pass {{pipe}}원 :} 사과 1000원, 배 500원 | /echo
+```
+금액마다 묶음이 실행되어 두 배가 됩니다: 알림 `사과 2000원, 배 1000원`. 묶음 안에서 `{{$1}}`은 괄호로 묶은 부분(숫자)입니다.
+- 괄호 부분을 가리키는 법: `replace=`·글로 쓴 `cmd=`에서는 `$1`, `$2`…, 클로저 안에서는 `{{$1}}`, `{{$2}}`…, 찾은 전체는 `{{$0}}`, 이름 붙인 괄호는 `{{$:이름}}`.
+.find 정규식(`/식/옵션`). 모두 바꾸려면 `g`
+.replace 바꿔 넣을 글
+.cmd 찾을 때마다 실행할 클로저(또는 명령). 그 결과로 바꿈
+#0 바꿀 대상 글
+
+@re-exec
+[[정규식]]으로 찾은 결과를 자세히(찾은 글, 괄호 부분, 위치 등) [[딕셔너리]] 리스트로 결과에 남깁니다.
+```stscript
+/re-exec first=true find=/(\d+)시/ 오후 3시에 보자 | /json-pretty | /comment {{pipe}}
+```
+첫 번째로 찾은 것의 정보(찾은 글 `3시`, 괄호 부분 `3`, 위치 등)를 메모로 보여 줍니다.
+.find 정규식(`/식/옵션`). 여러 개를 찾으려면 `g`
+.first `true`면 리스트 대신 첫 번째 결과 하나만
+#0 찾을 대상 글
+
+@getat
+[[리스트]]의 칸이나 [[딕셔너리]]의 값을 **꺼냅니다**.
+```stscript
+/getat index=hp {"hp":80,"mp":30} | /echo
+/getat index=["skills",0] {"hp":80,"skills":["베기","막기"]} | /echo
+```
+첫 줄 알림 `80`. 둘째 줄은 `skills` 안의 0번을 차례로 들어가 꺼내 `베기`.
+대상을 비우면 앞 명령의 결과에서 꺼냅니다: `/char-get 끼끼 | /getat index=description`.
+.index 꺼낼 번호나 키. 리스트(`["a",2,"b"]`)로 주면 차례로 안으로 들어감
+#0 꺼낼 대상. 비우면 앞 명령의 결과
+
+@setat
+[[리스트]]의 칸이나 [[딕셔너리]]의 값을 **바꾸고**, 바뀐 전체를 결과로 남깁니다.
+```stscript
+/setat value=[1,2,3] index=1 X | /echo
+```
+알림 `[1,"X",3]`.
+```stscript
+/let stat {"hp":80} |
+/setat value={{var::stat}} index=mood 설렘 |
+/echo {{var::stat}}
+```
+`value={{var::stat}}`처럼 변수를 넘기면 그 변수도 같이 바뀝니다. 알림 `{"hp":80,"mood":"설렘"}`.
+.index 바꿀 번호나 키. 리스트로 주면 차례로 안으로 들어감
+.value 바꿀 리스트나 딕셔너리
+#0 넣을 값
+
+@try
+묶음을 실행하다가 **오류가 나도 스크립트를 멈추지 않게** 잡아 둡니다. 바로 뒤에 `/catch`를 씁니다.
+```stscript
+/try {: /var 없는변수 :} |
+/catch {: /echo 문제가 생겼어요: {{exception}} :}
+```
+`/let`으로 만들지 않은 변수를 읽어 오류가 나지만, 스크립트가 멈추지 않고 `/catch`의 묶음이 실행되어 오류 내용이 알림으로 뜹니다.
+#0 시도할 클로저 또는 명령
+
+@catch
+바로 앞 `/try`에서 **오류가 났을 때만** 묶음을 실행합니다. 오류 내용은 `{{exception}}`(또는 `{{error}}`)입니다. 오류가 없었으면 `/try`의 결과를 그대로 넘깁니다.
+#0 오류가 났을 때 실행할 클로저 또는 명령
+
+@ifempty
+값이 **비어 있으면** 대신 쓸 값을, 아니면 원래 값을 결과로 남깁니다. 빈 글자, 빈 리스트 `[]`, 빈 딕셔너리 `{}`를 모두 "비었다"로 봅니다.
+```stscript
+/ifempty value={{getvar::nickname}} 별명 없음 | /echo
+```
+`nickname`이 비어 있으면 알림 `별명 없음`, 있으면 그 별명.
+.value 검사할 값
+#0 비어 있을 때 쓸 값
+
+@ifnullish
+값이 **빈 글자일 때만** 대신 쓸 값을 결과로 남깁니다. `/ifempty`와 달리 `[]`, `{}`는 비지 않은 값으로 봅니다.
+```stscript
+/ifnullish value=[] 기본값 | /echo
+```
+알림 `[]`(빈 리스트는 그대로 둠).
+.value 검사할 값
+#0 빈 글자일 때 쓸 값
+
+@copy
+값을 컴퓨터 클립보드에 **복사**합니다.
+```stscript
+/copy {{lastMessage}}
+```
+마지막 메시지 내용이 복사되어 Ctrl+V로 붙여 넣을 수 있습니다.
+#0 복사할 값
+
+@download
+값을 **글 파일로 내려받습니다**.
+```stscript
+/download name=마지막메시지 ext=md {{lastMessage}}
+```
+마지막 메시지 내용이 `마지막메시지.md` 파일로 저장됩니다.
+.name 파일 이름(확장자 빼고). 기본 `SillyTavern-지금 시각`
+.ext 확장자. 기본 `txt`
+#0 파일에 담을 내용
+
+@dom
+SillyTavern 화면의 요소(버튼, 입력칸 등)를 CSS 선택자(화면 요소를 가리키는 표기)로 찾아 **누르거나 값을 읽고 바꿉니다**. 화면 조작을 자동으로 하고 싶을 때 쓰는 고급 기능입니다.
+```stscript
+/dom action=click #option_regenerate
+/dom action=value #send_textarea | /echo
+```
+첫 줄은 `#option_regenerate` 요소를 누르고, 둘째 줄은 입력창의 글을 읽어 알림으로 띄웁니다.
+.quiet 요소를 못 찾아도 경고를 띄우지 않음
+.multi 맞는 요소 **전부**에 적용. `false`면 첫 번째만
+.target `multi=true`일 때 그중 몇 번째만(0부터)
+.action 할 일
+=click 누르기
+=value 입력칸의 값 읽기·바꾸기(`value=`를 주면 바꿈)
+=property 요소의 속성 읽기·바꾸기(`property=` 필요)
+=attribute HTML 속성 읽기·바꾸기(`attribute=` 필요)
+=call 요소의 기능 실행(`property=`에 기능 이름)
+.value 바꿀 새 값. 비우면 읽기만
+.property 읽고 바꾸거나 실행할 속성·기능 이름
+.attribute 읽고 바꿀 HTML 속성 이름
+#0 대상 요소의 CSS 선택자(예: `#send_textarea`, `.mes_text`)
+
+@memberpos
+그룹 멤버를 목록의 **정한 자리**로 옮깁니다(0부터).
+```stscript
+/memberpos 끼끼 0
+```
+`끼끼`이 그룹 목록 맨 위로 갑니다.
+#0 그룹 멤버 이름
+#1 옮길 자리 번호(0부터)
+
+@group-get
+그룹 정보를 통째로([[딕셔너리]]) 또는 한 칸만 결과로 남깁니다.
+```stscript
+/group-get index=members chars=true 우리반 | /echo
+```
+`우리반` 그룹의 멤버 목록을 캐릭터 정보째 가져옵니다.
+.index 가져올 칸(예: `members`, `name`). 비우면 전체
+.chars `members`처럼 아바타 키 목록인 값을 캐릭터 정보로 바꿔 줌
+#0 그룹 이름. 비우면 지금 그룹
+
+@switch
+값에 따라 **여러 갈래** 중 하나를 실행합니다. 뒤에 `/case`를 여러 개 이어 씁니다.
+```stscript
+/getvar weather |
+/switch |
+    /case 비 {: /echo 우산을 챙긴다 :} |
+    /case 눈 {: /echo 장갑을 낀다 :} |
+    /case {: /echo 그냥 나간다 :}
+```
+1. `/switch`가 `weather`의 값을 기준으로 삼습니다.
+2. 값이 `비`면 첫 `/case`, `눈`이면 둘째 `/case`가 실행되고 나머지는 건너뜁니다.
+3. 아무것도 맞지 않으면 비교 값 없이 쓴 마지막 `/case`가 실행됩니다.
+`/case`의 묶음 안에서 `{{value}}`는 `/switch`의 값입니다.
+#0 기준값. 비우면 앞 명령의 결과
+
+@case
+`/switch` 값과 **같으면** 묶음을 실행합니다. 하나가 실행되면 뒤의 `/case`는 건너뜁니다. 비교 값 없이 묶음만 쓰면 "아무것도 안 맞을 때"가 됩니다. 예제는 `/switch`에 있습니다.
+#0 비교할 값
+#1 맞을 때 실행할 클로저
+
+@ife
+LALib 식으로 조건을 보고, 맞으면 묶음을 실행합니다. 뒤에 `/elseif`, `/else`를 이어 씁니다. 기본 `/if`와 달리 `(hp > 50)` 같은 식을 그대로 씁니다.
+```stscript
+/setvar key=hp 30 |
+/ife (hp > 50) {: /echo 여유 있다 :} |
+/elseif (hp > 20) {: /echo 조금 위험하다 :} |
+/else {: /echo 매우 위험하다 :}
+```
+`hp`가 30이라 첫 조건은 틀리고 둘째 조건이 맞아 알림 `조금 위험하다`.
+```stscript
+/genraw 사과와 배 중 하나만 말해 |
+/ife answer={{pipe}} ('사과' in answer) {: /echo 사과라고 했다 :} |
+/else {: /echo 다른 걸 말했다 :}
+```
+`answer={{pipe}}`로 AI의 답을 식에 넘겨 씁니다.
+.expression variables 식 안에서 쓸 임시 값
+#0 조건(괄호 식 또는 클로저)과, 그 뒤에 맞을 때 실행할 클로저
+
+@elseif
+앞의 `/ife`·`/elseif`가 하나도 실행되지 않았고 이 조건이 맞으면 묶음을 실행합니다. 예제는 `/ife`에 있습니다.
+.expression variables 식 안에서 쓸 임시 값
+#0 조건(괄호 식 또는 클로저)과, 그 뒤에 맞을 때 실행할 클로저
+
+@else
+앞의 `/ife`·`/elseif`가 하나도 실행되지 않았으면 묶음을 실행합니다. 예제는 `/ife`에 있습니다.
+#0 실행할 클로저 또는 명령
+
+@then
+쓰지 않는 옛 명령입니다. 지금은 `/ife`의 마지막 칸에 실행할 묶음을 바로 씁니다.
+#0 실행할 명령
+
+@wi-list-books
+지금 켜져 있는 [[월드 인포|로어북]] 이름 목록을 결과로 남깁니다.
+```stscript
+/wi-list-books | /echo
+/wi-list-books source=true | /json-pretty | /comment {{pipe}}
+```
+둘째 줄은 "어디서 켜졌는지"(전역, 채팅, 캐릭터, 페르소나) 별로 나눠 메모로 보여 줍니다.
+.source `true`면 켜진 곳(global, chat, character, persona 등)별로 나눈 딕셔너리로
+.all `true`면 꺼진 로어북까지 모두
+
+@wi-list-entries
+로어북의 **항목 목록**을 결과로 남깁니다. 이름을 비우면 켜져 있는 로어북 전부입니다. 기본 모양은 `{"로어북이름":{"entries":[…]}}`입니다.
+```stscript
+/wi-list-entries flat=true 판타지세계 | /map {{pipe}} {: /getat index=comment {{var::item}} :} | /echo
+```
+`판타지세계`의 항목 제목(comment) 목록을 알림으로 띄웁니다.
+.flat `true`면 로어북 구분 없이 항목들을 리스트 하나로
+#0 항목을 가져올 로어북 이름. 비우면 켜진 로어북 전부
+
+@wi-activate
+지금 채팅 내용으로 [[월드 인포]] 항목이 켜지는지 검사하고, 켜진 항목에 적힌 Automation ID(자동 실행할 빠른 답장)를 실행합니다.
+```stscript
+/wi-activate
+```
+
+@wi-trigger
+로어북 항목을 다음 AI 답에 **억지로 켜서** 넣습니다. 키워드가 나오지 않아도 들어갑니다.
+```stscript
+/wi-trigger file=판타지세계 uid=1
+/wi-trigger file=판타지세계 uid=1 now=true
+```
+첫 줄은 다음에 보내는 채팅 답에, 둘째 줄은 바로 다음 생성(스와이프나 `/gen` 포함)에 넣습니다.
+! 항목이 sticky(계속 켜짐)가 아니면 sticky 1로 바뀝니다.
+.file 로어북 이름
+.uid 항목 번호
+.now `true`면 바로 다음 생성에, `false`(기본)면 다음 채팅 답에
+
+@costumes
+표정 그림의 **옷 갈아입히기 폴더** 목록을 결과로 남깁니다.
+```stscript
+/costumes 끼끼 | /echo
+```
+알림 `["끼끼/winter","끼끼/school"]` 같은 목록.
+.recurse 하위 폴더까지 찾을지. SillyTavern은 한 단계 아래 폴더까지만 표정을 불러올 수 있음
+#0 찾을 폴더(보통 캐릭터 이름)
+
+@qr-edit
+[[빠른 답장]] 버튼의 **편집 창**을 엽니다.
+```stscript
+/qr-edit set=전투버튼 label=공격
+```
+.set 세트 이름. 비우면 켜진 세트들에서 찾음
+.label 버튼 글자
+#0 버튼 글자(`label=` 대신)
+
+@qr-add
+[[빠른 답장]] 버튼을 새로 만들고 **편집 창**을 엽니다.
+```stscript
+/qr-add set=전투버튼 label=회복
+```
+.set 세트 이름. 비우면 켜진 세트 중 하나
+.label 새 버튼 글자
+#0 새 버튼 글자(`label=` 대신)
+
+@swipes-get
+마지막 메시지(또는 정한 메시지)의 **n번째 [[스와이프]]** 내용을 결과로 남깁니다.
+```stscript
+/swipes-get 0 | /echo 첫 번째 버전: {{pipe}}
+```
+! 번호는 **0부터**입니다. `{{currentSwipeId}}`는 1부터라 다릅니다.
+.message 메시지 번호. 비우면 마지막 메시지
+#0 스와이프 번호(0부터)
+
+@swipes-list
+마지막 메시지(또는 정한 메시지)의 **모든 스와이프**를 리스트로 결과에 남깁니다.
+```stscript
+/swipes-list | /echo
+```
+.message 메시지 번호. 비우면 마지막 메시지
+
+@swipes-count
+마지막 메시지(또는 정한 메시지)의 **스와이프 개수**를 결과로 남깁니다.
+```stscript
+/swipes-count | /echo 버전이 {{pipe}}개
+```
+.message 메시지 번호. 비우면 마지막 메시지
+
+@swipes-index
+지금 보고 있는 스와이프가 몇 번째인지를 **0부터** 센 번호로 결과에 남깁니다.
+```stscript
+/swipes-index | /echo
+```
+세 버전 중 두 번째를 보고 있으면 알림 `1`(매크로 `{{currentSwipeId}}`는 같은 상황에서 `2`).
+.message 메시지 번호. 비우면 마지막 메시지
+
+@swipes-add
+마지막 메시지(또는 정한 메시지)에 **스와이프를 직접 써서 추가**합니다.
+```stscript
+/swipes-add 내가 쓴 다른 버전.
+```
+.message 메시지 번호. 비우면 마지막 메시지
+#0 추가할 글
+
+@swipes-del
+스와이프를 **지웁니다**. 번호를 주면 그 버전, 안 주면 지금 보고 있는 버전입니다. `filter=`로 조건에 맞는 것을 한꺼번에 지울 수도 있습니다.
+```stscript
+/swipes-del
+/swipes-del 2
+/swipes-del filter="'나쁜말' in swipe.mes"
+/swipes-del filter="swipe.index != 0"
+```
+| 줄 | 지우는 것 |
+|---|---|
+| 1 | 지금 보고 있는 버전 |
+| 2 | 2번(세 번째) 버전 |
+| 3 | 글(`swipe.mes`)에 `나쁜말`이 든 버전 전부 |
+| 4 | 0번만 남기고 전부 |
+`filter=` 식 안의 `swipe`는 버전 하나이고, `swipe.index`(번호), `swipe.mes`(글)를 쓸 수 있습니다.
+.message 메시지 번호. 비우면 마지막 메시지
+.filter 버전마다 검사해 `true`면 지우는 식 또는 클로저
+#0 지울 스와이프 번호(0부터)
+
+@swipes-go
+정한 스와이프(버전)로 **넘깁니다**.
+```stscript
+/swipes-go 0
+```
+첫 번째 버전을 보여 줍니다.
+.message 메시지 번호. 비우면 마지막 메시지
+#0 넘길 스와이프 번호(0부터)
+
+@swipes-swipe
+마지막 메시지에서 새 스와이프를 받아 오고, **다 받을 때까지 기다립니다**.
+```stscript
+/swipes-swipe | /echo 새 버전을 받았습니다
+```
+
+@message-edit
+마지막 메시지(또는 정한 메시지)의 **내용을 바꿉니다**.
+```stscript
+/message-edit 이렇게 바꿨다.
+/message-edit append=true (덧붙인 말)
+/message-edit message=3 3번 메시지를 새로 씀
+```
+| 줄 | 하는 일 |
+|---|---|
+| 1 | 마지막 메시지 내용을 통째로 바꿈 |
+| 2 | 마지막 메시지 끝에 덧붙임 |
+| 3 | 3번 메시지를 바꿈 |
+! 덧붙일 때 앞에 빈칸이 필요하면 `{{space}}`를 씁니다: `/message-edit append=true {{space}}(덧붙인 말)`. 명령 칸 맨 앞의 빈칸은 지워지기 때문입니다.
+.message 메시지 번호. 비우면 마지막 메시지
+.append `true`면 바꾸지 않고 끝에 덧붙임
+.await `true`면 채팅 저장이 끝날 때까지 기다림
+#0 새 내용(또는 덧붙일 내용)
+
+@message-move
+메시지를 채팅 안에서 **위아래로 옮깁니다**. `to=`, `up=`, `down=` 중 하나를 씁니다.
+```stscript
+/message-move from={{lastMessageId}} to=0
+/message-move from=5 up=2
+```
+첫 줄은 마지막 메시지를 맨 위로, 둘째 줄은 5번 메시지를 두 칸 위(3번 자리)로 옮깁니다.
+.from 옮길 메시지 번호
+.to 옮겨 갈 자리(메시지 번호)
+.up 위로 몇 칸(번호가 작아짐)
+.down 아래로 몇 칸(번호가 커짐)

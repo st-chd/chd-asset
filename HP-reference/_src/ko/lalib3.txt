@@ -1,0 +1,177 @@
+@message-get
+채팅 메시지 하나의 **자세한 정보**를 [[딕셔너리]]로 결과에 남깁니다.
+```stscript
+/message-get -1 | /= pipe.mes | /echo
+/message-get 0 | /= pipe.name | /echo
+```
+첫 줄은 마지막 메시지 내용, 둘째 줄은 첫 메시지를 보낸 사람 이름을 알림으로 띄웁니다. LALib 식에서 `pipe`는 앞 명령의 결과입니다.
+자주 쓰는 칸:
+| 칸 | 뜻 |
+|---|---|
+| `name` | 보낸 사람 이름 |
+| `mes` | 내용 |
+| `is_user` | 내가 보냈으면 `true` |
+| `is_system` | 시스템 메시지면 `true` |
+| `send_date` | 보낸 시각 |
+| `swipes` | 스와이프(버전) 목록 |
+| `swipe_id` | 지금 보고 있는 버전 번호(0부터) |
+#0 메시지 번호. 음수는 뒤에서: `-1` = 마지막
+
+@message-list
+여러 메시지의 자세한 정보를 딕셔너리 **리스트**로 결과에 남깁니다.
+```stscript
+/message-list -3--1 | /= pipe*.name | /echo
+```
+마지막 3개 메시지를 가져와 보낸 사람 이름만 뽑아 알림 `["챗시","가나디","챗시"]`처럼 띄웁니다. `*.`은 리스트의 모든 칸에서 같은 값을 꺼내는 LALib 식입니다.
+| 범위 | 뜻 |
+|---|---|
+| (비움) | 전체 |
+| `0-2` | 0~2번(처음 3개) |
+| `-3--1` | 뒤에서 3번째~마지막(마지막 3개) |
+| `0--5` | 처음부터 뒤에서 5번째까지(마지막 4개 빼고) |
+#0 메시지 번호 범위(양 끝 포함). 음수는 뒤에서. 비우면 전체
+
+@chat-list
+지금(또는 정한) 캐릭터의 **모든 채팅** 목록을 결과로 남깁니다.
+```stscript
+/chat-list | /echo
+/chat-list char=끼끼.png | /echo
+```
+.char 캐릭터의 아바타 파일 이름(예: `끼끼.png`). 비우면 지금 캐릭터
+
+@chat-parent
+지금 채팅이 갈래(분기) 채팅이면 **원래 채팅**의 이름을 결과로 남깁니다.
+```stscript
+/chat-parent | /echo
+```
+
+@message-on
+마지막 메시지 안의 요소(버튼, 링크 등)에 "누르면 이걸 실행해라"를 **붙입니다**. 붙인 것의 번호(리스너 ID)를 결과로 남깁니다. 다른 채팅으로 가면 저절로 멈춥니다.
+AI가 답 끝에 `<span class="choice">숲으로 간다</span>` 같은 선택지를 써 주게 해 두었다면:
+```stscript
+/message-on event=click callback={:
+    /$ take=textContent {{target}} |
+    /send {{pipe}} ||
+    /trigger
+:} .choice |
+/setvar key=listenerId
+```
+1. 마지막 메시지 안의 `.choice` 요소를 누르면 묶음이 실행됩니다.
+2. `{{target}}`은 누른 요소의 HTML이고, `/$ take=textContent`로 그 안의 글(`숲으로 간다`)만 꺼냅니다.
+3. 그 글을 내 메시지로 보내고 AI 답을 받습니다.
+4. 나중에 떼려고 번호를 변수 `listenerId`에 넣어 둡니다.
+.event 기다릴 일의 종류(예: `click` 누르기, `mouseenter` 마우스 올리기)
+.callback 그 일이 일어나면 실행할 클로저. 안에서 `{{target}}` = 그 요소의 HTML
+.quiet 붙일 때 알림을 띄우지 않음
+#0 마지막 메시지 안에서 요소를 찾을 CSS 선택자(예: `.choice`)
+
+@message-off
+`/message-on`으로 붙인 것을 **뗍니다**.
+```stscript
+/message-off id={{getvar::listenerId}}
+/message-off event=click query=.choice
+```
+.id 뗄 리스너 번호
+.event 이 종류만 뗌
+.query 이 선택자에 붙은 것만 뗌
+.quiet 알림을 띄우지 않음
+
+@message-listeners
+지금 붙어 있는 `/message-on` 목록을 보여 줍니다.
+```stscript
+/message-listeners
+```
+
+@role-swap
+메시지의 역할을 **맞바꿉니다**. 내 메시지는 캐릭터 메시지로, 캐릭터 메시지는 내 메시지로 바뀝니다.
+```stscript
+/role-swap -1
+/role-swap 0-10
+/role-swap
+```
+| 줄 | 바꾸는 것 |
+|---|---|
+| 1 | 마지막 메시지 |
+| 2 | 0~10번 |
+| 3 | 채팅 전체 |
+#0 메시지 번호 또는 범위. 음수는 뒤에서(`-10-` = 마지막 10개). 비우면 전체
+
+@timestamp
+지금 시각을 **숫자 하나**(1970년 1월 1일부터 지난 시간을 1000분의 1초 단위로 센 값)로 결과에 남깁니다. 두 때의 차이를 계산할 때 씁니다.
+```stscript
+/timestamp | /setvar key=start
+```
+나중에 `/timestamp`를 다시 해서 빼면 걸린 시간(1000분의 1초 단위)이 나옵니다.
+
+@fireandforget
+묶음을 **실행만 시켜 두고**, 끝나기를 기다리지 않은 채 바로 다음 명령으로 넘어갑니다.
+```stscript
+/fireandforget {:
+    /delay 1000 |
+    /echo 뒤에서 하던 일 끝
+:} |
+/echo 바로 다음 명령
+```
+알림이 `바로 다음 명령`이 먼저, 1초 뒤 `뒤에서 하던 일 끝`이 뜹니다.
+#0 실행할 클로저 또는 명령
+
+@console-log
+값을 브라우저 **개발자 도구 콘솔**(F12)에 기록합니다. 화면에는 보이지 않습니다. 스크립트를 고칠 때 값을 확인하는 용도입니다.
+```stscript
+/console-log {{getvar::hp}}
+```
+#0 기록할 값
+
+@console-warn
+값을 개발자 도구 콘솔에 **경고**(노란 줄)로 기록합니다.
+#0 기록할 값
+
+@console-error
+값을 개발자 도구 콘솔에 **오류**(빨간 줄)로 기록합니다.
+#0 기록할 값
+
+@sfx
+소리 파일을 **재생**합니다.
+```stscript
+/sfx volume=0.5 await=true /user/files/audio/문소리.wav | /echo 다 재생했습니다
+```
+절반 크기로 재생하고, 끝날 때까지 기다린 뒤 알림을 띄웁니다.
+.volume 소리 크기. `1.0`이 원래 크기
+.await `true`면 다 재생할 때까지 기다림
+#0 소리 파일 주소(예: `/user/files/audio/소리.wav`)
+
+@fonts
+이 컴퓨터에서 쓸 수 있는 **글꼴** 목록을 결과로 남깁니다. 브라우저가 이 기능을 지원해야 하고, 허락을 물을 수 있습니다.
+```stscript
+/fonts | /comment
+```
+
+@fetch
+인터넷 주소의 내용을 **가져와** 결과로 남깁니다. 처음 접속하는 사이트는 허락을 묻고, 허락한 사이트는 기억합니다.
+```stscript
+/fetch https://example.com | /$ query=h1 take=textContent | /echo
+```
+페이지를 가져와 제목(`h1`)의 글만 꺼내 알림으로 띄웁니다.
+#0 가져올 주소
+
+@$
+HTML에서 CSS 선택자에 맞는 **첫 번째** 요소를 찾아, 그 안의 값을 꺼내 결과로 남깁니다. `/fetch`로 가져온 웹 페이지에서 필요한 부분만 뽑을 때 씁니다.
+```stscript
+/$ query=b take=textContent <p>이름: <b>가나디</b></p> | /echo
+```
+알림 `가나디`.
+.query 찾을 요소의 CSS 선택자(예: `h1`, `.title`, `#main`)
+.take 꺼낼 것. `outerHTML`(요소 전체, 기본), `textContent`(글만), `innerHTML`(안쪽 HTML), `href`(링크 주소) 등
+.call 요소에 실행할 기능 이름
+#0 찾을 대상 HTML
+
+@$$
+`/$`와 같지만, 맞는 요소를 **모두** 찾아 리스트로 결과에 남깁니다.
+```stscript
+/$$ query=li take=textContent <ul><li>사과</li><li>배</li></ul> | /echo
+```
+알림 `["사과","배"]`.
+.query 찾을 요소의 CSS 선택자
+.take 요소마다 꺼낼 것(기본 `outerHTML`)
+.call 요소마다 실행할 기능 이름
+#0 찾을 대상 HTML

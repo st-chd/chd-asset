@@ -1,0 +1,42 @@
+key 키워드(Primary Keywords). 채팅에 이 말이 나오면 항목이 켜짐. 쉼표로 여러 개
+keysecondary 보조 키워드(Optional Filter). `selective`가 켜져 있을 때 키워드와 함께 따져 봄
+comment 항목 제목·메모(Title / Memo). AI에게는 보내지지 않음
+content 항목 내용(Content). 켜지면 AI에게 보내지는 글
+constant 상시 활성화(파란 동그라미). 키워드가 없어도 늘 들어감
+vectorized 키워드 대신 뜻이 비슷하면 켜짐(Vectorized, 사슬 아이콘)
+selective 보조 키워드를 따질지
+selectiveLogic 보조 키워드를 따지는 방법. `0` = 보조 중 하나라도 있으면, `1` = 보조가 전부 있지는 않으면, `2` = 보조가 하나도 없으면, `3` = 보조가 전부 있으면
+addMemo 메모 칸을 보일지
+order 들어가는 순서(Order). 클수록 프롬프트에서 뒤쪽(AI가 더 크게 받아들이는 자리)
+position 들어가는 위치. `0` = 캐릭터 정보 앞, `1` = 뒤, `2` = 작가 노트 위, `3` = 아래, `4` = 채팅 기록 사이(`depth` 깊이), `5` = 대화 예시 위, `6` = 아래, `7` = Outlet(`{{outlet}}`으로 꺼내는 자리)
+disable 꺼 둠(Disabled). 키워드가 나와도 켜지지 않음
+ignoreBudget 월드 인포 분량 한도(토큰 예산)를 넘어도 넣음
+excludeRecursion 다른 항목 내용에 키워드가 있어서 켜지는 것은 막음(Non-recursable). 채팅에 키워드가 나올 때만 켜짐
+preventRecursion 이 항목 내용 속 키워드로 다른 항목이 줄줄이 켜지지 않게 막음
+matchPersonaDescription 페르소나 설명에서도 키워드를 찾음
+matchCharacterDescription 캐릭터 설명에서도 찾음
+matchCharacterPersonality 캐릭터 성격에서도 찾음
+matchCharacterDepthPrompt 캐릭터의 캐릭터 노트에서도 찾음
+matchScenario 시나리오에서도 찾음
+matchCreatorNotes 제작자의 메모에서도 찾음
+delayUntilRecursion 다른 항목 때문에 줄줄이 켜지는 단계가 이 값에 이를 때까지 켜지지 않음
+probability 켜질 확률(Trigger %, 0~100). 키워드가 나와도 이 확률로만 들어감
+useProbability 확률을 쓸지
+depth `position`이 `4`일 때 넣을 깊이. `0` = 마지막 메시지 뒤
+outletName `position`이 `7`일 때 Outlet 이름(`{{outlet::이름}}`으로 꺼냄)
+group 묶음(Inclusion Group) 이름. 같은 묶음에서 동시에 켜지면 하나만 들어감
+groupOverride 묶음 안에서 이 항목을 먼저 고름(Prioritize)
+groupWeight 묶음 안에서 뽑힐 비중. 클수록 잘 뽑힘
+scanDepth 최근 메시지 몇 개에서 키워드를 찾을지. 비우면 전체 설정값
+caseSensitive 영어 대소문자를 가릴지. 비우면 전체 설정값
+matchWholeWords 단어가 통째로 같을 때만 맞다고 볼지. 비우면 전체 설정값
+useGroupScoring 묶음 안에서 맞은 키워드가 많은 항목을 고를지. 비우면 전체 설정값
+automationId 켜질 때 실행할 빠른 답장의 Automation ID
+role `position`이 `4`일 때 누구의 말로 넣을지. `0` = 시스템, `1` = 나, `2` = 캐릭터
+sticky 한 번 켜지면 키워드가 없어도 이 메시지 수만큼 계속 켜져 있음
+cooldown 한 번 켜진 뒤 이 메시지 수만큼은 다시 켜지지 않음
+delay 채팅 메시지가 이 개수 이상일 때만 켜짐
+characterFilterNames 이 캐릭터들과의 채팅에서만 켜짐(이름 목록)
+characterFilterTags 이 태그가 붙은 캐릭터와의 채팅에서만 켜짐
+characterFilterExclude 위 두 목록을 "이 캐릭터들에서는 켜지지 않음"으로 뒤집음
+triggers 이 생성 방식일 때만 켜짐(`normal` 보내기, `continue` 이어 쓰기, `impersonate` 대신 쓰기, `swipe`, `regenerate` 다시 생성, `quiet` 숨은 생성)

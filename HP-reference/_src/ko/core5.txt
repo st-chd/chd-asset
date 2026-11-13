@@ -1,0 +1,413 @@
+@loader-hide
+`/loader-show`로 띄운 "작업 중" 표시를 닫습니다. 실제로 닫았으면 `true`를 결과로 남깁니다.
+```stscript
+/loader-hide handle={{getvar::loader}}
+/loader-hide
+```
+첫 줄은 그 번호의 표시만, 둘째 줄은 떠 있는 표시를 모두 닫습니다.
+.handle `/loader-show`가 남긴 번호. 비우면 전부 닫음
+
+@loader-stop
+"작업 중" 표시의 **중지 버튼을 누른 것처럼** 중지 동작을 실행합니다. 실제로 멈췄으면 `true`. `/loader-hide`와 달리 번호를 꼭 줘야 합니다.
+```stscript
+/loader-stop handle={{getvar::loader}}
+```
+.handle 멈출 표시의 번호
+
+@proxy
+[[Text Completion|Chat Completion]]에서 쓸 프록시(중간 서버) 설정 묶음을 이름으로 고릅니다. 지금 프록시 이름을 결과로 남깁니다.
+```stscript
+/proxy 내프록시
+```
+#0 프록시 설정 묶음 이름
+
+@sysprompt
+[[시스템 프롬프트]] 설정 묶음(프리셋)을 이름으로 고릅니다. 이름이 조금 달라도 가장 비슷한 것을 찾습니다. 이름 없이 쓰면 지금 이름을 결과로 남깁니다. 다른 이름 `/system-prompt`.
+```stscript
+/sysprompt Roleplay
+/sysprompt | /echo
+```
+.quiet 바꿀 때 뜨는 알림을 숨김
+.forceGet 시스템 프롬프트 사용이 꺼져 있어도 이름을 알려 줌
+#0 시스템 프롬프트 프리셋 이름
+
+@sysprompt-on
+[[시스템 프롬프트]] 사용을 켭니다. 다른 이름 `/sysprompt-enable`.
+
+@sysprompt-off
+[[시스템 프롬프트]] 사용을 끕니다. 다른 이름 `/sysprompt-disable`.
+
+@sysprompt-state
+[[시스템 프롬프트]] 사용이 켜져 있으면 `true`, 꺼져 있으면 `false`를 결과로 남깁니다. 값을 주면 그 상태로 바꿉니다. 다른 이름 `/sysprompt-toggle`.
+```stscript
+/sysprompt-state | /echo
+/sysprompt-state false
+```
+#0 바꿀 상태. `true`(켜기) 또는 `false`(끄기). 비우면 지금 상태를 알려 줌
+
+@extension-enable
+[[확장]]을 **켭니다**. 켜고 나면 페이지가 저절로 새로고침되므로, 이 명령 뒤에 쓴 명령은 실행되지 않습니다. 확장의 내부 이름을 결과로 남깁니다.
+```stscript
+/extension-enable Summarize
+```
+.reload 켠 뒤 새로고침할지. `false`면 새로고침하기 전까지는 아직 꺼진 상태(나중에 `/reload-page`)
+#0 확장 이름
+
+@extension-disable
+[[확장]]을 **끕니다**. 끄고 나면 페이지가 저절로 새로고침됩니다.
+```stscript
+/extension-disable Summarize
+```
+.reload 끈 뒤 새로고침할지. `false`면 새로고침하기 전까지는 계속 동작
+#0 확장 이름
+
+@extension-toggle
+[[확장]]이 켜져 있으면 끄고, 꺼져 있으면 켭니다. 페이지가 저절로 새로고침됩니다.
+```stscript
+/extension-toggle Summarize
+/extension-toggle state=true Summarize
+```
+둘째 줄은 뒤집지 않고 "켜기"로 정합니다.
+.reload 바꾼 뒤 새로고침할지
+.state 뒤집는 대신 정할 상태. `true` 켜기, `false` 끄기
+#0 확장 이름
+
+@extension-state
+[[확장]]이 켜져 있으면 `true`, 꺼져 있으면 `false`를 결과로 남깁니다.
+```stscript
+/extension-state Summarize | /echo
+```
+#0 확장 이름
+
+@extension-exists
+[[확장]]이 **설치돼 있으면** `true`를 결과로 남깁니다. 켜져 있는지와는 상관없습니다. 다른 이름 `/extension-installed`.
+```stscript
+/extension-exists SillyTavern-LALib | /echo
+```
+#0 확장 이름
+
+@reload-page
+페이지를 새로고침합니다(F5를 누른 것과 같음). 이 명령 뒤에 쓴 명령은 실행되지 않습니다.
+
+@tools-list
+등록된 "도구"(AI가 스스로 부를 수 있는 기능, Function Calling) 목록을 결과로 남깁니다.
+```stscript
+/tools-list return=popup-html
+```
+
+@tools-invoke
+등록된 도구를 이름으로 **직접** 실행합니다.
+```stscript
+/tools-invoke parameters={"message":"안녕"} Echo
+```
+`Echo` 도구에 `message`로 `안녕`을 넘겨 실행합니다.
+.parameters 도구에 넘길 값. 반드시 [[딕셔너리]] 모양(`{"이름":"값"}`)
+#0 실행할 도구 이름
+
+@tools-register
+AI가 대화 중에 스스로 부를 수 있는 **도구**를 새로 만듭니다. AI가 "이 도구를 써야겠다"고 판단해 부르면 넘겨준 [[클로저]]가 실행됩니다.
+```stscript
+/let key=echoSchema {"type":"object","properties":{"message":{"type":"string","description":"되풀이할 말"}},"required":["message"]} ||
+/tools-register name=Echo description="사용자가 같은 말을 반복해 달라고 할 때 부른다" parameters={{var::echoSchema}} {: /echo {{var::arg.message}} :}
+```
+1. `echoSchema`에 "이 도구는 `message`라는 글자 하나를 받는다"는 정의를 넣습니다(JSON Schema라는 정해진 모양).
+2. `Echo`라는 도구를 등록합니다. AI가 부르면 받은 `message`가 `{{var::arg.message}}`로 들어와 알림으로 뜹니다.
+! 도구 사용(Function Calling)을 지원하는 [[Text Completion|Chat Completion]] API에서만 동작합니다. `description=`은 AI가 언제 부를지 판단하는 근거라 구체적으로 씁니다.
+.name 도구 이름(AI에게 보이는 이름)
+.description 도구가 하는 일. AI가 부를지 판단하는 근거
+.parameters 받을 값의 정의. JSON Schema 모양의 딕셔너리
+.displayName 화면에 보일 이름
+.formatMessage 도구를 부른 기록을 채팅에 어떻게 보일지 정하는 클로저. 글자를 돌려줘야 함
+.shouldRegister 답을 받을 때마다 이 도구를 쓸 수 있게 할지 정하는 클로저. `true`/`false`를 돌려줌
+.stealth `true`면 도구 결과를 채팅에 보이지 않고, 결과를 받은 뒤 이어지는 답도 받지 않음
+#0 도구가 불렸을 때 실행할 클로저
+
+@tools-unregister
+등록한 도구를 없앱니다.
+```stscript
+/tools-unregister Echo
+```
+#0 없앨 도구 이름
+
+@preset
+지금 [[API]]의 생성 설정 묶음(프리셋: 온도·응답 길이 같은 값들)을 이름으로 고릅니다. 이름 없이 쓰면 지금 프리셋 이름을 결과로 남깁니다.
+```stscript
+/preset 창작용
+/preset | /echo
+```
+#0 프리셋 이름
+
+@world
+**전역** [[월드 인포|로어북]](모든 채팅에 적용되는 로어북)을 켜거나 끕니다.
+```stscript
+/world 판타지세계
+/world state=off 판타지세계
+/world
+```
+| 줄 | 하는 일 |
+|---|---|
+| 1 | `판타지세계` 로어북을 전역으로 켬 |
+| 2 | 그 로어북을 끔 |
+| 3 | 이름 없이 쓰면 **모든** 전역 로어북을 끔 |
+.state `on`(켜기, 기본), `off`(끄기), `toggle`(반대로)
+.silent 알림을 숨김
+#0 로어북 이름
+
+@getchatbook
+지금 **채팅에 연결된** 로어북 이름을 결과로 남깁니다. 다른 이름 `/getchatlore`, `/getchatwi`.
+```stscript
+/getchatbook | /setvar key=book
+```
+! 연결된 로어북이 없으면 **새로 만들어 연결**합니다. 만들지 않고 확인만 하려면 `create=false`(없으면 빈 값).
+.name 새로 만들게 될 때 쓸 로어북 이름. 비우면 자동
+.create 없을 때 새로 만들어 연결할지. 기본 `true`
+
+@getglobalbooks
+지금 켜져 있는 전역 로어북 이름 목록을 결과로 남깁니다. 다른 이름 `/getgloballore`, `/getglobalwi`.
+```stscript
+/getglobalbooks | /echo
+```
+알림 `["판타지세계","공통설정"]` 같은 목록.
+
+@getpersonabook
+지금 [[페르소나]]에 연결된 로어북 이름을 결과로 남깁니다. 없으면 빈 값입니다(`create=true`면 새로 만들어 연결). 다른 이름 `/getpersonalore`, `/getpersonawi`.
+.name 새로 만들게 될 때 쓸 로어북 이름
+.create 없을 때 새로 만들어 연결할지. 기본 `false`
+```stscript
+/getpersonabook | /echo
+```
+지금 페르소나에 연결된 로어북 이름을 알림으로 띄웁니다.
+
+@getcharbook
+캐릭터에 연결된 로어북 이름을 결과로 남깁니다. 없으면 빈 값입니다. 다른 이름 `/getcharlore`, `/getcharwi`.
+```stscript
+/getcharbook | /echo
+/getcharbook type=all 끼끼
+```
+첫 줄은 지금 캐릭터의 기본 로어북 이름, 둘째 줄은 `끼끼`에게 연결된 로어북 전부를 목록으로.
+! 그룹 채팅에서는 캐릭터 이름을 꼭 써야 합니다.
+.type 어느 로어북을
+=primary 캐릭터의 기본 로어북(이름 하나)
+=additional 추가로 연결한 로어북들(목록)
+=all 기본 + 추가 전부(목록)
+.name 새로 만들게 될 때 쓸 로어북 이름
+.create 없을 때 새로 만들어 연결할지
+#0 캐릭터 이름 또는 아바타 키. 비우면 지금 캐릭터
+
+@findentry
+로어북에서 항목을 **찾아** 그 항목 번호(UID)를 결과로 남깁니다. 비슷한 글자로 찾으므로 조금 달라도 가장 잘 맞는 것을 줍니다. 다른 이름 `/findlore`, `/findwi`.
+```stscript
+/getchatbook | /setvar key=book ||
+/findentry file=book field=key 그림자송곳니 |
+/echo 찾은 항목 번호: {{pipe}}
+```
+1. 채팅 로어북 이름을 변수 `book`에 넣습니다.
+2. 그 로어북에서 키워드(`key`)가 `그림자송곳니`와 가장 비슷한 항목을 찾습니다.
+3. 그 항목의 번호(예: `12`)가 알림으로 뜹니다.
+`field=`에 쓸 수 있는 이름은 아래 "월드 인포 항목 필드" 표에 있습니다.
+.file 로어북 이름, 또는 이름이 든 변수 이름
+.field 어느 칸에서 찾을지. 기본 `key`(키워드)
+#0 찾을 글
+
+@getentryfield
+항목 번호(UID)로 로어북 항목을 골라 그 **한 칸의 값**을 결과로 남깁니다. 다른 이름 `/getlorefield`, `/getwifield`.
+```stscript
+/getentryfield file=book field=content 12 | /echo
+```
+`book` 로어북의 12번 항목 **내용**을 알림으로 띄웁니다.
+.file 로어북 이름, 또는 이름이 든 변수 이름
+.field 읽을 칸. 기본 `content`(내용)
+#0 항목 번호(UID)
+
+@createentry
+로어북에 **새 항목**을 만들고 그 번호(UID)를 결과로 남깁니다. 다른 이름 `/createlore`, `/createwi`.
+```stscript
+/createentry file=book key=그림자송곳니,검 왕이 쓰던 검은 검.
+```
+키워드 `그림자송곳니`, `검`, 내용 `왕이 쓰던 검은 검.`인 항목이 생깁니다.
+.file 로어북 이름, 또는 이름이 든 변수 이름
+.key 키워드. 쉼표로 여러 개
+#0 항목 내용
+
+@setentryfield
+항목 번호(UID)로 로어북 항목을 골라 그 **한 칸의 값을 바꿉니다**. 다른 이름 `/setlorefield`, `/setwifield`.
+```stscript
+/setentryfield file=book uid=12 field=key 그림자송곳니,검,무기
+/setentryfield file=book uid=12 field=constant true
+```
+첫 줄은 키워드를 세 개로 바꿉니다. 둘째 줄은 이 항목을 "항상 켜짐(constant)"으로 바꿉니다.
+- 키워드처럼 여러 개인 칸은 쉼표로 구분합니다.
+- 켜기·끄기 칸은 `true`/`false`(또는 `1`/`0`).
+.file 로어북 이름, 또는 이름이 든 변수 이름
+.uid 항목 번호, 또는 번호가 든 변수 이름
+.field 바꿀 칸. 기본 `content`(내용)
+#0 넣을 값
+
+@wi-set-timed-effect
+로어북 항목의 **시간 효과**를 켜거나 끕니다. 지금 채팅에만 적용됩니다.
+- `sticky`: 한 번 켜지면 정해 둔 메시지 수만큼 키워드가 없어도 계속 켜져 있음
+- `cooldown`: 한 번 켜진 뒤 정해 둔 메시지 수만큼은 다시 켜지지 않음
+```stscript
+/wi-set-timed-effect file=book uid=12 effect=sticky on
+```
+12번 항목의 sticky 효과를 지금부터 시작합니다.
+! 몇 메시지 동안인지는 항목 설정에 미리 적혀 있어야 합니다. 이미 켜진 효과를 다시 켜면 처음부터 다시 셉니다. 마지막 메시지를 스와이프하거나 지우면 효과가 사라집니다.
+.file 로어북 이름
+.uid 항목 번호
+.effect `sticky` 또는 `cooldown`
+#0 `on`(켜기), `off`(끄기), `toggle`(반대로)
+
+@wi-get-timed-effect
+로어북 항목의 시간 효과가 지금 켜져 있는지 결과로 남깁니다.
+```stscript
+/wi-get-timed-effect file=book effect=sticky format=number 12 | /echo
+```
+sticky가 몇 메시지 더 남았는지 알림으로 띄웁니다(꺼져 있으면 `0`).
+.file 로어북 이름
+.effect `sticky` 또는 `cooldown`
+.format 결과 모양
+=bool 켜져 있으면 `true`, 아니면 `false`
+=number 남은 메시지 수. 꺼져 있으면 `0`
+#0 항목 번호(UID)
+
+@translate
+글을 다른 언어로 **번역**합니다. 채팅 번역 [[확장]]의 번역 서비스를 씁니다.
+```stscript
+/translate target=en 오늘 날씨 좋다 | /echo
+```
+알림 `The weather is nice today` 같은 번역.
+.target 번역할 언어 코드(`ko` 한국어, `en` 영어, `ja` 일본어, `zh-CN` 중국어 간체 등). 비우면 확장 설정값
+.provider 번역 서비스(`google`, `deepl`, `libre` 등). 비우면 확장 설정값
+#0 번역할 글
+
+@profile
+연결 프로필(API·모델·프리셋을 묶어 저장해 둔 것)로 바꿉니다. 이름 없이 쓰면 지금 프로필 이름을 결과로 남깁니다. `<None>`을 주면 "프로필 없음"이 됩니다.
+```stscript
+/profile 클로드-롤플
+```
+.await 프로필 적용이 끝날 때까지 기다릴지. 기본 `true`
+.timeout API 연결을 기다릴 최대 시간(1000분의 1초 단위). `0`이면 끝없이. `await=true`일 때만 의미 있음
+#0 연결 프로필 이름
+
+@profile-list
+모든 연결 프로필 이름 목록을 결과로 남깁니다.
+```stscript
+/profile-list | /echo
+```
+
+@profile-create
+지금 연결 설정을 새 연결 프로필로 저장합니다.
+```stscript
+/profile-create 테스트용
+```
+#0 새 프로필 이름
+
+@profile-update
+지금 골라 둔 연결 프로필을 **지금 설정으로** 덮어씁니다.
+
+@profile-get
+연결 프로필의 자세한 내용(API, 모델, 프리셋 등)을 [[딕셔너리]]로 결과에 남깁니다. 이름 없이 쓰면 지금 프로필입니다.
+```stscript
+/profile-get | /echo
+```
+#0 연결 프로필 이름
+
+@profile-genstream
+연결 프로필로 AI에게 글을 받으면서, 받는 과정을 **실시간 창**에 보여 줍니다. 다 받으면 받은 글을 결과로 남깁니다. 중지 버튼을 누르면 그때까지 받은 만큼을 남깁니다.
+```stscript
+/profile-genstream delay=infinite 짧은 동화 하나 들려줘
+```
+창에 글이 써지는 모습이 보이고, `delay=infinite`라 다 쓴 뒤에도 창이 직접 닫을 때까지 남아 있습니다.
+.lock `on`이면 받는 동안 입력창을 잠금
+.profile 쓸 연결 프로필 ID. 비우면 지금 프로필
+.reasoning AI의 생각 과정(추론)도 결과에 포함. 나중에 `/reasoning-parse`로 떼어 낼 수 있음
+.system 맨 앞에 넣을 시스템 프롬프트
+.length 최대 답 길이([[토큰]])
+.generating 받는 동안의 창 제목
+.completed 다 받은 뒤의 창 제목
+.delay 다 받은 뒤 창이 저절로 닫히기까지의 시간(1000분의 1초 단위). `infinite`면 직접 닫을 때까지
+=infinite 직접 닫을 때까지 남김
+.stop 창에 중지 버튼을 보일지
+.onStop 중지 버튼을 눌렀을 때 실행할 클로저
+.onComplete 다 받은 뒤 실행할 클로저
+#0 AI에게 보낼 글
+
+@regex
+정규식 [[확장]]에 만들어 둔 **찾아 바꾸기 스크립트**를 이름으로 골라 글에 적용하고, 바뀐 글을 결과로 남깁니다.
+```stscript
+/regex name=괄호지우기 (속마음) 안녕하세요 | /echo
+```
+`괄호지우기` 스크립트가 괄호 부분을 지우도록 만들어져 있다면 알림 `안녕하세요`.
+! 그 스크립트가 켜져 있어야 합니다.
+.name 쓸 정규식 스크립트 이름
+#0 적용할 글
+
+@regex-state
+정규식 스크립트가 켜져 있으면 `true`, 꺼져 있으면 `false`를 결과로 남깁니다.
+```stscript
+/regex-state 괄호지우기 | /echo
+```
+#0 스크립트 이름
+
+@regex-toggle
+정규식 스크립트를 켜거나 끕니다. 바꾼 스크립트 이름을 결과로 남깁니다.
+```stscript
+/regex-toggle 괄호지우기
+/regex-toggle state=off 괄호지우기
+```
+첫 줄은 켜져 있으면 끄고 꺼져 있으면 켭니다. 둘째 줄은 끕니다.
+.state `on`(켜기), `off`(끄기), `toggle`(반대로, 기본)
+.quiet 알림을 숨김
+#0 스크립트 이름
+
+@regex-preset
+정규식 프리셋(스크립트 켜짐·꺼짐 상태를 묶어 저장한 것)을 고릅니다. 이름 없이 쓰면 지금 프리셋 ID를 결과로 남깁니다.
+.quiet 알림을 숨김
+#0 프리셋 이름 또는 ID
+```stscript
+/regex-preset 번역용
+```
+`번역용` 정규식 프리셋으로 바꿉니다.
+
+@db
+데이터 저장소(AI가 참고할 문서를 넣어 두는 곳) 창을 엽니다. 다른 이름 `/databank`, `/data-bank`.
+
+@db-list
+데이터 저장소에 넣어 둔 파일 목록을 결과로 남깁니다.
+```stscript
+/db-list source=chat field=name | /echo
+```
+지금 채팅에 넣어 둔 파일 이름 목록을 알림으로 띄웁니다.
+.source 어느 범위의 파일인지
+=global 모든 채팅 공통
+=character 지금 캐릭터
+=chat 지금 채팅
+.field 무엇으로 목록을 만들지. `name`(파일 이름) 또는 `url`(주소, 기본)
+
+@db-get
+데이터 저장소 파일의 **글 내용**을 결과로 남깁니다.
+```stscript
+/db-get 설정집.txt | /echo
+```
+.source 찾을 범위: `global`, `character`, `chat`. 비우면 전부에서 찾음
+#0 파일 이름 또는 주소(URL)
+
+@db-add
+데이터 저장소에 글을 **파일로 저장**하고, 그 주소를 결과로 남깁니다.
+```stscript
+/db-add source=chat name=요약.txt {{summary}}
+```
+지금 요약을 `요약.txt`로 이 채팅의 데이터 저장소에 넣습니다.
+.source 저장할 범위: `global`, `character`, `chat`(기본)
+.name 파일 이름. 비우면 자동
+#0 파일 내용
+
+@db-update
+데이터 저장소 파일의 내용을 **바꿉니다**. 이름은 그대로이고 새 주소를 결과로 남깁니다. `name=`이나 `url=`로 어느 파일인지 고릅니다.
+```stscript
+/db-update source=chat name=요약.txt {{summary}}
+```
+.source 범위: `global`, `character`, `chat`(기본)
+.name 바꿀 파일 이름
+.url 바꿀 파일 주소
+#0 새 내용

@@ -1,0 +1,78 @@
+# 영어 원문 ⇒ 한국어 (인자 설명·선택지 설명 공용 사전)
+Suppress toast message notifications. ⇒ 알림을 띄우지 않음
+If true, does not alter quoted literal unnamed arguments ⇒ 이름 없는 인자을 큰따옴표로 감쌌을 때 따옴표를 어떻게 할지. `true`(기본)면 따옴표까지 그대로 쓰고, `false`면 바깥 따옴표를 떼어 냄. 예: `/echo raw=false "안녕"`은 알림 `안녕`
+The way how you want the return value to be provided ⇒ 결과를 어디로 보낼지. 아래 목록 중 하나
+The way to return the result ⇒ 결과를 어디로 보낼지. 아래 목록 중 하나
+Character name - or unique character identifier (avatar key) ⇒ 캐릭터 이름, 또는 캐릭터를 정확히 가리키는 아바타 파일 이름(예: `끼끼.png`)
+Character name or avatar key. If not provided, uses the currently selected character. ⇒ 캐릭터 이름 또는 아바타 파일 이름. 비우면 지금 캐릭터
+Persona name or avatar key. If not provided, uses the currently active persona. ⇒ 페르소나 이름 또는 아바타 파일 이름. 비우면 지금 페르소나
+Suppress the toast message on template change ⇒ 바꿀 때 뜨는 알림을 숨김
+lock user input during generation ⇒ AI가 답을 쓰는 동안 입력창을 잠금
+API response length in tokens ⇒ 이번에만 쓸 최대 답 길이(토큰). 비우면 설정값
+change the type of the value when used with index ⇒ `index=`와 함께 쓸 때 넣을 값의 종류. 예: `as=number`면 글자 `"5"`가 아니라 숫자 `5`로 저장
+lorebook name if creating a new one, will be auto-generated otherwise ⇒ 로어북을 새로 만들게 될 때 쓸 이름. 비우면 자동
+create a new lorebook if it doesn't exist ⇒ 연결된 로어북이 없으면 새로 만들어 연결할지
+Message ID or range (e.g. 0-10). If not provided, the last message is used. ⇒ 메시지 번호 또는 `시작-끝` 범위(예: `0-10`). 비우면 마지막 메시지
+Two character language code according to IETF BCP 47 ⇒ 두 글자 언어 코드(`ko` 한국어, `en` 영어, `ja` 일본어 등). 언어마다 단어·문장을 나누는 규칙이 다름
+numeric ID of the QR, e.g., id=42 ⇒ 버튼 번호(예: `id=42`). 같은 글자의 버튼이 여럿일 때 정확히 고르는 용도
+name of the QR set, e.g., set=PresetName1 ⇒ 빠른 답장 세트 이름(예: `set=전투버튼`)
+text on the button, e.g., label=MyButton ⇒ 버튼에 보이는 글자(예: `label=공격`)
+the label of the quick reply ⇒ 빠른 답장 버튼 글자
+QR set name ⇒ 빠른 답장 세트 이름
+Extension name ⇒ 확장 이름. 확장 메뉴에 보이는 이름이나 폴더 이름(예: `SillyTavern-LALib`)
+named arguments assigned to scoped variables to be used in the expression ⇒ 식 안에서 쓸 임시 값. `이름=값`으로 여러 개 넘길 수 있음. 예: `answer={{pipe}}`
+the list or dictionary to iterate over ⇒ 하나씩 돌아볼 리스트나 딕셔너리(직접 쓰거나 `{{var::x}}`로 넘김)
+position to insert the message (index-based, corresponding to message id). If not set, the message will be inserted at the end of the chat.
+Negative values (including -0) are accepted and will work similarly to how 'depth' usually works. For example, -1 will insert the message right before the last message in chat. ⇒ 메시지를 끼워 넣을 위치(메시지 ID 기준, 0부터). 생략하면 채팅 맨 끝에 추가합니다. 음수도 받으며 depth처럼 뒤에서 셉니다. `-1`은 마지막 메시지 바로 앞, `-0`은 맨 끝입니다.
+
+# 선택지(enum) 설명
+Return to the pipe for the next command ⇒ 다음 명령으로 넘김(`{{pipe}}`로 받음)
+Return as an object (or array) to the pipe for the next command ⇒ 리스트·딕셔너리 모양 그대로 다음 명령으로 넘김
+Showing as a popup with the return value - Can display HTML ⇒ 창으로 보여 줌(HTML 꾸밈 적용)
+Show the return value as a toast notification - Can display HTML ⇒ 알림으로 보여 줌(HTML 꾸밈 적용)
+Show the return value as a toast notification - Will only display as text ⇒ 알림으로 보여 줌(글자 그대로)
+Log the return value (object, if it can be one) to the console ⇒ 개발자 도구 콘솔(F12)에 기록
+No return value ⇒ 아무 데도 보내지 않음
+Sending a chat message with the return value - Can display HTML ⇒ 채팅에 메시지로 올림(HTML 꾸밈 적용)
+Open file picker to select an image ⇒ 파일 선택 창을 열어 그림을 고름
+Character avatars path (e.g., characters/Name.png) ⇒ 캐릭터 아바타 경로(예: `characters/끼끼.png`)
+Background image path ⇒ 배경 그림 경로(예: `backgrounds/바다.png`)
+User avatar path ⇒ 페르소나 아바타 경로(예: `User Avatars/나.png`)
+Asset file path ⇒ 에셋 파일 경로(`assets/` 아래)
+User image path ⇒ 사용자 그림 경로(`user/images/` 아래)
+Character name ⇒ 캐릭터 이름
+a == b (strings & numbers) ⇒ 같다
+a !== b (strings & numbers) ⇒ 다르다
+a includes b (strings & numbers as strings) ⇒ 왼쪽 글 안에 오른쪽 글이 있다
+a not includes b (strings & numbers as strings) ⇒ 왼쪽 글 안에 오른쪽 글이 없다
+a > b (numbers) ⇒ 왼쪽이 크다 `>`
+a >= b (numbers) ⇒ 크거나 같다 `≥`
+a < b (numbers) ⇒ 왼쪽이 작다 `<`
+a <= b (numbers) ⇒ 작거나 같다 `≤`
+!a (truthy) ⇒ 왼쪽이 거짓이다(빈 값·`0`·`false`·`off`)
+No toast displayed ⇒ 알림 없음
+Static toast without stop button ⇒ 중지 버튼 없는 알림
+Toast with stop button (default) ⇒ 중지 버튼이 있는 알림(기본)
+In Prompt (default) ⇒ 프롬프트 안(기본)
+Allows to escape all delimiters with backslash, and allows escaping of backslashes. ⇒ 따옴표 안의 `|`를 `\` 없이 써도 글자로 봄. `\` 자체를 쓰려면 `\\`
+Replace all {{getvar::}} and {{getglobalvar::}} macros with scoped variables to avoid double macro substitution. ⇒ 변수 값 안에 `{{char}}` 같은 글이 있어도 또 매크로로 바뀌지 않게 막음
+slash commands (STscript) ⇒ 슬래시 명령 목록
+{{macros}} (text replacement) ⇒ 매크로 목록
+chat/text formatting ⇒ 채팅 글 꾸미기 방법
+keyboard shortcuts ⇒ 단축키
+Character description ⇒ 캐릭터 설명
+Character personality ⇒ 성격 요약
+Character scenario ⇒ 시나리오
+First message ⇒ 첫 번째 메시지
+Message examples ⇒ 대화 예시
+Creator notes ⇒ 제작자의 메모
+System prompt ⇒ 카드의 주요 프롬프트(고급 정의 → 프롬프트 무시)
+Post-history instructions ⇒ 카드 전용 Post-History Instructions
+Creator name ⇒ 만든 사람 이름
+Character version ⇒ 카드 버전
+Character tags ⇒ 카드 태그
+Talkativeness ⇒ 수다스러움(그룹 채팅에서 말을 거는 정도)
+Avatar filename ⇒ 아바타 파일 이름
+Favorite status ⇒ 즐겨찾기 여부
+How you want the return value to be provided ⇒ 결과를 어디로 보낼지
+Showing as a popup with the return value - Will only display as text ⇒ 창으로 보여 줌(글자 그대로)

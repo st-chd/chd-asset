@@ -1,0 +1,377 @@
+@db-disable
+데이터 저장소 파일을 **잠시 쓰지 않게** 합니다(지우지는 않음). 다시 쓰려면 `/db-enable`.
+```stscript
+/db-disable 설정집.txt
+```
+.source 찾을 범위: `global`(공통), `character`(지금 캐릭터), `chat`(지금 채팅)
+#0 파일 이름 또는 주소
+
+@db-enable
+`/db-disable`로 쉬게 한 데이터 저장소 파일을 다시 씁니다.
+```stscript
+/db-enable 설정집.txt
+```
+.source 찾을 범위: `global`, `character`, `chat`
+#0 파일 이름 또는 주소
+
+@db-delete
+데이터 저장소 파일을 **지웁니다**.
+```stscript
+/db-delete source=chat 요약.txt
+```
+.source 찾을 범위: `global`, `character`, `chat`(기본)
+#0 파일 이름 또는 주소
+
+@caption
+그림을 보고 AI가 **설명 글**(캡션)을 써서 결과로 남깁니다. 이미지 캡셔닝 [[확장]]을 씁니다. 기본으로는 파일 선택 창이 뜨고, 만든 설명을 채팅 메시지로도 보냅니다.
+```stscript
+/caption quiet=true mesId={{lastMessageId}} | /echo
+```
+마지막 메시지에 붙은 그림의 설명을 채팅에 보내지 않고 알림으로만 띄웁니다.
+.quiet 만든 설명을 채팅에 보내지 않음
+.mesId 파일을 고르는 대신 이 번호 메시지에 붙은 그림을 씀
+.index 그 메시지에 그림이 여러 장이면 몇 번째(0부터)를 쓸지
+#0 설명을 쓸 때 줄 지시(그림을 읽는 멀티모달 모델에서만)
+
+@expression-set
+지금 캐릭터의 **표정 그림**을 직접 정합니다(캐릭터 감정 표현들 확장). 정해진 표정 이름을 결과로 남깁니다. 다른 이름 `/sprite`, `/emote`.
+```stscript
+/expression-set joy
+```
+캐릭터 그림이 `joy`(기쁨) 표정으로 바뀝니다.
+.type `expression`이면 표정 이름으로, `sprite`면 그림 파일 이름으로 고름
+#0 표정 이름(예: `joy`, `sadness`) 또는 그림 파일 이름
+
+@expression-fallback
+맞는 표정 그림이 없을 때 대신 쓸 표정을 알려 줍니다. 이름을 주면 그것으로 바꿉니다.
+```stscript
+/expression-fallback | /echo
+/expression-fallback neutral
+```
+#0 새로 정할 대신 쓸 표정 이름
+
+@expression-folder-override
+지금 캐릭터의 표정 그림을 **다른 폴더**에서 가져오게 합니다(옷 갈아입히기). 비우면 원래 폴더로 돌아갑니다. 다른 이름 `/spriteoverride`, `/costume`.
+```stscript
+/expression-folder-override /winter
+```
+캐릭터 이름 폴더 안의 `winter` 폴더에 든 그림들로 바뀝니다(겨울옷 표정 세트).
+.name 바꿀 캐릭터 이름. 비우면 마지막으로 말한 캐릭터
+#0 폴더 이름. `/`로 시작하면 캐릭터 폴더 안의 하위 폴더
+
+@expression-last
+캐릭터에 마지막으로 보여 준 표정 이름을 결과로 남깁니다. 다른 이름 `/lastsprite`.
+```stscript
+/expression-last 끼끼 | /echo
+```
+#0 캐릭터 이름 또는 아바타 키. 비우면 지금 캐릭터(그룹에서는 꼭 써야 함)
+
+@expression-list
+쓸 수 있는 표정 이름 목록을 결과로 남깁니다. 다른 이름 `/expressions`.
+```stscript
+/expression-list | /echo
+```
+.filter 지금 캐릭터에게 그림이 있는 표정만
+.custom 직접 추가한 표정을 어떻게 할지
+=true 포함(기본)
+=false 빼기
+=only 직접 추가한 것만
+
+@expression-classify
+글의 **감정**을 판단해 표정 이름을 결과로 남깁니다. 다른 이름 `/classify`.
+```stscript
+/expression-classify 오늘 정말 행복해! | /echo
+```
+알림 `joy` 같은 표정 이름.
+.api 감정을 판단할 방법. 비우면 확장 설정값
+=local 브라우저 안의 작은 모델
+=extras Extras 서버
+=llm 연결한 AI에게 물어봄
+=webllm WebLLM 확장
+=none 판단하지 않음
+.filter 지금 캐릭터에게 그림이 있는 표정 중에서만 고름
+.prompt AI에게 물을 때 쓸 지시(`api=llm`일 때만)
+#0 감정을 판단할 글
+
+@expression-upload
+그림 주소에서 그림을 가져와 **표정 그림으로 등록**하고, 등록된 이름을 결과로 남깁니다. 다른 이름 `/uploadsprite`.
+```stscript
+/expression-upload name=끼끼 label=joy /user/images/끼끼/웃음.png
+```
+`끼끼`의 `joy` 표정 그림으로 등록합니다.
+.name 캐릭터 이름 또는 아바타 키. 비우면 지금 캐릭터
+.label 표정 이름(예: `joy`)
+.folder 올릴 폴더(옷 갈아입히기 폴더 등)
+.spriteName 한 표정에 그림을 여러 장 둘 때의 파일 이름. `표정-이름` 모양(`joy-2`). 비우면 표정 이름 그대로
+#0 올릴 그림 주소(SillyTavern 안의 경로도 됨)
+
+@show-gallery
+지금 캐릭터의 그림 갤러리를 엽니다. 다른 이름 `/sg`.
+
+@list-gallery
+캐릭터나 그룹 갤러리의 그림 목록을 결과로 남깁니다. 다른 이름 `/lg`.
+```stscript
+/list-gallery char=끼끼 | /echo
+```
+.char 캐릭터 이름
+.group 그룹 이름
+
+@summarize
+글을 **요약**해 결과로 남깁니다. 글을 주지 않으면 지금 채팅을 요약합니다. 채팅 요약 [[확장]]을 씁니다.
+```stscript
+/summarize | /echo
+/summarize {{lastMessage}}
+```
+첫 줄은 지금 채팅 요약을 알림으로, 둘째 줄은 마지막 메시지만 요약합니다.
+.source 요약에 쓸 AI
+=main 지금 연결한 AI
+=extras Extras 서버
+=webllm WebLLM 확장
+.prompt 요약 지시. 비우면 확장 설정값
+.quiet 채팅을 요약할 때 뜨는 알림을 숨김
+#0 요약할 글. 비우면 지금 채팅
+
+@imagine
+**그림을 만듭니다**(이미지 생성 확장). 만든 그림을 채팅에 올리고, 그림 주소를 결과로 남깁니다. 실패하면 빈 값. 다른 이름 `/sd`, `/img`, `/image`.
+```stscript
+/imagine you
+/imagine 노을 지는 바닷가, 수채화
+/imagine quiet=true face | /char-update avatar="{{pipe}}"
+```
+| 줄 | 하는 일 |
+|---|---|
+| 1 | 캐릭터의 전신 그림 |
+| 2 | 쓴 글을 그대로 그림 주제로(아래 단어가 아니면 이렇게 됨) |
+| 3 | 캐릭터 얼굴 그림을 채팅에 올리지 않고 만들어 아바타로 씀 |
+=you 캐릭터 전신
+=me 나(페르소나)
+=scene 지금까지의 장면
+=raw_last 마지막 메시지 글 그대로를 그림 지시로
+=last 마지막 메시지 내용을 바탕으로
+=face 캐릭터 얼굴
+=background 배경
+.quiet 만든 그림을 채팅에 올리지 않음
+.gallery `false`면 캐릭터 갤러리 대신 사용자 그림 폴더에 저장
+.negative 이번에만 덧붙일 "그리지 말 것" 목록
+.extend 자유 지시를 AI가 더 자세하게 늘려 씀
+.edit 만들기 전에 그림 지시를 고칠 수 있는 창을 띄움
+.multimodal 캐릭터 그림을 만들 때 아바타를 보고 묘사함
+.snap 크기를 가장 가까운 정해진 해상도로 맞춤(초상화·배경만)
+.processing AI가 만든 그림 지시를 얼마나 손볼지
+=standard 보통
+=minimal 조금만
+.seed 시드(같은 값이면 비슷한 그림이 나옴)
+.width 가로 크기(픽셀)
+.height 세로 크기(픽셀)
+.steps 스텝 수(클수록 오래 걸리고 정교함)
+.cfg CFG 값(지시를 얼마나 따를지)
+.skip CLIP skip 값
+.model 그림 모델 바꾸기
+.sampler 샘플러 바꾸기
+.scheduler 스케줄러 바꾸기
+.vae VAE 바꾸기
+.upscaler 업스케일러 바꾸기
+.hires 고해상도 보정(Hires fix) 사용
+.scale 확대 배율
+.denoise 디노이즈 강도
+.2ndpass 두 번째 단계 스텝 수
+.faces 얼굴 보정
+#0 무엇을 그릴지: 위 단어(`you`, `face` 등) 또는 자유 지시
+
+@imagine-source
+그림을 만들 프로그램(소스)을 바꿉니다(예: `comfy`, `openai`). 지금 소스 이름을 결과로 남깁니다. 다른 이름 `/sd-source`, `/img-source`.
+```stscript
+/imagine-source comfy
+```
+#0 소스 이름
+
+@imagine-style
+그림 스타일 묶음(스타일 프리셋)을 바꿉니다. 지금 스타일 이름을 결과로 남깁니다. 다른 이름 `/sd-style`, `/img-style`.
+#0 스타일 이름
+```stscript
+/imagine-style 애니풍
+```
+`애니풍` 스타일로 바꿉니다.
+
+@imagine-comfy-workflow
+ComfyUI로 그림을 만들 때 쓸 워크플로(작업 순서 파일)를 바꿉니다. 다른 이름 `/icw`.
+```stscript
+/imagine-comfy-workflow 내워크플로
+```
+#0 워크플로 이름
+
+@speak
+글을 **소리 내어 읽어** 줍니다(TTS 확장). 기본은 지금 캐릭터의 목소리입니다. 다른 이름 `/narrate`, `/tts`.
+```stscript
+/speak 안녕, 오늘도 왔구나.
+/speak voice=끼끼 나도 있어!
+```
+둘째 줄은 목소리 목록에 `끼끼`으로 등록해 둔 목소리로 읽습니다.
+.voice 목소리 목록에 등록된 캐릭터 이름
+#0 읽을 글
+
+@qr
+켜져 있는 [[빠른 답장]] 버튼을 **순서 번호**로 실행합니다. 번호는 0부터, 켜진 전역 세트들 → 채팅 세트 순서로 이어서 셉니다.
+```stscript
+/qr 0
+```
+첫 번째 버튼을 누른 것과 같습니다.
+#0 버튼 번호(0부터)
+
+@qrset
+쓰지 않는 옛 명령입니다. `/qr-set`, `/qr-set-on`, `/qr-set-off`를 쓰세요.
+
+@qr-set
+[[빠른 답장]] 세트를 **모든 채팅에서** 쓰도록 켜거나 끕니다(누를 때마다 반대로).
+```stscript
+/qr-set 전투버튼
+```
+.visible 켤 때 버튼을 화면에 보일지. `false`면 버튼은 숨기고 자동 실행 같은 기능만 동작
+#0 세트 이름
+
+@qr-set-on
+[[빠른 답장]] 세트를 모든 채팅에서 켭니다.
+```stscript
+/qr-set-on 전투버튼
+```
+.visible 버튼을 화면에 보일지
+#0 세트 이름
+
+@qr-set-off
+[[빠른 답장]] 세트를 모든 채팅에서 끕니다.
+```stscript
+/qr-set-off 전투버튼
+```
+#0 세트 이름
+
+@qr-chat-set
+[[빠른 답장]] 세트를 **지금 채팅에서만** 켜거나 끕니다(반대로).
+.visible 켤 때 버튼을 화면에 보일지
+#0 세트 이름
+```stscript
+/qr-chat-set 이벤트버튼
+```
+이 채팅에서만 `이벤트버튼` 세트를 켜거나 끕니다.
+
+@qr-chat-set-on
+[[빠른 답장]] 세트를 지금 채팅에서만 켭니다.
+.visible 버튼을 화면에 보일지
+#0 세트 이름
+```stscript
+/qr-chat-set-on 이벤트버튼
+```
+
+@qr-chat-set-off
+[[빠른 답장]] 세트를 지금 채팅에서 끕니다.
+#0 세트 이름
+```stscript
+/qr-chat-set-off 이벤트버튼
+```
+
+@qr-set-list
+[[빠른 답장]] 세트 이름 목록을 결과로 남깁니다.
+```stscript
+/qr-set-list global | /echo
+```
+=all 모든 세트
+=global 켜져 있는 전역 세트
+=chat 켜져 있는 채팅 세트
+#0 어떤 세트를 보여 줄지
+
+@qr-list
+한 세트 안의 버튼 라벨 목록을 결과로 남깁니다.
+```stscript
+/qr-list 전투버튼 | /echo
+```
+알림 `["공격","방어","도망"]` 같은 목록.
+#0 세트 이름
+
+@qr-create
+[[빠른 답장]] 세트에 **새 버튼**을 만듭니다. 자동 실행 칸(`startup`~`generation`)을 켜면 그때마다 이 버튼이 저절로 실행됩니다.
+```stscript
+/qr-create set=전투버튼 label=주사위 /echo \{\{roll::1d20\}\}
+```
+`전투버튼` 세트에 `주사위` 버튼이 생기고, 누를 때마다 1~20 숫자가 알림으로 뜹니다.
+! 내용에 매크로를 그냥 `{{roll::1d20}}`으로 쓰면 이 명령이 실행되는 순간 숫자로 바뀌어, 버튼에는 `/echo 14`처럼 고정된 숫자가 저장됩니다. 버튼을 누를 때 바뀌게 하려면 위처럼 중괄호 앞에 `\`를 붙입니다([[이스케이프]]).
+```stscript
+/qr-create set=자동 label=턴세기 hidden=true bot=true /incvar turn
+```
+화면에 안 보이는 버튼을 만들고, AI 답이 올 때마다 저절로 `turn`을 1 늘립니다.
+.set 버튼을 만들 세트 이름
+.label 버튼 글자
+.icon 버튼 아이콘(Font Awesome 이름, 예: `fa-dice`)
+.showlabel 아이콘이 있어도 글자를 같이 보임
+.hidden 버튼을 화면에 숨김(다른 버튼이나 자동 실행으로만 부름)
+.startup 앱을 켤 때 저절로 실행
+.user 내가 메시지를 보낼 때 저절로 실행
+.bot AI 답이 올 때 저절로 실행
+.load 채팅을 열 때 저절로 실행
+.new 새 채팅을 열 때 저절로 실행
+.group 그룹에서 답할 캐릭터가 정해질 때 저절로 실행
+.generation AI 답을 받기 직전에 저절로 실행
+.title 버튼에 마우스를 올리면 뜨는 설명
+#0 버튼을 누르면 실행할 내용(스크립트)
+
+@qr-get
+[[빠른 답장]] 버튼의 설정 전부를 [[딕셔너리]]로 결과에 남깁니다. `label=`이나 `id=`로 버튼을 고릅니다.
+```stscript
+/qr-get set=전투버튼 label=주사위 | /echo
+```
+.set 세트 이름
+.label 버튼 글자
+.id 버튼 번호(라벨이 겹칠 때)
+
+@qr-update
+있는 [[빠른 답장]] 버튼을 **고칩니다**. 쓴 칸만 바뀝니다.
+```stscript
+/qr-update set=전투버튼 label=주사위 newlabel=d20 /echo 주사위: \{\{roll::1d20\}\}
+```
+버튼 이름을 `d20`으로 바꾸고 내용도 바꿉니다. 매크로는 `/qr-create`처럼 `\{\{…\}\}`로 써야 누를 때마다 바뀝니다.
+.newlabel 새 버튼 글자
+.id 고칠 버튼 번호(라벨이 겹칠 때)
+.set 세트 이름
+.label 고칠 버튼의 지금 글자
+.icon 버튼 아이콘
+.showlabel 아이콘이 있어도 글자를 같이 보임
+.hidden 버튼을 화면에 숨김
+.startup 앱을 켤 때 저절로 실행
+.user 내가 메시지를 보낼 때 저절로 실행
+.bot AI 답이 올 때 저절로 실행
+.load 채팅을 열 때 저절로 실행
+.new 새 채팅을 열 때 저절로 실행
+.group 그룹에서 답할 캐릭터가 정해질 때 저절로 실행
+.generation AI 답을 받기 직전에 저절로 실행
+.title 버튼 설명
+#0 새 내용. 비우면 내용은 그대로
+
+@qr-delete
+[[빠른 답장]] 버튼을 **지웁니다**.
+```stscript
+/qr-delete set=전투버튼 주사위
+```
+.set 세트 이름
+.label 지울 버튼 글자
+.id 지울 버튼 번호
+#0 지울 버튼 글자(`label=` 대신)
+
+@qr-contextadd
+[[빠른 답장]] 버튼에 **오른쪽 클릭 메뉴**를 붙입니다. 메뉴에는 다른 세트의 버튼들이 나옵니다.
+```stscript
+/qr-contextadd set=전투버튼 label=공격 공격기술
+```
+`공격` 버튼을 오른쪽 클릭하면 `공격기술` 세트의 버튼들이 메뉴로 나옵니다.
+.set 메뉴를 붙일 버튼이 있는 세트
+.label 메뉴를 붙일 버튼 글자
+.id 메뉴를 붙일 버튼 번호(`label=`보다 우선)
+.chain `true`면 메뉴 항목을 누를 때 원래 버튼을 먼저 실행하고 이어서 메뉴 항목을 실행
+#0 메뉴로 붙일 세트 이름
+
+@qr-contextdel
+[[빠른 답장]] 버튼의 오른쪽 클릭 메뉴에서 세트 하나를 뗍니다.
+```stscript
+/qr-contextdel set=전투버튼 label=공격 공격기술
+```
+.set 버튼이 있는 세트
+.label 버튼 글자
+.id 버튼 번호(`label=`보다 우선)
+#0 뗄 세트 이름
