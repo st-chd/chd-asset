@@ -701,7 +701,7 @@ overflow-y: auto;
 ===
 [카테고리] 캐릭터 패널
 [확장프로그램] 기본
-[제목] 이미지 가리기
+[제목] 이미지 전부 가리기
 [태그] 캐릭터 목록, 프사, 사진, 숨기기, 지우기
 [CSS코드]
 #rm_print_characters_block .entity_block .avatar { display: none; }
@@ -710,7 +710,7 @@ overflow-y: auto;
 ===
 [카테고리] 캐릭터 패널
 [확장프로그램] 기본
-[제목] 이미지 가리기
+[제목] 이미지 전부 기본 사진으로 바꾸기
 [태그] 캐릭터 목록, 프사, 사진, 바꾸기
 [CSS코드]
 #rm_print_characters_block .entity_block .avatar img { content: url("/img/ai4.png"); }
