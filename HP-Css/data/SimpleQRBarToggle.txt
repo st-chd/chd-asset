@@ -24,3 +24,16 @@
 #qr--bar:not(.sqrbt-toggle_button-expanded) { display: none !important; }
 [/CSS코드]
 ===
+[카테고리] 입력창
+[확장프로그램] 빠답 접기
+[제목] 커스텀 프리셋 매니저와 버튼 합치기
+[태그] SimpleQRBarToggle, 심플 QR 바 토글, 빠른 답장, 입력칸, 인풋, 아이콘, 지우기
+[CSS코드]
+#custom_preset_quick_toggle_button { display: none !important; }
+#send_form:has(.sqrbt-toggle_button-expanded) #custom_preset_quick_toggle_bar { display: flex !important; }
+#send_form:has(.sqrbt-toggle_button-collapsed) #custom_preset_quick_toggle_bar { display: none !important; }
+[/CSS코드]
+[팁] 빠른 답장과 프롬프트 토글 버튼이 같이 보입니다.
+커스텀 프리셋 매니저 버튼만 남기고 싶다면 [[빠답 접기와 버튼 합치기]]를 확인하세요.
+[추가일] 2026-11-08
+===

@@ -120,7 +120,7 @@ animation-duration:24s;
 to{transform:translateY(100vh);}
 }
 [/CSS코드]
-[미리보기] img/Default/4.png
+[미리보기] img/Default/4.webp
 ===
 [카테고리] 캐릭터 패널
 [확장프로그램] 기본
@@ -485,7 +485,7 @@ object-position: center top;
 border-radius: 0 !important;
 }
 [/CSS코드]
-[미리보기] img/Default/12.png
+[미리보기] img/Default/12.webp
 [팁] 화질이 안 좋다면 [[이미지 크게 바꿀 때 고화질로 수정하기]]를 확인하세요.
 [[큰 이미지 아래 흐림 효과]]를 같이 쓰면 좋아요.
 ===
@@ -506,7 +506,7 @@ overflow: hidden;
 mask-image: linear-gradient(to bottom, #000 40%, rgba(0, 0, 0, 0.6) 72%, transparent 100%);
 }
 [/CSS코드]
-[미리보기] img/Default/13.png
+[미리보기] img/Default/13.webp
 [팁] [[캐릭터 이미지 크게 만들기]]와 같이 사용 하면 좋아요.
 ===
 [카테고리] 캐릭터 패널
@@ -665,7 +665,7 @@ max-height: 50dvh !important;
 }
 [/CSS코드]
 [출처] 달글
-[미리보기] img/Default/20.png
+[미리보기] img/Default/20.webp
 [팁] `50` 숫자를 조절해서 원하는 크기로 변경할 수 있습니다.
 ===
 [카테고리] 확장 패널
@@ -698,4 +698,23 @@ overflow-y: auto;
 }
 [/CSS코드]
 [미리보기] https://t1.daumcdn.net/cafeattach/1IHuH/1353a97dbb4371d1d2079410f711ac27efd2396a?type=thumb&opt=R667x0a
+===
+[카테고리] 캐릭터 패널
+[확장프로그램] 기본
+[제목] 이미지 가리기
+[태그] 캐릭터 목록, 프사, 사진, 숨기기, 지우기
+[CSS코드]
+#rm_print_characters_block .entity_block .avatar { display: none; }
+[/CSS코드]
+[추가일] 2026-11-08
+===
+[카테고리] 캐릭터 패널
+[확장프로그램] 기본
+[제목] 이미지 가리기
+[태그] 캐릭터 목록, 프사, 사진, 바꾸기
+[CSS코드]
+#rm_print_characters_block .entity_block .avatar img { content: url("/img/ai4.png"); }
+[/CSS코드]
+[팁] `/img/ai4.png`를 원하는 사진 경로로 변경하세요.
+[추가일] 2026-11-08
 ===

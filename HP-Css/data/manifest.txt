@@ -35,3 +35,5 @@ Folio.txt
 Recast.txt
 Context Tracker.txt
 Telegram.txt
+RandomCharacterGenerator.txt
+CustomPresetManager.txt

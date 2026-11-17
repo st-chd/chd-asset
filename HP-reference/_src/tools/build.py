@@ -722,6 +722,20 @@ def render_term(names, b, tid):
     )
 
 
+def legend(kind):
+    """The key to the marks on cards, shown once above the cards of each big section."""
+    dot = '<span class="arg req" style="display:inline;border:0;padding:0"><span class="an">{}</span></span>'
+    if kind == 'macro':
+        items = [dot.format('<span class="pos">formula</span>') + ' 꼭 채워야 하는 칸',
+                 '<code class="dv">= 기본값</code>']
+    else:
+        items = [dot.format('<code>name=</code>') + ' 필수 인자',
+                 '<span class="pos">값</span> 이름 없는 인자',
+                 '<code class="dv">= 기본값</code>']
+    spans = ''.join(f'<span>{i}</span>' for i in items)
+    return f'<div class="legend">{spans}<a class="jump" href="#g-card">카드 읽는 법 →</a></div>'
+
+
 def sample_card(key):
     """A real card shown inside a guide ("%%CARD /echo%%" or "%%CARD {{roll}}%%"), without its id."""
     if key.startswith('/'):
@@ -757,7 +771,7 @@ nav.append(('basics', '처음 시작하기', [(hid, t, None) for hid, t in g_toc
 
 # Macros
 g_html, g_toc = guide('guide-macro.md', 'g-macro', 'macro-guide')
-parts = [g_html]
+parts = [g_html, legend('macro')]
 items = [('macro-guide', '문법', None)]
 used = set()
 for gid, title, pred in MACRO_GROUPS:
@@ -822,12 +836,12 @@ def command_sections(src_filter, cat_map, order, prefix, extra=None):
 
 
 body, its = command_sections(lambda c: c['src'] != 'lalib', CORE_CAT, CORE_ORDER, 'c', {'월드인포(로어북)': wi_field_table})
-sections.append(('commands', '슬래시 명령어', body))
+sections.append(('commands', '슬래시 명령어', legend('cmd') + body))
 nav.append(('commands', '슬래시 명령어', its))
 
 g_html, g_toc = guide('guide-lalib.md', 'g-la', 'lalib-guide')
 body, its = command_sections(lambda c: c['src'] == 'lalib', LALIB_CAT, LALIB_ORDER, 'l')
-sections.append(('lalib', 'LALib', f'{g_html}{body}'))
+sections.append(('lalib', 'LALib', f'{g_html}{legend("cmd")}{body}'))
 nav.append(('lalib', 'LALib', [('lalib-guide', '식(계산식)', None)] + its))
 
 # ---------------------------------------------------------------- page

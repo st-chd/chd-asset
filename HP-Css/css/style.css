@@ -555,6 +555,17 @@ a { color: var(--blue-600); }
   line-height: 1.4;
 }
 
+/* 이 브라우저에서 아직 열어보지 않은 카드 */
+.dot-new{
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 7px 2px 0;
+  border-radius: 50%;
+  background: var(--blue-500);
+  vertical-align: middle;
+}
+
 .card-code{
   margin: 0 18px;
   background: var(--code-bg);
@@ -825,6 +836,32 @@ a { color: var(--blue-600); }
 }
 .code-block.is-guide pre{
   color: var(--text);
+}
+
+/* 업데이트 카드(목록 첫 칸)와 업데이트 창 — data/updates.txt */
+.badge-update{ background: var(--blue-100); color: var(--blue-700); }
+.update-body{ white-space: normal; }
+.update-body p{ margin: 0; }
+.update-body ul{ margin: 0; padding-left: 18px; }
+.update-body b{ color: var(--text); }
+.update-item + .update-item{
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.update-item-date{
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-700);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+/* 업데이트 카드: 내용 상자가 카드 아래 끝까지 채움 */
+.card-update .card-note-preview{
+  height: auto;
+  flex: 1 1 0;        /* 같은 줄 옆 카드 높이만큼 늘어남 */
+  min-height: 108px;  /* 폰처럼 한 줄에 카드 하나일 때 최소 높이 */
+  margin-bottom: 18px;
 }
 
 /* [팁] 안의 간단한 서식: `코드`, **굵게**, [[다른 항목]] 링크 */

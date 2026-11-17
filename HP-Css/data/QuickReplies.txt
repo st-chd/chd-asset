@@ -31,7 +31,7 @@ transform: translate(-50%, -50%) !important;
 z-index: 99999 !important;
 }
 [/CSS코드]
-[미리보기] img/QuickReplies/1.png
+[미리보기] img/QuickReplies/1.webp
 ===
 [카테고리] 빠른 답장
 [확장프로그램] 기본

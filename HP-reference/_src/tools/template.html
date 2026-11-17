@@ -87,7 +87,9 @@ nav li a.dim { opacity: .35; }
 .looks button.on { box-shadow: 0 0 0 2px var(--accent); }
 
 main { padding: 28px 40px 80px; max-width: 1060px; width: 100%; }
-.legend { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; color: var(--muted); font-size: 13px; margin: 18px 0 4px; padding: 8px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.legend code.dv { background: none; padding: 0; color: var(--faint); }
+.legend a.jump { margin-left: auto; }
 .legend .an { display: inline; }
 section.top > h2 { font-size: 28px; margin: 44px 0 6px; letter-spacing: -.02em; }
 section.top:first-of-type > h2 { margin-top: 8px; }
@@ -213,11 +215,6 @@ figure.ex.out pre { background: var(--code-bg); color: var(--text); border: 1px 
   <div class="resizer" role="separator" aria-orientation="vertical" aria-label="목차 너비 조절" tabindex="0" title="드래그해서 너비 조절 · 더블클릭하면 기본값"></div>
 </aside>
 <main>
-  <div class="legend">
-    <span><span class="arg req" style="display:inline;border:0;padding:0"><span class="an"><code>name=</code></span></span> 필수 인자</span>
-    <span><span class="pos">값</span> 이름 없이 쓰는 인자</span>
-    <span><code style="background:none;padding:0;color:var(--faint)">= 기본값</code></span>
-  </div>
   %%MAIN%%
   <p class="empty hide" id="empty">검색 결과가 없습니다.</p>
 </main>

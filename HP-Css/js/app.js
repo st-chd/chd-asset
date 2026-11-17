@@ -4,6 +4,9 @@
 const DATA_DIR = "data/";
 const MANIFEST_URL = DATA_DIR + "manifest.txt";
 const PAGE_SIZE = 9;
+const RECENT_DAYS = 20;              // [추가일]이 이 기간 안이면 "최근 추가"에 들어감
+const RECENT_CATEGORY = "__recent";  // "최근 추가" 버튼의 내부 값 (실제 카테고리 이름과 겹치지 않게)
+const SEEN_KEY = "hpcss-seen";       // localStorage: 이 브라우저에서 이미 본 카드 키 목록
 
 /* ============================================================
    상태
@@ -107,6 +110,120 @@ el.noticeToggle.addEventListener("click", () => {
   el.noticeToggle.textContent = expanded ? "접기" : "더 보기";
 });
 
+/* ============================================================
+   0-2) 업데이트 카드 (data/updates.txt)
+
+   날짜만 있는 줄(2026-11-17)로 업데이트 하나가 시작되고, 그 아래 줄들이 내용이 된다.
+   "- "로 시작하는 줄은 목록, 나머지는 문단. `코드`, **굵게**, [[제목]] 링크는 팁과 같다.
+   카드 목록 첫 칸(전체 + 필터·검색 없음 + 1페이지)에 가장 최근 업데이트를 보여주고,
+   카드를 누르면 전체 내역 창이 열린다.
+   이 브라우저에서 마지막으로 연 날짜보다 새 날짜가 있으면 제목 앞에 점을 찍는다.
+   ============================================================ */
+const UPDATE_SEEN_KEY = "hpcss-update-seen";
+
+function parseUpdates(rawText) {
+  const updates = [];
+  rawText.split("\n").forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#")) return;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      updates.push({ date: trimmed, lines: [] });
+    } else if (updates.length && trimmed) {
+      updates[updates.length - 1].lines.push(trimmed);
+    }
+  });
+  return updates
+    .filter(u => u.lines.length)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function renderUpdateBody(lines) {
+  let html = "";
+  let inList = false;
+  lines.forEach(line => {
+    const isItem = line.startsWith("- ");
+    if (isItem && !inList) { html += "<ul>"; inList = true; }
+    if (!isItem && inList) { html += "</ul>"; inList = false; }
+    html += isItem
+      ? `<li>${renderTipHtml(line.slice(2))}</li>`
+      : `<p>${renderTipHtml(line)}</p>`;
+  });
+  if (inList) html += "</ul>";
+  return html;
+}
+
+let updates = [];          // 최신 날짜가 앞
+let updateUnseen = false;
+
+async function loadUpdates() {
+  try {
+    const res = await fetch(DATA_DIR + "updates.txt", { cache: "no-store" });
+    if (!res.ok) return; // 파일이 없으면 카드를 표시하지 않는다
+    updates = parseUpdates(await res.text());
+    if (!updates.length) return;
+    let lastSeen = null;
+    try { lastSeen = localStorage.getItem(UPDATE_SEEN_KEY); } catch (e) {}
+    updateUnseen = lastSeen === null || updates[0].date > lastSeen;
+    if (allEntries.length) renderPage(); // CSS 목록이 먼저 그려졌으면 다시 그려서 카드 넣기
+  } catch (err) {
+    console.error("업데이트 로드 실패:", err);
+  }
+}
+
+// 필터·검색을 하나도 안 쓰고 있을 때만 업데이트 카드를 목록 첫 칸에 넣는다.
+function showsUpdateCard() {
+  return updates.length > 0
+    && activeCategory === "전체" && activeExtension === "전체" && activeDevice === "전체"
+    && !searchTerm.trim();
+}
+
+function buildUpdateCard() {
+  const latest = updates[0];
+  const card = document.createElement("article");
+  card.className = "card card-update";
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", "업데이트 내역 보기");
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-badges"><span class="badge badge-update">업데이트</span></div>
+      <h3 class="card-title">${updateUnseen ? `<span class="dot-new" aria-label="새 업데이트"></span>` : ""}${escapeHtml(latest.date)}</h3>
+    </div>
+    <div class="card-note-preview update-body">${renderUpdateBody(latest.lines)}</div>
+  `;
+  card.addEventListener("click", (e) => {
+    if (e.target.closest(".tip-link")) return; // [[링크]]는 링크 대상 창을 연다
+    openUpdateModal();
+  });
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openUpdateModal(); }
+  });
+  return card;
+}
+
+function openUpdateModal() {
+  if (updateUnseen) {
+    updateUnseen = false;
+    try { localStorage.setItem(UPDATE_SEEN_KEY, updates[0].date); } catch (e) {}
+    renderPage(); // 카드의 점 지우기
+  }
+  el.modalTitle.textContent = "업데이트";
+  el.modalBadges.innerHTML = "";
+  el.codeBlockLabel.textContent = "전체 내역";
+  el.modalCode.innerHTML = `<div class="update-body">${updates.map(u =>
+    `<div class="update-item"><div class="update-item-date">${escapeHtml(u.date)}</div>${renderUpdateBody(u.lines)}</div>`
+  ).join("")}</div>`;
+  el.modalCode.classList.add("prose");
+  el.codeBlock.classList.add("is-guide");
+  el.modalCopyBtn.style.display = "none"; // .copy-btn의 display 때문에 hidden 속성만으로는 안 숨겨짐
+  el.modalTip.hidden = true;
+  el.modalPreview.hidden = true;
+  el.modalPreview.style.display = "none";
+  el.modalPreview.removeAttribute("src");
+  el.modalBackdrop.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
 el.modalPreview.addEventListener("click", () => {
   el.imgLightboxImg.src = el.modalPreview.src;
   el.imgLightbox.classList.add("open");
@@ -200,6 +317,7 @@ async function loadData() {
     }));
 
     allEntries = results.flat().map(entry => ({ ...entry, id: idCounter++ }));
+    markUnseen();
 
     el.stateArea.innerHTML = "";
     if (allEntries.length === 0) {
@@ -260,6 +378,9 @@ function parseEntries(rawText, sourceFile = "") {
     const tip = matchField(block, "팁", true);
     const envRaw = matchField(block, "환경");
     const source = matchField(block, "출처");
+    const added = matchField(block, "추가일").trim();
+    const pinned = /^\[고정\]/m.test(block); // 값 없이 줄만 있으면 고정
+    const baseKey = `${sourceFile}|${extension.trim()}|${title.trim()}`;
     const devices = parseDevices(envRaw);
 
     const codeMatch = block.match(/\[CSS코드\]\s*\n?([\s\S]*?)\n?\[\/CSS코드\]/);
@@ -279,6 +400,10 @@ function parseEntries(rawText, sourceFile = "") {
       code,
       isTipOnly: !code,
       devices, // ["pc"], ["mobile"], ["pc","mobile"] 또는 [] (미지정 = 둘 다 해당)
+      added: /^\d{4}-\d{2}-\d{2}$/.test(added) ? added : "", // "" = 예전 항목
+      pinned,
+      // 안 본 카드 판별용 키. 고정 항목(공지)은 본문이 바뀌면 다시 "안 본 것"이 되도록 본문 해시를 붙인다.
+      key: pinned ? `${baseKey}|${hashText((tip || "") + code)}` : baseKey,
     });
   });
   return entries;
@@ -298,7 +423,7 @@ function parseDevices(envRaw) {
 }
 
 // 대괄호 필드 하나를 추출. multiline=true면 다음 [필드] 나 블록 끝까지 전부 가져옴.
-const FIELD_NAMES = "카테고리|확장프로그램|제목|태그|환경|CSS코드|\\/CSS코드|미리보기|팁";
+const FIELD_NAMES = "카테고리|확장프로그램|제목|태그|환경|CSS코드|\\/CSS코드|미리보기|팁|출처|추가일|고정";
 
 function matchField(block, name, multiline = false) {
   const pattern = multiline
@@ -306,6 +431,41 @@ function matchField(block, name, multiline = false) {
     : new RegExp(`\\[${name}\\]\\s*([^\\n]*)`);
   const m = block.match(pattern);
   return m ? m[1] : "";
+}
+
+/* ============================================================
+   1-2) 새 항목 표시 — [추가일] 기준 "최근 추가" + 브라우저별 "안 본 카드" 점
+
+   - 안 본 카드: localStorage에 본 카드 키를 저장해 두고, 목록에 없는 키에만 점을 찍는다.
+     처음 방문하면(저장된 기록 없음) 지금 있는 카드를 전부 본 것으로 처리한다.
+     카드를 열면 점이 사라진다.
+   ============================================================ */
+function markUnseen() {
+  let seen = null;
+  try { seen = JSON.parse(localStorage.getItem(SEEN_KEY)); } catch (e) {}
+  const seenSet = Array.isArray(seen) ? new Set(seen) : null;
+  allEntries.forEach(e => { e.unseen = seenSet ? !seenSet.has(e.key) : false; });
+  saveSeen();
+}
+
+// 안 본 카드를 뺀 나머지를 저장. 지금 없는 카드 키는 자연히 정리된다.
+function saveSeen() {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(allEntries.filter(e => !e.unseen).map(e => e.key)));
+  } catch (e) {}
+}
+
+// 짧은 문자열 해시 (djb2). 공지 본문이 바뀌었는지만 알면 되므로 충분하다.
+function hashText(text) {
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
+function isRecent(entry) {
+  if (!entry.added) return false;
+  const addedTime = new Date(entry.added + "T00:00:00").getTime();
+  return Date.now() - addedTime < RECENT_DAYS * 86400000;
 }
 
 /* ============================================================
@@ -318,6 +478,8 @@ function buildSidebar() {
   el.categoryList.innerHTML = "";
   const allCatBtn = makeCategoryButton("전체", allEntries.length, true);
   el.categoryList.appendChild(allCatBtn);
+  const recentCount = allEntries.filter(isRecent).length;
+  if (recentCount > 0) el.categoryList.appendChild(makeCategoryButton(RECENT_CATEGORY, recentCount, false, "최근 추가"));
   Object.entries(categoryCounts)
     .sort((a, b) => a[0].localeCompare(b[0], "ko"))
     .forEach(([name, count]) => {
@@ -347,12 +509,12 @@ function countBy(list, key) {
   return map;
 }
 
-function makeCategoryButton(name, count, isDefault) {
+function makeCategoryButton(name, count, isDefault, label = name) {
   const li = document.createElement("li");
   const btn = document.createElement("button");
   btn.className = "category-btn" + (isDefault ? " active" : "");
   btn.dataset.category = name;
-  btn.innerHTML = `<span>${escapeHtml(name)}</span><span class="count">${count}</span>`;
+  btn.innerHTML = `<span>${escapeHtml(label)}</span><span class="count">${count}</span>`;
   btn.addEventListener("click", () => {
     activeCategory = name;
     currentPage = 1;
@@ -401,7 +563,8 @@ function applyFilters() {
   const term = searchTerm.trim().toLowerCase();
 
   filtered = allEntries.filter(entry => {
-    if (activeCategory !== "전체" && entry.category !== activeCategory) return false;
+    if (activeCategory === RECENT_CATEGORY) { if (!isRecent(entry)) return false; }
+    else if (activeCategory !== "전체" && entry.category !== activeCategory) return false;
     if (activeExtension !== "전체" && entry.extension !== activeExtension) return false;
     // [환경]을 지정하지 않은 항목(devices.length === 0)은 컴퓨터/모바일 필터 어느 쪽에도 걸린다.
     if (activeDevice !== "전체" && !(entry.devices.length === 1 && entry.devices[0] === activeDevice)) return false;
@@ -411,6 +574,10 @@ function applyFilters() {
     ].join(" ").toLowerCase();
     return haystack.includes(term);
   });
+  filtered.sort((a, b) =>
+    (b.pinned - a.pinned) ||                         // [고정] 항목이 맨 앞
+    (b.added || "").localeCompare(a.added || "") ||  // 그다음 [추가일] 최신순
+    a.id - b.id);                                    // 나머지는 원래 순서
 
   el.resultCount.textContent = allEntries.length
     ? `${filtered.length}개의 CSS가 있습니다.`
@@ -422,12 +589,15 @@ function applyFilters() {
 /* ============================================================
    4) 카드 렌더링 + 페이지네이션
    ============================================================ */
+const UPDATE_CARD = { isUpdateCard: true };
+
 function renderPage() {
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const items = showsUpdateCard() ? [UPDATE_CARD, ...filtered] : filtered;
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
   if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * PAGE_SIZE;
-  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  const pageItems = items.slice(start, start + PAGE_SIZE);
 
   el.grid.innerHTML = "";
 
@@ -435,7 +605,7 @@ function renderPage() {
     el.grid.innerHTML = `<div class="state-msg" style="grid-column: 1/-1;"><strong>일치하는 결과가 없습니다</strong>다른 검색어나 필터를 시도해보세요.</div>`;
   }
 
-  pageItems.forEach(entry => el.grid.appendChild(buildCard(entry)));
+  pageItems.forEach(entry => el.grid.appendChild(entry.isUpdateCard ? buildUpdateCard() : buildCard(entry)));
 
   renderPagination(totalPages);
 }
@@ -511,7 +681,7 @@ function buildCard(entry) {
         ${deviceBadgesHtml(entry)}
         ${entry.source ? `<span class="badge badge-source">출처: ${escapeHtml(entry.source)}</span>` : ""}
       </div>
-      <h3 class="card-title">${escapeHtml(entry.title)}</h3>
+      <h3 class="card-title">${entry.unseen ? `<span class="dot-new" aria-label="새 항목"></span>` : ""}${escapeHtml(entry.title)}</h3>
     </div>
     ${previewHtml}
     <div class="card-bottom">
@@ -552,12 +722,6 @@ function renderPagination(totalPages) {
 
   addBtn("‹", currentPage - 1, { disabled: currentPage === 1 });
 
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(renderPage, 150);
-  });
-
   const pages = pageRange(currentPage, totalPages);
   pages.forEach(p => {
     if (p === "...") {
@@ -572,10 +736,17 @@ function renderPagination(totalPages) {
 
   addBtn("›", currentPage + 1, { disabled: currentPage === totalPages });
 }
+// 화면 폭이 바뀌면 페이지 번호 개수(모바일/PC)를 다시 계산. 리스너는 한 번만 붙인다.
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderPage, 150);
+});
+
 
 function pageRange(current, total) {
-  // 모바일에서는 +2개, pc에서는 +5개
-  const delta = window.innerWidth <= 860 ? 2 : 5;
+  // 모바일에서는 +1개, pc에서는 +5개
+  const delta = window.innerWidth <= 860 ? 1 : 5;
   const range = [];
   for (let i = 1; i <= total; i++) {
     if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
@@ -591,7 +762,13 @@ function pageRange(current, total) {
    5) 모달
    ============================================================ */
 function openModal(entry) {
+  if (entry.unseen) {
+    entry.unseen = false;
+    saveSeen();
+    renderPage(); // 카드의 점 지우기
+  }
   el.modalTitle.textContent = entry.title;
+  el.modalCopyBtn.style.display = "";
   el.modalBadges.innerHTML = `
     <span class="badge badge-category">${escapeHtml(entry.category)}</span>
     <span class="badge badge-extension">${escapeHtml(entry.extension)}</span>
@@ -786,4 +963,5 @@ function escapeHtml(str) {
    시작
    ============================================================ */
 loadNotice();
+loadUpdates();
 loadData();

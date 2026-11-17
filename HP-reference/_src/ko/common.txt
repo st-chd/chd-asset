@@ -1,6 +1,6 @@
 # 영어 원문 ⇒ 한국어 (인자 설명·선택지 설명 공용 사전)
 Suppress toast message notifications. ⇒ 알림을 띄우지 않음
-If true, does not alter quoted literal unnamed arguments ⇒ 이름 없는 인자을 큰따옴표로 감쌌을 때 따옴표를 어떻게 할지. `true`(기본)면 따옴표까지 그대로 쓰고, `false`면 바깥 따옴표를 떼어 냄. 예: `/echo raw=false "안녕"`은 알림 `안녕`
+If true, does not alter quoted literal unnamed arguments ⇒ 이름 없는 인자를 큰따옴표로 감쌌을 때 따옴표를 어떻게 할지. `true`(기본)면 따옴표까지 그대로 쓰고, `false`면 바깥 따옴표를 떼어 냄. 예: `/echo raw=false "안녕"`은 알림 `안녕`
 The way how you want the return value to be provided ⇒ 결과를 어디로 보낼지. 아래 목록 중 하나
 The way to return the result ⇒ 결과를 어디로 보낼지. 아래 목록 중 하나
 Character name - or unique character identifier (avatar key) ⇒ 캐릭터 이름, 또는 캐릭터를 정확히 가리키는 아바타 파일 이름(예: `끼끼.png`)
