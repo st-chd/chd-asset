@@ -753,6 +753,20 @@ textarea:focus, input:focus {
   width: 100%;
 }
 
+/* 긴 텍스트가 아래 칸을 덮지 않도록 높이 제한 + 칸 안 스크롤 */
+#raw-input,
+#regex-input {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  #raw-input,
+  #regex-input {
+    max-height: 300px;
+  }
+}
+
 .trim-label {
   display: block;
   margin-top: 8px;
