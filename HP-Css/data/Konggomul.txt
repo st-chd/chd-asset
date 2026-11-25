@@ -50,7 +50,7 @@ transform: scale(0.5);
 [카테고리] UI
 [확장프로그램] 콩고물 톡
 [제목] 전송 버튼 작게 줄이기
-[태그] Konggomul talk, 버튼, 아이콘, 크기, 사이즈, 축소
+[태그] Konggomul talk, 아이콘, 크기, 사이즈, 축소
 [CSS코드]
 #tua-panel #tua-send {
 width: 26px !important;
@@ -62,4 +62,68 @@ font-size: 12px !important;
 }
 [/CSS코드]
 [출처] 달글
+===
+[카테고리] 입력창
+[확장프로그램] 콩고물 톡
+[제목] 버튼 인풋 영역에 배치
+[태그] Konggomul talk, 아이콘, 입력칸, 인풋창, 인풋칸, 옮기기, 고정
+[환경] 
+[CSS코드]
+@supports (anchor-name: --tua-input-slot) and
+(position-anchor: --tua-input-slot) {
+
+body:has(#tua-panel.tua-visible.tua-collapsed)
+#rightSendForm::before {
+content: "";
+display: block;
+flex: 0 0 var(--bottomFormBlockSize, 28px);
+width: var(--bottomFormBlockSize, 28px);
+height: var(--bottomFormBlockSize, 28px);
+order: 2;
+anchor-name: --tua-input-slot;
+pointer-events: none;
+}
+/* 접힌 콩톡 버튼을 해당 자리에 표시 */
+#tua-panel.tua-visible.tua-collapsed {
+position: fixed !important;
+position-anchor: --tua-input-slot !important;
+
+left: anchor(center) !important;
+top: anchor(center) !important;
+right: auto !important;
+bottom: auto !important;
+
+transform: translate(-50%, -50%) !important;
+
+width: 28px !important;
+height: 28px !important;
+min-width: 28px !important;
+min-height: 28px !important;
+
+margin: 0 !important;
+z-index: 31 !important;
+position-visibility: anchors-visible;
+}
+/* 콩고물톡 버튼 디자인 통일 */
+#tua-panel.tua-collapsed #tua-collapsed-button {
+width: 28px !important;
+height: 28px !important;
+min-width: 28px !important;
+min-height: 28px !important;
+
+padding: 0 !important;
+margin: 0 !important;
+
+border: none !important;
+border-radius: 0 !important;
+background: transparent !important;
+box-shadow: none !important;
+
+font-size: 17px !important;
+cursor: pointer !important;
+}
+}
+[/CSS코드]
+[출처] 달글
+[추가일] 2026-11-25
 ===

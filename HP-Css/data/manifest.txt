@@ -35,5 +35,9 @@ Folio.txt
 Recast.txt
 Context Tracker.txt
 Telegram.txt
+GoogleDocs.txt
 RandomCharacterGenerator.txt
 CustomPresetManager.txt
+verba.txt
+PhraseDesk.txt
+ChiikawaLaborBoard.txt
