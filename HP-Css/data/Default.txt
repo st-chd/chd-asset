@@ -718,3 +718,38 @@ overflow-y: auto;
 [팁] `/img/ai4.png`를 원하는 사진 경로로 변경하세요.
 [추가일] 2026-11-08
 ===
+[카테고리] 입력창
+[확장프로그램] 기본
+[제목] 입력창 최대 높이 고정하기
+[태그] 입력칸, 인풋, 길이
+[CSS코드]
+#nonQRFormItems { max-height: 25vh; }
+[/CSS코드]
+[미리보기] 
+[팁] `25`를 수정해 화면에 맞게 조절하세요.
+[추가일] 2026-11-26 
+===
+[카테고리] UI
+[확장프로그램] 기본
+[제목] 메인화면 채팅 하단 버튼 지우기
+[태그] 아이콘, 숨기기, 첫 화면
+[CSS코드]
+[type="welcome_prompt"] {
+display: none !important;
+}
+[/CSS코드]
+[출처] 달글
+[팁] 메인화면 하단의 `API연결, 캐릭터 관리, 확장` 버튼을 의미합니다.
+[추가일] 2026-11-27 
+===
+[카테고리] 프리셋 패널
+[확장프로그램] 기본
+[제목] 비활성화된 프롬프트 글자 색 바꾸기
+[태그] 색깔, 프리셋 목록, 프롬프트 이름, 꾸미기
+[CSS코드]
+#completion_prompt_manager #completion_prompt_manager_list .completion_prompt_manager_prompt_disabled .completion_prompt_manager_prompt_name .prompt-manager-inspect-action {
+color: #999 !important;
+}
+[/CSS코드]
+[추가일] 2026-11-27
+===

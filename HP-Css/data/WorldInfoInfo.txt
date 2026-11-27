@@ -69,3 +69,37 @@ color: var(--SmartThemeBodyColor) !important;}
 [미리보기] img/WorldInfoInfo/2.png
 [팁] 알림 색상을 책 아이콘처럼 연하게 바꾸고 싶다면 [[플로팅 아이콘 알림 뱃지 색상 바꾸기]]를 확인하세요.
 ===
+[카테고리] 입력창
+[확장프로그램] 월드인포인포
+[제목] 입력창 메뉴(☰) 왼쪽에 고정하기
+[태그] WorldInfoInfo, 버튼, 아이콘, 위치
+[환경] 
+[CSS코드]
+#options_button { anchor-name: --wii-slot; }
+#leftSendForm { padding-left: 40px; }
+.stwii--trigger {
+position: fixed !important;
+inset: auto !important;
+position-anchor: --wii-slot;
+position-area: left;
+}
+[/CSS코드]
+[추가일] 2026-11-26
+===
+[카테고리] 입력창
+[확장프로그램] 월드인포인포
+[제목] 입력창 오른쪽에 고정하기
+[태그] WorldInfoInfo, 버튼, 아이콘, 위치
+[환경] 
+[CSS코드]
+#rightSendForm { anchor-name: --wii-slot; padding-left: 40px; }
+.stwii--trigger {
+position: fixed !important;
+inset: auto !important;
+position-anchor: --wii-slot;
+position-area: center;
+justify-self: start;
+}
+[/CSS코드]
+[추가일] 2026-11-26
+===

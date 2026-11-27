@@ -41,3 +41,5 @@ CustomPresetManager.txt
 verba.txt
 PhraseDesk.txt
 ChiikawaLaborBoard.txt
+kikkiCloset.txt
+NanoGPTTools.txt

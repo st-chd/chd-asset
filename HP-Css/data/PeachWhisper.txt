@@ -39,3 +39,15 @@ left: 10px !important;
 [/CSS코드]
 [팁] `top`, `left`는 원하는 숫자로 조절 해 주세요. `px`단위 대신 `%`를 사용 할 수도 있습니다.
 ===
+[카테고리] UI
+[확장프로그램] 피치 위스퍼
+[제목] 입력창 하단에 붙이기
+[태그] Peach Whisper, 입력칸, 인풋창, 인풋칸, 화면, 위치
+[CSS코드]
+#pw_popup_body { flex: 1; }
+#pw_tab_contents { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.pw_tab_content.active { flex: 1; min-height: 0; }
+#pw_popup .pw_messages { max-height: none; }
+[/CSS코드]
+[추가일] 2026-11-26
+===
